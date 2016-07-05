@@ -1,0 +1,4 @@
+code_generation: false
+suites:
+    queues:
+        spec_path: tests
