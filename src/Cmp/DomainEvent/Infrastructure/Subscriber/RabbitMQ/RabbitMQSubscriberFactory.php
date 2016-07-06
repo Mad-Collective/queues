@@ -1,18 +1,20 @@
 <?php
 
-namespace Cmp\DomainEvent\Infrastructure\Publisher;
+namespace Cmp\DomainEvent\Infrastructure\Subscriber\RabbitMQ;
 
-use Cmp\DomainEvent\Infrastructure\Publisher\RabbitMQ\Publisher;
-use PhpAmqpLib\Connection\AMQPStreamConnection;
-
-class PublisherFactory
+class RabbitMQSubscriberFactory
 {
 
     public function create($config) {
         $amqpStreamConnection = new AMQPStreamConnection($config['host'], $config['port'], $config['user'], $config['password']);
         $channel = $amqpStreamConnection->channel();
+
         $channel->exchange_declare($config['exchange'], 'fanout', false, false, false);
-        return new Publisher($channel, $config);
+
+        list($queue_name, ,) = $channel->queue_declare("", false, false, true, false);
+
+        $channel->queue_bind($queue_name, $config['exchange']);
+        return new RabbitMQSubscriber($channel, $queue_name);
     }
 
 }

@@ -2,13 +2,13 @@
 
 namespace spec\Cmp\DomainEvent\Infrastructure\Publisher\RabbitMQ;
 
-use Cmp\DomainEvent\Domain\Event\AbstractEvent;
+use Cmp\DomainEvent\Domain\Event\DomainEvent;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Message\AMQPMessage;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
-class PublisherSpec extends ObjectBehavior
+class RabbitMQPublisherSpec extends ObjectBehavior
 {
 
     public function let(AMQPChannel $channel)
@@ -19,10 +19,10 @@ class PublisherSpec extends ObjectBehavior
 
     public function it_is_initializable()
     {
-        $this->shouldHaveType('Cmp\DomainEvent\Infrastructure\Publisher\RabbitMQ\Publisher');
+        $this->shouldHaveType('Cmp\DomainEvent\Infrastructure\Publisher\RabbitMQ\RabbitMQPublisher');
     }
 
-    public function it_calls_basic_publish_with_a_message(AMQPChannel $channel, AbstractEvent $event)
+    public function it_calls_basic_publish_with_a_message(AMQPChannel $channel, DomainEvent $event)
     {
         $body = ['test' => 'hello'];
         $event->jsonSerialize()->willReturn($body); // Serialize function is mocked so we need to set the return

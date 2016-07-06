@@ -3,13 +3,16 @@
 namespace Cmp\DomainEvent\Infrastructure\Publisher\RabbitMQ;
 
 
-use Cmp\DomainEvent\Domain\Event\AbstractEvent;
+use Cmp\DomainEvent\Domain\Event\DomainEvent;
+use Cmp\DomainEvent\Domain\Publisher\Publisher;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Message\AMQPMessage;
 
-class Publisher implements \Cmp\DomainEvent\Infrastructure\Publisher\Publisher
+class RabbitMQPublisher implements Publisher
 {
-
+    /**
+     * @var array
+     */
     private $config;
 
     /**
@@ -30,7 +33,7 @@ class Publisher implements \Cmp\DomainEvent\Infrastructure\Publisher\Publisher
         $this->config = $config;
     }
 
-    public function publish(AbstractEvent $event)
+    public function publish(DomainEvent $event)
     {
         $msg = new AMQPMessage(json_encode($event));
         $this->channel->basic_publish($msg, $this->config['exchange']);
