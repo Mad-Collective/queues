@@ -2,6 +2,9 @@
 
 namespace Cmp\DomainEvent\Infrastructure\Subscriber\RabbitMQ;
 
+use Cmp\DomainEvent\Domain\Event\JSONDomainEventFactory;
+use PhpAmqpLib\Connection\AMQPStreamConnection;
+
 class RabbitMQSubscriberFactory
 {
 
@@ -14,7 +17,10 @@ class RabbitMQSubscriberFactory
         list($queue_name, ,) = $channel->queue_declare("", false, false, true, false);
 
         $channel->queue_bind($queue_name, $config['exchange']);
-        return new RabbitMQSubscriber($channel, $queue_name);
+
+        $jsonDomainEventFactory = new JSONDomainEventFactory();
+
+        return new RabbitMQSubscriber($channel, $jsonDomainEventFactory, $queue_name);
     }
 
 }

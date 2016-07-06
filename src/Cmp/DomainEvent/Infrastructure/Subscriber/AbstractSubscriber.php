@@ -3,14 +3,15 @@
 namespace Cmp\DomainEvent\Infrastructure\Subscriber;
 
 use Cmp\DomainEvent\Application\EventObserver;
-use Cmp\DomainEvent\Domain\Subscriber;
+use Cmp\DomainEvent\Domain\Event\DomainEvent;
+use Cmp\DomainEvent\Domain\Subscriber\Subscriber;
 
 abstract class AbstractSubscriber implements Subscriber
 {
     /**
      * @var array
      */
-    private $observers;
+    private $observers = [];
 
     public function subscribe(EventObserver $eventObserver)
     {
