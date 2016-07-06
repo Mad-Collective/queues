@@ -5,7 +5,9 @@
             "": "src"
         }
     },
-    "require": {},
+    "require": {
+        "php-amqplib/php-amqplib": "^2.6"
+    },
     "require-dev": {
         "phpspec/phpspec": "2.4.1"
     }

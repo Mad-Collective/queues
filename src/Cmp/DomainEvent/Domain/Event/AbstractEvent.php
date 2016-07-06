@@ -2,7 +2,7 @@
 
 namespace Cmp\DomainEvent\Domain\Event;
 
-abstract class AbstractEvent
+abstract class AbstractEvent implements \JsonSerializable
 {
     /**
      * @var string
@@ -100,4 +100,15 @@ abstract class AbstractEvent
         $this->extra = $extra;
         return $this;
     }
+
+    public function jsonSerialize()
+    {
+        return [
+            'origin' => $this->origin,
+            'name' => $this->name,
+            'ocurredOn' => $this->ocurredOn,
+            'extra' => $this->extra
+        ];
+    }
+
 }
