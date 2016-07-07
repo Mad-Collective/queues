@@ -6,7 +6,8 @@
         }
     },
     "require": {
-        "php-amqplib/php-amqplib": "^2.6"
+        "php-amqplib/php-amqplib": "^2.6",
+        "psr/log": "^1.0"
     },
     "require-dev": {
         "phpspec/phpspec": "2.4.1"

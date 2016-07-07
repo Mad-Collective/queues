@@ -7,14 +7,15 @@ use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Message\AMQPMessage;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
+use Psr\Log\LoggerInterface;
 
 class RabbitMQPublisherSpec extends ObjectBehavior
 {
 
-    public function let(AMQPChannel $channel)
+    public function let(AMQPChannel $channel, LoggerInterface $logger)
     {
         $config = ['exchange' => 'test'];
-        $this->beConstructedWith($channel, $config);
+        $this->beConstructedWith($channel, $config, $logger);
     }
 
     public function it_is_initializable()

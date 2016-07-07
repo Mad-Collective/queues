@@ -2,21 +2,22 @@
 
 namespace spec\Cmp\DomainEvent\Infrastructure\Subscriber\RabbitMQ;
 
-use Cmp\DomainEvent\Application\EventSubscriber;
+use Cmp\DomainEvent\Application\EventSubscriptor;
 use Cmp\DomainEvent\Domain\Event\DomainEvent;
 use Cmp\DomainEvent\Domain\Event\JSONDomainEventFactory;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
+use Psr\Log\LoggerInterface;
 
 class RabbitMQSubscriberSpec extends ObjectBehavior
 {
 
     private $queueName = 'a queue name';
 
-    public function let(AMQPChannel $channel, JSONDomainEventFactory $jsonDomainEventFactory)
+    public function let(AMQPChannel $channel, JSONDomainEventFactory $jsonDomainEventFactory, LoggerInterface $logger)
     {
-        $this->beConstructedWith($channel, $jsonDomainEventFactory, $this->queueName);
+        $this->beConstructedWith($channel, $jsonDomainEventFactory, $this->queueName, $logger);
     }
 
     public function it_is_initializable()
@@ -39,16 +40,16 @@ class RabbitMQSubscriberSpec extends ObjectBehavior
         $this->process();
     }
 
-    public function it_should_notify_the_subscribed_eventsubscribers_when_notify_is_called(
-        EventSubscriber $eventSubscriber1,
-        EventSubscriber $eventSubscriber2,
+    public function it_should_notify_the_subscribed_eventsubscriptors_when_notify_is_called(
+        EventSubscriptor $eventSubscriptor1,
+        EventSubscriptor $eventSubscriptor2,
         DomainEvent $domainEvent)
     {
-        $eventSubscriber1->notify($domainEvent)->shouldBeCalled();
-        $this->subscribe($eventSubscriber1);
+        $eventSubscriptor1->notify($domainEvent)->shouldBeCalled();
+        $this->subscribe($eventSubscriptor1);
 
-        $eventSubscriber2->notify($domainEvent)->shouldBeCalled();
-        $this->subscribe($eventSubscriber2);
+        $eventSubscriptor2->notify($domainEvent)->shouldBeCalled();
+        $this->subscribe($eventSubscriptor2);
 
         $this->notify($domainEvent);
     }

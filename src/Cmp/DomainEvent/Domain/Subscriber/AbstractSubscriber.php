@@ -3,7 +3,7 @@
 namespace Cmp\DomainEvent\Domain\Subscriber;
 
 use Cmp\DomainEvent\Application\EventSubscribable;
-use Cmp\DomainEvent\Application\EventSubscriber;
+use Cmp\DomainEvent\Application\EventSubscriptor;
 use Cmp\DomainEvent\Domain\Event\DomainEvent;
 
 abstract class AbstractSubscriber implements EventSubscribable
@@ -11,22 +11,23 @@ abstract class AbstractSubscriber implements EventSubscribable
     /**
      * @var array
      */
-    private $subscribers = [];
+    private $subscriptors = [];
 
     abstract public function process();
 
-    abstract protected function isSubscribed();
+    abstract protected function isSubscribed(DomainEvent $domainEvent);
 
-    public function subscribe(EventSubscriber $eventSubscriber)
+    public function subscribe(EventSubscriptor $eventSubscriptor)
     {
-        array_push($this->subscribers, $eventSubscriber);
+        array_push($this->subscriptors, $eventSubscriptor);
     }
 
     public function notify(DomainEvent $domainEvent)
     {
-        foreach($this->subscribers as $observer) {
+        $this->logger->debug('Domain Event received, notifying subscribers');
+        foreach($this->subscriptors as $subscriptor) {
             if ($this->isSubscribed($domainEvent)) {
-                $observer->notify($domainEvent);
+                $subscriptor->notify($domainEvent);
             }
         }
     }
