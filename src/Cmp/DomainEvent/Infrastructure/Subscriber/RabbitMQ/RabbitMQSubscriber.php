@@ -3,7 +3,7 @@
 namespace Cmp\DomainEvent\Infrastructure\Subscriber\RabbitMQ;
 
 use Cmp\DomainEvent\Domain\Event\JSONDomainEventFactory;
-use Cmp\DomainEvent\Infrastructure\Subscriber\AbstractSubscriber;
+use Cmp\DomainEvent\Domain\Subscriber\AbstractSubscriber;
 use PhpAmqpLib\Channel\AMQPChannel;
 
 class RabbitMQSubscriber extends AbstractSubscriber
@@ -48,5 +48,10 @@ class RabbitMQSubscriber extends AbstractSubscriber
         };
         $this->channel->basic_consume($this->queueName, '', false, true, false, false, $callback);
         $this->initialized = true;
+    }
+
+    protected function isSubscribed()
+    {
+        return true; // RabbitMQ Topic Exchanges are handling this
     }
 }

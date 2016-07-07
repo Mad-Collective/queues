@@ -4,11 +4,9 @@ namespace Cmp\DomainEvent\Application;
 
 use Cmp\DomainEvent\Domain\Event\DomainEvent;
 
-interface EventObserver
+interface EventSubscriber
 {
 
     public function notify(DomainEvent $event);
-
-    public function isSubscribed(DomainEvent $event);
 
 }

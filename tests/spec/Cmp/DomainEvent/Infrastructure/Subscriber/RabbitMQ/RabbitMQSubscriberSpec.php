@@ -2,7 +2,7 @@
 
 namespace spec\Cmp\DomainEvent\Infrastructure\Subscriber\RabbitMQ;
 
-use Cmp\DomainEvent\Application\EventObserver;
+use Cmp\DomainEvent\Application\EventSubscriber;
 use Cmp\DomainEvent\Domain\Event\DomainEvent;
 use Cmp\DomainEvent\Domain\Event\JSONDomainEventFactory;
 use PhpAmqpLib\Channel\AMQPChannel;
@@ -39,18 +39,16 @@ class RabbitMQSubscriberSpec extends ObjectBehavior
         $this->process();
     }
 
-    public function it_should_notify_the_subscribed_eventobservers_when_notify_is_called(
-        EventObserver $eventObserver1,
-        EventObserver $eventObserver2,
+    public function it_should_notify_the_subscribed_eventsubscribers_when_notify_is_called(
+        EventSubscriber $eventSubscriber1,
+        EventSubscriber $eventSubscriber2,
         DomainEvent $domainEvent)
     {
-        $eventObserver1->isSubscribed($domainEvent)->shouldBeCalled()->willReturn(true);
-        $eventObserver1->notify($domainEvent)->shouldBeCalled();
-        $this->subscribe($eventObserver1);
+        $eventSubscriber1->notify($domainEvent)->shouldBeCalled();
+        $this->subscribe($eventSubscriber1);
 
-        $eventObserver2->isSubscribed($domainEvent)->shouldBeCalled()->willReturn(true);
-        $eventObserver2->notify($domainEvent)->shouldBeCalled();
-        $this->subscribe($eventObserver2);
+        $eventSubscriber2->notify($domainEvent)->shouldBeCalled();
+        $this->subscribe($eventSubscriber2);
 
         $this->notify($domainEvent);
     }
