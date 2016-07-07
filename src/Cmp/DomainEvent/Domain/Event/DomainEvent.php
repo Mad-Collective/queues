@@ -4,15 +4,6 @@ namespace Cmp\DomainEvent\Domain\Event;
 
 class DomainEvent implements \JsonSerializable
 {
-
-    public function __construct($origin, $name, $ocurredOn, $extra = [])
-    {
-        $this->origin = $origin;
-        $this->name = $name;
-        $this->ocurredOn = $ocurredOn;
-        $this->extra = $extra;
-    }
-
     /**
      * @var string
      */
@@ -33,6 +24,14 @@ class DomainEvent implements \JsonSerializable
      */
 
     protected $extra = array();
+
+    public function __construct($origin, $name, $ocurredOn, $extra = [])
+    {
+        $this->origin = $origin;
+        $this->name = $name;
+        $this->ocurredOn = $ocurredOn;
+        $this->extra = $extra;
+    }
 
     /**
      * @return string
