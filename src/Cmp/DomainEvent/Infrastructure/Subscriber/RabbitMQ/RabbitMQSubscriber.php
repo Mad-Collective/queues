@@ -20,6 +20,11 @@ class RabbitMQSubscriber extends AbstractSubscriber
 
     private $queueName;
 
+    /**
+     * @var bool
+     */
+    private $initialized = false;
+
     public function __construct(AMQPChannel $channel, JSONDomainEventFactory $jsonDomainEventFactory, $queueName)
     {
         $this->channel = $channel;
@@ -27,17 +32,21 @@ class RabbitMQSubscriber extends AbstractSubscriber
         $this->queueName = $queueName;
     }
 
-    public function start()
+    public function process()
     {
+        if (!$this->initialized) {
+            $this->initialize();
+        }
+
+        $this->channel->wait();
+    }
+
+    private function initialize() {
         $callback = function($msg){
             $domainEvent = $this->jsonDomainEventFactory->create($msg->body);
             $this->notify($domainEvent);
         };
-
         $this->channel->basic_consume($this->queueName, '', false, true, false, false, $callback);
-
-        while(count($this->channel->callbacks)) {
-            $this->channel->wait();
-        }
+        $this->initialized = true;
     }
 }

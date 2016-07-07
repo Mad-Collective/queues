@@ -18,12 +18,19 @@ abstract class AbstractSubscriber implements Subscriber
         array_push($this->observers, $eventObserver);
     }
 
-    public function notify(DomainEvent $event)
+    public function notify(DomainEvent $domainEvent)
     {
         foreach($this->observers as $observer) {
-            if ($observer->isSubscribed($event)) {
-                $observer->notify($event);
+            if ($observer->isSubscribed($domainEvent)) {
+                $observer->notify($domainEvent);
             }
+        }
+    }
+
+    public function start()
+    {
+        while(true) {
+            $this->process();
         }
     }
 
