@@ -11,7 +11,7 @@ class RabbitMQPublisherFactory
     {
         $amqpStreamConnection = new AMQPStreamConnection($config['host'], $config['port'], $config['user'], $config['password']);
         $channel = $amqpStreamConnection->channel();
-        $channel->exchange_declare($config['exchange'], 'fanout', false, false, false);
+        $channel->exchange_declare($config['exchange'], 'topic', false, false, false);
         return new RabbitMQPublisher($channel, $config);
     }
 

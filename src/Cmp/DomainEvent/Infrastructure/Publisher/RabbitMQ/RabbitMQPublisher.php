@@ -33,10 +33,10 @@ class RabbitMQPublisher implements Publisher
         $this->config = $config;
     }
 
-    public function publish(DomainEvent $event)
+    public function publish(DomainEvent $domainEvent)
     {
-        $msg = new AMQPMessage(json_encode($event));
-        $this->channel->basic_publish($msg, $this->config['exchange']);
+        $msg = new AMQPMessage(json_encode($domainEvent));
+        $this->channel->basic_publish($msg, $this->config['exchange'], $domainEvent->getName());
     }
 
 }

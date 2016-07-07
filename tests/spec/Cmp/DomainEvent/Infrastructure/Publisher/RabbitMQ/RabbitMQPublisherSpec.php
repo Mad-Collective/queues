@@ -25,10 +25,12 @@ class RabbitMQPublisherSpec extends ObjectBehavior
     public function it_calls_basic_publish_with_a_message(AMQPChannel $channel, DomainEvent $event)
     {
         $body = ['test' => 'hello'];
+        $name = 'test_domain_event_name';
         $event->jsonSerialize()->willReturn($body); // Serialize function is mocked so we need to set the return
+        $event->getName()->willReturn($name);
         $msg = new AMQPMessage(json_encode($body));
 
-        $channel->basic_publish(Argument::exact($msg), 'test')->shouldBeCalled();
+        $channel->basic_publish(Argument::exact($msg), 'test', $name)->shouldBeCalled();
         $this->publish($event);
     }
 }

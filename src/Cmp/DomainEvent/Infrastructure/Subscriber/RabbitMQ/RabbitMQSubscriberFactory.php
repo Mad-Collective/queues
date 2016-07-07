@@ -8,15 +8,17 @@ use PhpAmqpLib\Connection\AMQPStreamConnection;
 class RabbitMQSubscriberFactory
 {
 
-    public function create($config) {
+    public function create($config, $domainTopics) {
         $amqpStreamConnection = new AMQPStreamConnection($config['host'], $config['port'], $config['user'], $config['password']);
         $channel = $amqpStreamConnection->channel();
 
-        $channel->exchange_declare($config['exchange'], 'fanout', false, false, false);
+        $channel->exchange_declare($config['exchange'], 'topic', false, false, false);
 
         list($queue_name, ,) = $channel->queue_declare("", false, false, true, false);
 
-        $channel->queue_bind($queue_name, $config['exchange']);
+        foreach($domainTopics as $domainTopic) {
+            $channel->queue_bind($queue_name, $config['exchange'], $domainTopic);
+        }
 
         $jsonDomainEventFactory = new JSONDomainEventFactory();
 
