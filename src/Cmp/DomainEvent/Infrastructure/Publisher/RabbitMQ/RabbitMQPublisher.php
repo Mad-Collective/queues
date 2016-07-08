@@ -17,9 +17,14 @@ class RabbitMQPublisher implements Publisher
     private $config;
 
     /**
+     * @var RabbitMQPublisherInitializer
+     */
+    private $rabbitMQPublisherInitializer;
+
+    /**
      * @var AMQPChannel
      */
-    private $channel;
+    private $channel = null;
 
     /**
      * @var LoggerInterface
@@ -32,16 +37,20 @@ class RabbitMQPublisher implements Publisher
      * @param AMQPChannel $channel
      * @param array       $config
      */
-    public function __construct(AMQPChannel $channel, array $config, LoggerInterface $logger)
+    public function __construct(RabbitMQPublisherInitializer $rabbitMQPublisherInitializer, array $config, LoggerInterface $logger)
     {
 
-        $this->channel = $channel;
+        $this->rabbitMQPublisherInitializer = $rabbitMQPublisherInitializer;
         $this->config = $config;
         $this->logger = $logger;
     }
 
     public function publish(DomainEvent $domainEvent)
     {
+        if (!$this->channel) {
+            $this->channel = $this->rabbitMQPublisherInitializer->initialize();
+        }
+
         $this->logger->debug('Publishing Domain Event:' . json_encode($domainEvent));
         $msg = new AMQPMessage(json_encode($domainEvent));
         $this->channel->basic_publish($msg, $this->config['exchange'], $domainEvent->getName());

@@ -2,7 +2,7 @@
 
 namespace Cmp\DomainEvent\Infrastructure\Publisher\RabbitMQ;
 
-use PhpAmqpLib\Connection\AMQPStreamConnection;
+use PhpAmqpLib\Connection\AMQPLazyConnection;
 use Psr\Log\LoggerInterface;
 
 class RabbitMQPublisherFactory
@@ -21,10 +21,9 @@ class RabbitMQPublisherFactory
     {
         $this->logger->info('Using RabbitMQ Publisher');
         $this->logger->info(sprintf('Connecting to RabbitMQ, Host: %s, Port: %s, User: %s, Exchange: %s', $config['host'], $config['port'], $config['user'], $config['exchange']));
-        $amqpStreamConnection = new AMQPStreamConnection($config['host'], $config['port'], $config['user'], $config['password']);
-        $channel = $amqpStreamConnection->channel();
-        $channel->exchange_declare($config['exchange'], 'topic', false, false, false);
-        return new RabbitMQPublisher($channel, $config, $this->logger);
+        $amqpLazyConnection = new AMQPLazyConnection($config['host'], $config['port'], $config['user'], $config['password']);
+        $rabbitMQPublisherInitializer = new RabbitMQPublisherInitializer($amqpLazyConnection, $config, $this->logger);
+        return new RabbitMQPublisher($rabbitMQPublisherInitializer, $config, $this->logger);
     }
 
 }
