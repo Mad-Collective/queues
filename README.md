@@ -41,7 +41,7 @@ $config = [
     'exchange' => 'rabbitmq_exchange',
 ];
 
-$logger = new \Cmp\DomainEvent\Application\Log\NullLogger();
+$logger = new \Cmp\DomainEvent\Infrastructure\Log\NullLogger();
 
 $publisherFactory = new \Cmp\DomainEvent\Domain\Publisher\PublisherFactory($logger);
 $publisher = $publisherFactory->create($config);
@@ -58,7 +58,7 @@ Example code:
 
 ````php
 
-class TestEventSubscriptor implements \Cmp\DomainEvent\Application\EventSubscriptor
+class TestEventSubscriptor implements \Cmp\DomainEvent\Domain\Event\EventSubscriptor
 {
 
     public function notify(\Cmp\DomainEvent\Domain\Event\DomainEvent $event)
@@ -72,7 +72,7 @@ class TestEventSubscriptor implements \Cmp\DomainEvent\Application\EventSubscrip
     }
 }
 
-$logger = new \Cmp\DomainEvent\Application\Log\NullLogger();
+$logger = new \Cmp\DomainEvent\Infrastructure\Log\NullLogger();
 
 $config = [
     'host' => 'rabbitmq_host',
