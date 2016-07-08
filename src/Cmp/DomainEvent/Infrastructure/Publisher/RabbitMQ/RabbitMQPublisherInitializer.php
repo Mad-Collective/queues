@@ -33,7 +33,7 @@ class RabbitMQPublisherInitializer
     public function initialize()
     {
         $channel = $this->connection->channel();
-        $channel->exchange_declare($this->config['exchange'], 'topic', false, false, false);
+        $channel->exchange_declare($this->config['exchange'], 'topic', false, true, false);
         return $channel;
     }
 

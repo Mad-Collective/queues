@@ -42,9 +42,9 @@ class RabbitMQSubscriberInitializer
 
         $channel = $this->connection->channel(); // this is the one starting the connection
 
-        $channel->exchange_declare($this->config['exchange'], 'topic', false, false, false);
+        $channel->exchange_declare($this->config['exchange'], 'topic', false, true, false);
 
-        list($queueName, ,) = $channel->queue_declare("", false, false, true, false);
+        list($queueName, ,) = $channel->queue_declare("", false, false, true, true);
 
         foreach($this->domainTopics as $domainTopic) {
             $this->logger->info('Binding Topic:' . $domainTopic);
