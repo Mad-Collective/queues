@@ -2,8 +2,8 @@
 
 namespace Cmp\DomainEvent\Domain\Subscriber;
 
-use Cmp\DomainEvent\Application\EventSubscribable;
-use Cmp\DomainEvent\Application\EventSubscriptor;
+use Cmp\DomainEvent\Domain\Event\EventSubscribable;
+use Cmp\DomainEvent\Domain\Event\EventSubscriptor;
 use Cmp\DomainEvent\Domain\Event\DomainEvent;
 
 abstract class AbstractSubscriber implements EventSubscribable

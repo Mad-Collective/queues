@@ -1,6 +1,6 @@
 <?php
 
-namespace Cmp\DomainEvent\Application;
+namespace Cmp\DomainEvent\Domain\Event;
 
 use Cmp\DomainEvent\Domain\Event\DomainEvent;
 

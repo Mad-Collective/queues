@@ -1,6 +1,6 @@
 <?php
 
-namespace Cmp\DomainEvent\Application;
+namespace Cmp\DomainEvent\Domain\Event;
 
 interface EventSubscribable
 {
