@@ -20,7 +20,8 @@ class RabbitMQSubscriberInitializerSpec extends ObjectBehavior
             'host' => 'a host',
             'port' => 'a port',
             'user' => 'a user',
-            'exchange' => 'a exchange'
+            'exchange' => 'a exchange',
+            'queue' => 'a queue'
         ];
         $this->domainTopics = ['user.created.#', 'user.email.#'];
         $this->beConstructedWith($connection, $this->config, $this->domainTopics, $logger);
@@ -33,11 +34,11 @@ class RabbitMQSubscriberInitializerSpec extends ObjectBehavior
 
     public function it__should_bind_the_topics_to_the_queue_and_bind_the_provided_callback(AMQPLazyConnection $connection, AMQPChannel $channel)
     {
-        $queueName = 'aqueuename';
+        $queueName = 'a queue';
         $callable = function() {};
         $connection->channel()->willReturn($channel);
         $channel->exchange_declare($this->config['exchange'], 'topic', false, true, false)->shouldBeCalled();
-        $channel->queue_declare("", false, false, true, true)->willReturn([$queueName, '', '']);
+        $channel->queue_declare($this->config['queue'], false, true, false, false)->willReturn([$queueName, '', '']);
         $channel->queue_bind($queueName, $this->config['exchange'], $this->domainTopics[0])->shouldBeCalled();
         $channel->queue_bind($queueName, $this->config['exchange'], $this->domainTopics[1])->shouldBeCalled();
         $channel->basic_consume($queueName, '', false, true, false, false, $callable)->shouldBeCalled();
