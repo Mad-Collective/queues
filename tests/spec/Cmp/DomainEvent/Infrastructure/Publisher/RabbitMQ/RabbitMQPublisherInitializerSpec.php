@@ -2,12 +2,13 @@
 
 namespace spec\Cmp\DomainEvent\Infrastructure\Publisher\RabbitMQ;
 
+use Cmp\DomainEvent\Domain\Publisher\ConnectionException;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AMQPLazyConnection;
 use PhpSpec\ObjectBehavior;
 use Psr\Log\LoggerInterface;
 
-class RabbitMQPublisherInitializer extends ObjectBehavior
+class RabbitMQPublisherInitializerSpec extends ObjectBehavior
 {
 
     private $config;
@@ -33,6 +34,12 @@ class RabbitMQPublisherInitializer extends ObjectBehavior
         $connection->channel()->willReturn($channel);
         $channel->exchange_declare($this->config['exchange'], 'topic', false, false, false);
         $this->initialize()->shouldReturn($channel);
+    }
+
+    public function it_should_throw_ConnectionException_if_cant_connect(AMQPLazyConnection $connection)
+    {
+        $connection->channel()->willThrow(new \ErrorException());
+        $this->shouldThrow(new ConnectionException('Error trying to connect to the queue backend'))->duringInitialize();
     }
 
 

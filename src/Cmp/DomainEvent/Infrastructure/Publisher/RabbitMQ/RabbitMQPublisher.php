@@ -45,6 +45,11 @@ class RabbitMQPublisher implements Publisher
         $this->logger = $logger;
     }
 
+    /**
+     * @param DomainEvent $domainEvent
+     *
+     * @throws \Cmp\DomainEvent\Domain\Publisher\ConnectionException
+     */
     public function publish(DomainEvent $domainEvent)
     {
         if (!$this->channel) {
