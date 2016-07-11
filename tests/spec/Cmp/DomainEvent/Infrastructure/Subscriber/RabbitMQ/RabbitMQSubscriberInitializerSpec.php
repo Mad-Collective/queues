@@ -2,6 +2,7 @@
 
 namespace spec\Cmp\DomainEvent\Infrastructure\Subscriber\RabbitMQ;
 
+use Cmp\DomainEvent\Domain\ConnectionException;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AMQPLazyConnection;
 use PhpSpec\ObjectBehavior;
@@ -44,6 +45,24 @@ class RabbitMQSubscriberInitializerSpec extends ObjectBehavior
         $channel->basic_consume($queueName, '', false, true, false, false, $callable)->shouldBeCalled();
 
         $this->initialize($callable);
+    }
+
+    public function it_should_throw_ConnectionException_if_cant_connect(AMQPLazyConnection $connection)
+    {
+        $callable = function() {};
+        $connection->channel()->willThrow(new \ErrorException());
+        $this->shouldThrow(new ConnectionException('Error trying to connect to the queue backend'))->duringInitialize($callable);
+    }
+
+    public function it_should_log_an_error_if_cant_connect(AMQPLazyConnection $connection, LoggerInterface $logger)
+    {
+        $callable = function() {};
+        $errorMessage = 'error message in test';
+        $connection->channel()->willThrow(new \ErrorException($errorMessage));
+        $logger->info(sprintf('Connecting to RabbitMQ, Host: %s, Port: %s, User: %s, Exchange: %s, Queue: %s',
+            $this->config['host'], $this->config['port'], $this->config['user'], $this->config['exchange'], $this->config['queue']))->shouldBeCalled();
+        $logger->error('Error trying to connect to rabbitMQ:' . $errorMessage)->shouldBeCalled();
+        $this->shouldThrow(new ConnectionException('Error trying to connect to the queue backend'))->duringInitialize($callable);
     }
 
 }

@@ -2,9 +2,8 @@
 
 namespace Cmp\DomainEvent\Infrastructure\Publisher\RabbitMQ;
 
-use Cmp\DomainEvent\Domain\Publisher\ConnectionException;
+use Cmp\DomainEvent\Domain\ConnectionException;
 use PhpAmqpLib\Connection\AMQPLazyConnection;
-use PhpSpec\Exception\Example\ErrorException;
 use Psr\Log\LoggerInterface;
 
 class RabbitMQPublisherInitializer
@@ -38,6 +37,9 @@ class RabbitMQPublisherInitializer
      */
     public function initialize()
     {
+        $this->logger->info(sprintf('Connecting to RabbitMQ, Host: %s, Port: %s, User: %s, Exchange: %s',
+            $this->config['host'], $this->config['port'], $this->config['user'], $this->config['exchange']));
+
         try {
             $channel = $this->connection->channel(); // this is the one starting the connection
             $channel->exchange_declare($this->config['exchange'], 'topic', false, true, false);
