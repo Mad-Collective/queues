@@ -28,18 +28,21 @@ class RabbitMQPublisherSpec extends ObjectBehavior
     {
         $rabbitMQPublisherInitializer->initialize()->willReturn($channel)->shouldBeCalled();
 
-        $this->publish($event);
+        $this->add($event);
+        $this->publish();
     }
 
     public function it_should_not_call_rabbitmqpublisherInitializer_if_already_initialized(RabbitMQPublisherInitializer $rabbitMQPublisherInitializer, AMQPChannel $channel, DomainEvent $event)
     {
         $rabbitMQPublisherInitializer->initialize()->willReturn($channel)->shouldBeCalledTimes(1);
 
-        $this->publish($event);
-        $this->publish($event);
+        $this->add($event);
+        $this->publish();
+        $this->add($event);
+        $this->publish();
     }
 
-    public function it_calls_basic_publish_with_a_message(RabbitMQPublisherInitializer $rabbitMQPublisherInitializer, AMQPChannel $channel, DomainEvent $event)
+    public function it_calls_basic_publish_with_a_message_when_there_is_only_one_domain_event_added(RabbitMQPublisherInitializer $rabbitMQPublisherInitializer, AMQPChannel $channel, DomainEvent $event)
     {
         $body = ['test' => 'hello'];
         $name = 'test_domain_event_name';
@@ -49,6 +52,33 @@ class RabbitMQPublisherSpec extends ObjectBehavior
         $msg = new AMQPMessage(json_encode($body));
 
         $channel->basic_publish(Argument::exact($msg), 'test', $name)->shouldBeCalled();
-        $this->publish($event);
+
+        $this->add($event);
+        $this->publish();
+    }
+
+    public function it_calls_batch_basic_publish_with_a_message_for_every_domain_event_added(RabbitMQPublisherInitializer $rabbitMQPublisherInitializer, AMQPChannel $channel, DomainEvent $event, DomainEvent $event2)
+    {
+        $rabbitMQPublisherInitializer->initialize()->willReturn($channel);
+
+        $body = ['test' => 'hello'];
+        $name = 'test_domain_event_name';
+        $event->jsonSerialize()->willReturn($body); // Serialize function is mocked so we need to set the return
+        $event->getName()->willReturn($name);
+        $msg = new AMQPMessage(json_encode($body));
+
+        $body2 = ['test2' => 'hello2'];
+        $name2 = 'test_domain_event_name2';
+        $event2->jsonSerialize()->willReturn($body2); // Serialize function is mocked so we need to set the return
+        $event2->getName()->willReturn($name2);
+        $msg2 = new AMQPMessage(json_encode($body2));
+
+        $channel->batch_basic_publish(Argument::exact($msg), 'test', $name)->shouldBeCalled();
+        $channel->batch_basic_publish(Argument::exact($msg2), 'test', $name2)->shouldBeCalled();
+        $channel->publish_batch()->shouldBeCalled();
+
+        $this->add($event);
+        $this->add($event2);
+        $this->publish();
     }
 }

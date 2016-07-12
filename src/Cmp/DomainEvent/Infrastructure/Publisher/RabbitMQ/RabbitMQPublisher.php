@@ -4,12 +4,12 @@ namespace Cmp\DomainEvent\Infrastructure\Publisher\RabbitMQ;
 
 
 use Cmp\DomainEvent\Domain\Event\DomainEvent;
-use Cmp\DomainEvent\Domain\Publisher\Publisher;
+use Cmp\DomainEvent\Domain\Publisher\AbstractPublisher;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Message\AMQPMessage;
 use Psr\Log\LoggerInterface;
 
-class RabbitMQPublisher implements Publisher
+class RabbitMQPublisher extends AbstractPublisher
 {
     /**
      * @var array
@@ -46,11 +46,24 @@ class RabbitMQPublisher implements Publisher
     }
 
     /**
-     * @param DomainEvent $domainEvent
-     *
-     * @throws \Cmp\DomainEvent\Domain\Publisher\ConnectionException
+     * @throws \Cmp\DomainEvent\Domain\ConnectionException
      */
-    public function publish(DomainEvent $domainEvent)
+    public function publishSome(array $domainEvents)
+    {
+        if (!$this->channel) {
+            $this->channel = $this->rabbitMQPublisherInitializer->initialize();
+        }
+
+        foreach($domainEvents as $domainEvent) {
+            $this->logger->debug('Publishing Domain Event:' . json_encode($domainEvent));
+            $msg = new AMQPMessage(json_encode($domainEvent));
+            $this->channel->batch_basic_publish($msg, $this->config['exchange'], $domainEvent->getName());
+        }
+
+        $this->channel->publish_batch();
+    }
+
+    public function publishOne(DomainEvent $domainEvent)
     {
         if (!$this->channel) {
             $this->channel = $this->rabbitMQPublisherInitializer->initialize();
@@ -60,5 +73,4 @@ class RabbitMQPublisher implements Publisher
         $msg = new AMQPMessage(json_encode($domainEvent));
         $this->channel->basic_publish($msg, $this->config['exchange'], $domainEvent->getName());
     }
-
 }
