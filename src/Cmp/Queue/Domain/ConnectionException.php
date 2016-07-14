@@ -1,6 +1,6 @@
 <?php
 
-namespace Cmp\DomainEvent\Domain;
+namespace Cmp\Queue\Domain;
 
 class ConnectionException extends \Exception
 {

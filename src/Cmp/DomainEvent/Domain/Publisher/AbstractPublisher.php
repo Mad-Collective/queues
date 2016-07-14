@@ -32,7 +32,7 @@ abstract class AbstractPublisher
     }
 
     /**
-     * @throws \Cmp\DomainEvent\Domain\ConnectionException
+     * @throws \Cmp\Queue\Domain\ConnectionException
      */
     public function publish()
     {

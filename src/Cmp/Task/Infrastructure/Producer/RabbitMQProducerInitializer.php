@@ -1,14 +1,13 @@
 <?php
 
-namespace Cmp\DomainEvent\Infrastructure\Publisher\RabbitMQ;
+namespace Cmp\Task\Infrastructure\Producer;
 
 use Cmp\Queue\Domain\ConnectionException;
 use PhpAmqpLib\Connection\AMQPLazyConnection;
 use Psr\Log\LoggerInterface;
 
-class RabbitMQPublisherInitializer
+class RabbitMQProducerInitializer
 {
-
     /**
      * @var AMQPLazyConnection
      */
@@ -37,12 +36,12 @@ class RabbitMQPublisherInitializer
      */
     public function initialize()
     {
-        $this->logger->info(sprintf('Connecting to RabbitMQ, Host: %s, Port: %s, User: %s, Exchange: %s',
-            $this->config['host'], $this->config['port'], $this->config['user'], $this->config['exchange']));
+        $this->logger->info(sprintf('Connecting to RabbitMQ, Host: %s, Port: %s, User: %s, Queue: %s',
+            $this->config['host'], $this->config['port'], $this->config['user'], $this->config['queue']));
 
         try {
             $channel = $this->connection->channel(); // this is the one starting the connection
-            $channel->exchange_declare($this->config['exchange'], 'topic', false, true, false);
+            $channel->queue_declare($this->config['queue'], false, true, false, false);
             return $channel;
         } catch (\ErrorException $e) {
             $this->logger->error('Error trying to connect to rabbitMQ:' . $e->getMessage());
@@ -50,5 +49,4 @@ class RabbitMQPublisherInitializer
         }
 
     }
-
 }

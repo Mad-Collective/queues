@@ -32,10 +32,11 @@ class RabbitMQPublisher extends AbstractPublisher
     private $logger;
 
     /**
-     * Publisher constructor.
+     * RabbitMQPublisher constructor.
      *
-     * @param AMQPChannel $channel
-     * @param array       $config
+     * @param RabbitMQPublisherInitializer $rabbitMQPublisherInitializer
+     * @param array                        $config
+     * @param LoggerInterface              $logger
      */
     public function __construct(RabbitMQPublisherInitializer $rabbitMQPublisherInitializer, array $config, LoggerInterface $logger)
     {
@@ -46,7 +47,7 @@ class RabbitMQPublisher extends AbstractPublisher
     }
 
     /**
-     * @throws \Cmp\DomainEvent\Domain\ConnectionException
+     * @throws \Cmp\Queue\Domain\ConnectionException
      */
     public function publishSome(array $domainEvents)
     {

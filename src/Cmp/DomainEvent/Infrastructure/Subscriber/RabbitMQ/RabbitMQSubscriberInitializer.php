@@ -2,7 +2,7 @@
 
 namespace Cmp\DomainEvent\Infrastructure\Subscriber\RabbitMQ;
 
-use Cmp\DomainEvent\Domain\ConnectionException;
+use Cmp\Queue\Domain\ConnectionException;
 use PhpAmqpLib\Connection\AMQPLazyConnection;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use Psr\Log\LoggerInterface;
