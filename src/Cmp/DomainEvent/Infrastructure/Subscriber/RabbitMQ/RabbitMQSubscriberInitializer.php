@@ -55,7 +55,7 @@ class RabbitMQSubscriberInitializer
             }
 
             $this->logger->info('Starting to consume RabbitMQ Queue:' . $queueName);
-            $channel->basic_consume($queueName, '', false, true, false, false, $msgCallback);
+            $channel->basic_consume($queueName, '', false, false, false, false, $msgCallback);
 
             return $channel;
         } catch (\ErrorException $e) {

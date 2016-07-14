@@ -42,7 +42,7 @@ class RabbitMQSubscriberInitializerSpec extends ObjectBehavior
         $channel->queue_declare($this->config['queue'], false, true, false, false)->willReturn([$queueName, '', '']);
         $channel->queue_bind($queueName, $this->config['exchange'], $this->domainTopics[0])->shouldBeCalled();
         $channel->queue_bind($queueName, $this->config['exchange'], $this->domainTopics[1])->shouldBeCalled();
-        $channel->basic_consume($queueName, '', false, true, false, false, $callable)->shouldBeCalled();
+        $channel->basic_consume($queueName, '', false, false, false, false, $callable)->shouldBeCalled();
 
         $this->initialize($callable);
     }

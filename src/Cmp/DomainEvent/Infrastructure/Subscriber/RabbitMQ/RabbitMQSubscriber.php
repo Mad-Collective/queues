@@ -7,6 +7,7 @@ use Cmp\DomainEvent\Domain\Event\JSONDomainEventFactory;
 use Cmp\DomainEvent\Domain\Subscriber\AbstractSubscriber;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
+use PhpAmqpLib\Message\AMQPMessage;
 use Psr\Log\LoggerInterface;
 
 class RabbitMQSubscriber extends AbstractSubscriber
@@ -22,9 +23,9 @@ class RabbitMQSubscriber extends AbstractSubscriber
     private $channel = null;
 
     /**
-     * @var JSONDomainEventFactory
+     * @var RabbitMQMessageHandler
      */
-    private $jsonDomainEventFactory;
+    private $rabbitMQMessageHandler;
 
     private $queueName;
 
@@ -38,10 +39,10 @@ class RabbitMQSubscriber extends AbstractSubscriber
      */
     private $initialized = false;
 
-    public function __construct(RabbitMQSubscriberInitializer $rabbitMQSubscriberInitializer, JSONDomainEventFactory $jsonDomainEventFactory, LoggerInterface $logger)
+    public function __construct(RabbitMQSubscriberInitializer $rabbitMQSubscriberInitializer, RabbitMQMessageHandler $rabbitMQMessageHandler, LoggerInterface $logger)
     {
         $this->rabbitMQSubscriberInitializer = $rabbitMQSubscriberInitializer;
-        $this->jsonDomainEventFactory = $jsonDomainEventFactory;
+        $this->rabbitMQMessageHandler = $rabbitMQMessageHandler;
         $this->logger = $logger;
     }
 
@@ -57,12 +58,8 @@ class RabbitMQSubscriber extends AbstractSubscriber
 
     private function initialize()
     {
-        $callback = function($msg){
-            $domainEvent = $this->jsonDomainEventFactory->create($msg->body);
-            $this->notify($domainEvent);
-        };
-
-        $this->channel = $this->rabbitMQSubscriberInitializer->initialize($callback);
+        $this->rabbitMQMessageHandler->setEventCallback(array($this, 'notify'));
+        $this->channel = $this->rabbitMQSubscriberInitializer->initialize(array($this->rabbitMQMessageHandler, 'handleMessage'));
     }
 
     protected function isSubscribed(DomainEvent $domainEvent)

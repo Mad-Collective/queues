@@ -29,7 +29,9 @@ class RabbitMQSubscriberFactory
         $amqpLazyConnection = new AMQPLazyConnection($config['host'], $config['port'], $config['user'], $config['password']);
         $rabbitMQSubscriberInitializer = new RabbitMQSubscriberInitializer($amqpLazyConnection, $config, $domainTopics, $this->logger);
 
-        return new RabbitMQSubscriber($rabbitMQSubscriberInitializer, $jsonDomainEventFactory, $this->logger);
+        $rabbitMQMessageHandler = new RabbitMQMessageHandler($jsonDomainEventFactory);
+
+        return new RabbitMQSubscriber($rabbitMQSubscriberInitializer, $rabbitMQMessageHandler, $this->logger);
     }
 
 }

@@ -3,8 +3,10 @@
 namespace spec\Cmp\DomainEvent\Infrastructure\Subscriber\RabbitMQ;
 
 use Cmp\DomainEvent\Domain\Event\JSONDomainEventFactory;
+use Cmp\DomainEvent\Infrastructure\Subscriber\RabbitMQ\RabbitMQMessageHandler;
 use Cmp\DomainEvent\Infrastructure\Subscriber\RabbitMQ\RabbitMQSubscriberInitializer;
 use PhpAmqpLib\Channel\AMQPChannel;
+use PhpAmqpLib\Message\AMQPMessage;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use Psr\Log\LoggerInterface;
@@ -12,9 +14,9 @@ use Psr\Log\LoggerInterface;
 class RabbitMQSubscriberSpec extends ObjectBehavior
 {
 
-    public function let(RabbitMQSubscriberInitializer $rabbitMQSubscriberInitializer, JSONDomainEventFactory $jsonDomainEventFactory, LoggerInterface $logger)
+    public function let(RabbitMQSubscriberInitializer $rabbitMQSubscriberInitializer, RabbitMQMessageHandler $rabbitMQMessageHandler, LoggerInterface $logger)
     {
-        $this->beConstructedWith($rabbitMQSubscriberInitializer, $jsonDomainEventFactory, $logger);
+        $this->beConstructedWith($rabbitMQSubscriberInitializer, $rabbitMQMessageHandler, $logger);
     }
 
     public function it_is_initializable()
@@ -35,6 +37,17 @@ class RabbitMQSubscriberSpec extends ObjectBehavior
         $channel->wait()->shouldBeCalled();
         $this->process();
         $this->process();
+    }
+
+    public function it_should_call_setEventCallback_if_not_initialized(RabbitMQSubscriberInitializer $rabbitMQSubscriberInitializer, RabbitMQMessageHandler $rabbitMQMessageHandler, AMQPChannel $channel)
+    {
+
+        $rabbitMQMessageHandler->setEventCallback(Argument::type('callable'))->shouldBeCalled();
+        $rabbitMQSubscriberInitializer->initialize(Argument::type('callable'))->willReturn($channel);
+        $channel->wait()->shouldBeCalled();
+        $this->process();
+
+
     }
 
 }
