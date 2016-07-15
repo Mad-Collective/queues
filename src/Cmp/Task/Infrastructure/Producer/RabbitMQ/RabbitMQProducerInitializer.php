@@ -1,6 +1,6 @@
 <?php
 
-namespace Cmp\Task\Infrastructure\Producer;
+namespace Cmp\Task\Infrastructure\Producer\RabbitMQ;
 
 use Cmp\Queue\Domain\ConnectionException;
 use PhpAmqpLib\Connection\AMQPLazyConnection;

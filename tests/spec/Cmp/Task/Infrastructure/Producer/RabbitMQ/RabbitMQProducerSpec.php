@@ -1,9 +1,9 @@
 <?php
 
-namespace spec\Cmp\Task\Infrastructure\Producer;
+namespace spec\Cmp\Task\Infrastructure\Producer\RabbitMQ;
 
 use Cmp\Task\Domain\Task\Task;
-use Cmp\Task\Infrastructure\Producer\RabbitMQProducerInitializer;
+use Cmp\Task\Infrastructure\Producer\RabbitMQ\RabbitMQProducerInitializer;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Message\AMQPMessage;
 use PhpSpec\ObjectBehavior;
@@ -22,7 +22,7 @@ class RabbitMQProducerSpec extends ObjectBehavior
 
     function it_is_initializable()
     {
-        $this->shouldHaveType('Cmp\Task\Infrastructure\Producer\RabbitMQProducer');
+        $this->shouldHaveType('Cmp\Task\Infrastructure\Producer\RabbitMQ\RabbitMQProducer');
     }
 
     public function it_calls_rabbitmqProducerInitializer_if_not_initialized(RabbitMQProducerInitializer $rabbitMQProducerInitializer, AMQPChannel $channel, Task $task)

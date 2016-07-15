@@ -1,6 +1,6 @@
 <?php
 
-namespace spec\Cmp\Task\Infrastructure\Producer;
+namespace spec\Cmp\Task\Infrastructure\Producer\RabbitMQ;
 
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
@@ -15,6 +15,6 @@ class RabbitMQProducerFactorySpec extends ObjectBehavior
 
     function it_is_initializable()
     {
-        $this->shouldHaveType('Cmp\Task\Infrastructure\Producer\RabbitMQProducerFactory');
+        $this->shouldHaveType('Cmp\Task\Infrastructure\Producer\RabbitMQ\RabbitMQProducerFactory');
     }
 }

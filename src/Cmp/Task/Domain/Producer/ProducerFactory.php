@@ -2,7 +2,7 @@
 
 namespace Cmp\Task\Domain\Producer;
 
-use Cmp\Task\Infrastructure\Producer\RabbitMQProducerFactory;
+use Cmp\Task\Infrastructure\Producer\RabbitMQ\RabbitMQProducerFactory;
 use Psr\Log\LoggerInterface;
 
 class ProducerFactory

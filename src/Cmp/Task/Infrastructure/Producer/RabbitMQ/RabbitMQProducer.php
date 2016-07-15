@@ -1,6 +1,6 @@
 <?php
 
-namespace Cmp\Task\Infrastructure\Producer;
+namespace Cmp\Task\Infrastructure\Producer\RabbitMQ;
 
 use Cmp\Task\Domain\Task\Task;
 use PhpAmqpLib\Channel\AMQPChannel;

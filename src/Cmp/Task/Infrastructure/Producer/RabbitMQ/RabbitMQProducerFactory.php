@@ -1,6 +1,6 @@
 <?php
 
-namespace Cmp\Task\Infrastructure\Producer;
+namespace Cmp\Task\Infrastructure\Producer\RabbitMQ;
 
 use PhpAmqpLib\Connection\AMQPLazyConnection;
 use Psr\Log\LoggerInterface;

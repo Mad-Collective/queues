@@ -1,6 +1,6 @@
 <?php
 
-namespace spec\Cmp\Task\Infrastructure\Producer;
+namespace spec\Cmp\Task\Infrastructure\Producer\RabbitMQ;
 
 use Cmp\Queue\Domain\ConnectionException;
 use PhpAmqpLib\Channel\AMQPChannel;
@@ -27,7 +27,7 @@ class RabbitMQProducerInitializerSpec extends ObjectBehavior
 
     function it_is_initializable()
     {
-        $this->shouldHaveType('Cmp\Task\Infrastructure\Producer\RabbitMQProducerInitializer');
+        $this->shouldHaveType('Cmp\Task\Infrastructure\Producer\RabbitMQ\RabbitMQProducerInitializer');
     }
 
     public function it_should_declare_the_rabbit_queue(AMQPLazyConnection $connection, AMQPChannel $channel)
