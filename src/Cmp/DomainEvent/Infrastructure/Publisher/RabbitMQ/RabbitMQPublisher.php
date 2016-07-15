@@ -47,6 +47,8 @@ class RabbitMQPublisher extends AbstractPublisher
     }
 
     /**
+     * @param DomainEvent[] $domainEvents
+     *
      * @throws \Cmp\Queue\Domain\ConnectionException
      */
     public function publishSome(array $domainEvents)

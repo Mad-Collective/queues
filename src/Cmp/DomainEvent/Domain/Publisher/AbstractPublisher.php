@@ -17,7 +17,7 @@ abstract class AbstractPublisher
     abstract protected function publishOne(DomainEvent $domainEvent);
 
     /**
-     * @param array $domainEvents
+     * @param DomainEvent[] $domainEvents
      *
      * @return mixed
      */

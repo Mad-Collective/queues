@@ -20,7 +20,7 @@ class RabbitMQSubscriberInitializer
     private $config;
 
     /**
-     * @var array
+     * @var string[]
      */
     private $domainTopics;
 
