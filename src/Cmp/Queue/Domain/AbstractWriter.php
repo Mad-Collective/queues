@@ -35,11 +35,11 @@ abstract class AbstractWriter
      */
     public function write()
     {
-        $numOfDomainEvents = count($this->writableDomainObjects);
+        $numOfDomainObjects = count($this->writableDomainObjects);
 
-        if ($numOfDomainEvents === 1) {
+        if ($numOfDomainObjects === 1) {
             $this->writeOne($this->writableDomainObjects[0]);
-        } else if($numOfDomainEvents > 1) {
+        } else if($numOfDomainObjects > 1) {
             $this->writeSome($this->writableDomainObjects);
         }
     }
