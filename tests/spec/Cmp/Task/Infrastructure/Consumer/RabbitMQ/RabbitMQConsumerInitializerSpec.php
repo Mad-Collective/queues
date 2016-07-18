@@ -35,8 +35,10 @@ class RabbitMQConsumerInitializerSpec extends ObjectBehavior
     {
         $callable = function() {};
         $connection->channel()->willReturn($channel);
+        $channel->exchange_declare($this->config['exchange'], 'fanout', false, true, false)->shouldBeCalled();
         $channel->queue_declare($this->config['queue'], false, true, false, false)->willReturn([$this->config['queue'], '', ''])->shouldBeCalled();
-        $channel->basic_qos(null, 1, null)->shouldBeCalled();
+        $channel->queue_bind($this->config['queue'], $this->config['exchange'])->shouldBeCalled();
+
         $channel->basic_consume($this->config['queue'], '', false, false, false, false, $callable)->shouldBeCalled();
         $this->initialize($callable)->shouldReturn($channel);
     }

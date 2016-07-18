@@ -1,6 +1,6 @@
 <?php
 
-namespace spec\Cmp\DomainEvent\Infrastructure\Publisher\RabbitMQ;
+namespace spec\Cmp\Queue\Infrastructure\RabbitMQ;
 
 use Cmp\DomainEvent\Domain\Event\DomainEvent;
 use Cmp\DomainEvent\Infrastructure\Publisher\RabbitMQ\RabbitMQPublisherInitializer;
@@ -10,26 +10,30 @@ use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use Psr\Log\LoggerInterface;
 
-class RabbitMQPublisherSpec extends ObjectBehavior
+class RabbitMQWriterSpec extends ObjectBehavior
 {
+
+    private $exchange;
 
     public function let(RabbitMQPublisherInitializer $rabbitMQPublisherInitializer, LoggerInterface $logger)
     {
-        $config = ['exchange' => 'test'];
-        $this->beConstructedWith($rabbitMQPublisherInitializer, $config, $logger);
+        $this->exchange = 'test';
+        $this->beConstructedWith($rabbitMQPublisherInitializer, $this->exchange, $logger);
     }
 
-    public function it_is_initializable()
+    function it_is_initializable()
     {
-        $this->shouldHaveType('Cmp\DomainEvent\Infrastructure\Publisher\RabbitMQ\RabbitMQPublisher');
+        $this->shouldHaveType('Cmp\Queue\Infrastructure\RabbitMQ\RabbitMQWriter');
     }
+
+
 
     public function it_calls_rabbitmqpublisherInitializer_if_not_initialized(RabbitMQPublisherInitializer $rabbitMQPublisherInitializer, AMQPChannel $channel, DomainEvent $event)
     {
         $rabbitMQPublisherInitializer->initialize()->willReturn($channel)->shouldBeCalled();
 
         $this->add($event);
-        $this->publish();
+        $this->write();
     }
 
     public function it_should_not_call_rabbitmqpublisherInitializer_if_already_initialized(RabbitMQPublisherInitializer $rabbitMQPublisherInitializer, AMQPChannel $channel, DomainEvent $event)
@@ -37,9 +41,9 @@ class RabbitMQPublisherSpec extends ObjectBehavior
         $rabbitMQPublisherInitializer->initialize()->willReturn($channel)->shouldBeCalledTimes(1);
 
         $this->add($event);
-        $this->publish();
+        $this->write();
         $this->add($event);
-        $this->publish();
+        $this->write();
     }
 
     public function it_calls_basic_publish_with_a_message_when_there_is_only_one_domain_event_added(RabbitMQPublisherInitializer $rabbitMQPublisherInitializer, AMQPChannel $channel, DomainEvent $event)
@@ -49,12 +53,12 @@ class RabbitMQPublisherSpec extends ObjectBehavior
         $rabbitMQPublisherInitializer->initialize()->willReturn($channel);
         $event->jsonSerialize()->willReturn($body); // Serialize function is mocked so we need to set the return
         $event->getName()->willReturn($name);
-        $msg = new AMQPMessage(json_encode($body));
+        $msg = new AMQPMessage(json_encode($body), array('delivery_mode' => 2));
 
-        $channel->basic_publish(Argument::exact($msg), 'test', $name)->shouldBeCalled();
+        $channel->basic_publish(Argument::exact($msg), $this->exchange, $name)->shouldBeCalled();
 
         $this->add($event);
-        $this->publish();
+        $this->write();
     }
 
     public function it_calls_batch_basic_publish_with_a_message_for_every_domain_event_added(RabbitMQPublisherInitializer $rabbitMQPublisherInitializer, AMQPChannel $channel, DomainEvent $event, DomainEvent $event2)
@@ -65,20 +69,20 @@ class RabbitMQPublisherSpec extends ObjectBehavior
         $name = 'test_domain_event_name';
         $event->jsonSerialize()->willReturn($body); // Serialize function is mocked so we need to set the return
         $event->getName()->willReturn($name);
-        $msg = new AMQPMessage(json_encode($body));
+        $msg = new AMQPMessage(json_encode($body), array('delivery_mode' => 2));
 
         $body2 = ['test2' => 'hello2'];
         $name2 = 'test_domain_event_name2';
         $event2->jsonSerialize()->willReturn($body2); // Serialize function is mocked so we need to set the return
         $event2->getName()->willReturn($name2);
-        $msg2 = new AMQPMessage(json_encode($body2));
+        $msg2 = new AMQPMessage(json_encode($body2), array('delivery_mode' => 2));
 
-        $channel->batch_basic_publish(Argument::exact($msg), 'test', $name)->shouldBeCalled();
-        $channel->batch_basic_publish(Argument::exact($msg2), 'test', $name2)->shouldBeCalled();
+        $channel->batch_basic_publish(Argument::exact($msg), $this->exchange, $name)->shouldBeCalled();
+        $channel->batch_basic_publish(Argument::exact($msg2), $this->exchange, $name2)->shouldBeCalled();
         $channel->publish_batch()->shouldBeCalled();
 
         $this->add($event);
         $this->add($event2);
-        $this->publish();
+        $this->write();
     }
 }

@@ -3,10 +3,11 @@
 namespace Cmp\DomainEvent\Infrastructure\Publisher\RabbitMQ;
 
 use Cmp\Queue\Domain\ConnectionException;
+use Cmp\Queue\Infrastructure\RabbitMQ\RabbitMQInitializer;
 use PhpAmqpLib\Connection\AMQPLazyConnection;
 use Psr\Log\LoggerInterface;
 
-class RabbitMQPublisherInitializer
+class RabbitMQPublisherInitializer implements RabbitMQInitializer
 {
 
     /**

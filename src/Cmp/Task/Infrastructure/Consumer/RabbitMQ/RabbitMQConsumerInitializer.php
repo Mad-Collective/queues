@@ -32,16 +32,21 @@ class RabbitMQConsumerInitializer
 
     public function initialize(callable $msgCallback)
     {
+
+
         $this->logger->info(sprintf('Connecting to RabbitMQ, Host: %s, Port: %s, User: %s, Queue: %s',
             $this->config['host'], $this->config['port'], $this->config['user'], $this->config['queue']));
 
         try {
             $channel = $this->connection->channel(); // this is the one starting the connection
 
+            $channel->exchange_declare($this->config['exchange'], 'fanout', false, true, false);
+
             list($queueName, ,) = $channel->queue_declare($this->config['queue'], false, true, false, false);
 
+            $channel->queue_bind($queueName, $this->config['exchange']);
+
             $this->logger->info('Starting to consume RabbitMQ Queue:' . $queueName);
-            $channel->basic_qos(null, 1, null);
             $channel->basic_consume($queueName, '', false, false, false, false, $msgCallback);
 
             return $channel;

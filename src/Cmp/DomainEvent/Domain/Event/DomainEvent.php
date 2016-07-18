@@ -2,7 +2,9 @@
 
 namespace Cmp\DomainEvent\Domain\Event;
 
-class DomainEvent implements \JsonSerializable
+use Cmp\Queue\Domain\WritableDomainObject;
+
+class DomainEvent implements \JsonSerializable, WritableDomainObject
 {
     /**
      * @var string

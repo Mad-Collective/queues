@@ -2,8 +2,11 @@
 
 namespace Cmp\Task\Domain\Task;
 
+
+use Cmp\Queue\Domain\WritableDomainObject;
+
 // @TODO: Rethink this object
-class Task implements \JsonSerializable
+class Task implements \JsonSerializable, WritableDomainObject
 {
 
     private $id;
@@ -19,6 +22,11 @@ class Task implements \JsonSerializable
      * @return mixed
      */
     public function getId()
+    {
+        return $this->id;
+    }
+
+    public function getName()
     {
         return $this->id;
     }
