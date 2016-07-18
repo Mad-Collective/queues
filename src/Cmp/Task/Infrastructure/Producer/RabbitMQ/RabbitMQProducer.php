@@ -18,7 +18,7 @@ class RabbitMQProducer
     /**
      * @var RabbitMQProducerInitializer
      */
-    private $rabbitMQPublisherInitializer;
+    private $rabbitMQProducerInitializer;
 
     /**
      * @var AMQPChannel
@@ -33,14 +33,14 @@ class RabbitMQProducer
     /**
      * RabbitMQProducer constructor.
      *
-     * @param RabbitMQProducerInitializer $rabbitMQPublisherInitializer
+     * @param RabbitMQProducerInitializer $rabbitMQProducerInitializer
      * @param array                       $config
      * @param LoggerInterface             $logger
      */
-    public function __construct(RabbitMQProducerInitializer $rabbitMQPublisherInitializer, array $config, LoggerInterface $logger)
+    public function __construct(RabbitMQProducerInitializer $rabbitMQProducerInitializer, array $config, LoggerInterface $logger)
     {
 
-        $this->rabbitMQPublisherInitializer = $rabbitMQPublisherInitializer;
+        $this->rabbitMQProducerInitializer = $rabbitMQProducerInitializer;
         $this->config = $config;
         $this->logger = $logger;
     }
@@ -48,7 +48,7 @@ class RabbitMQProducer
     public function produce(Task $task)
     {
         if (!$this->channel) {
-            $this->channel = $this->rabbitMQPublisherInitializer->initialize();
+            $this->channel = $this->rabbitMQProducerInitializer->initialize();
         }
 
         $this->logger->debug('Producing Task:' . json_encode($task));

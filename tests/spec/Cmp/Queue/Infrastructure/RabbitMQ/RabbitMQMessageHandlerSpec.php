@@ -1,6 +1,6 @@
 <?php
 
-namespace spec\Cmp\Task\Infrastructure\Consumer\RabbitMQ;
+namespace spec\Cmp\Queue\Infrastructure\RabbitMQ;
 
 use Cmp\DomainEvent\Domain\Event\DomainEvent;
 use Cmp\Task\Domain\Task\JSONTaskFactory;
@@ -23,7 +23,7 @@ class RabbitMQMessageHandlerSpec extends ObjectBehavior
 
     function it_is_initializable()
     {
-        $this->shouldHaveType('Cmp\Task\Infrastructure\Consumer\RabbitMQ\RabbitMQMessageHandler');
+        $this->shouldHaveType('Cmp\Queue\Infrastructure\RabbitMQ\RabbitMQMessageHandler');
     }
 
     public function it_should_call_the_eventCallback_with_a_domain_object(

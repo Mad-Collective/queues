@@ -2,6 +2,8 @@
 
 namespace Cmp\Task\Domain\Task;
 
-class InvalidJSONTaskException extends \Exception
+use Cmp\Queue\Domain\InvalidJSONDomainObjectException;
+
+class InvalidJSONTaskException extends InvalidJSONDomainObjectException
 {
 }

@@ -2,8 +2,8 @@
 
 namespace spec\Cmp\Task\Infrastructure\Consumer\RabbitMQ;
 
+use Cmp\Queue\Infrastructure\RabbitMQ\RabbitMQMessageHandler;
 use Cmp\Task\Infrastructure\Consumer\RabbitMQ\RabbitMQConsumerInitializer;
-use Cmp\Task\Infrastructure\Consumer\RabbitMQ\RabbitMQMessageHandler;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;

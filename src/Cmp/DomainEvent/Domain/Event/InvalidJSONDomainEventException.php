@@ -2,6 +2,8 @@
 
 namespace Cmp\DomainEvent\Domain\Event;
 
-class InvalidJSONDomainEventException extends \Exception
+use Cmp\Queue\Domain\InvalidJSONDomainObjectException;
+
+class InvalidJSONDomainEventException extends InvalidJSONDomainObjectException
 {
 }

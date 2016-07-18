@@ -5,6 +5,7 @@ namespace Cmp\DomainEvent\Infrastructure\Subscriber\RabbitMQ;
 use Cmp\DomainEvent\Domain\Event\DomainEvent;
 use Cmp\DomainEvent\Domain\Event\JSONDomainEventFactory;
 use Cmp\DomainEvent\Domain\Subscriber\AbstractSubscriber;
+use Cmp\Queue\Infrastructure\RabbitMQ\RabbitMQMessageHandler;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;

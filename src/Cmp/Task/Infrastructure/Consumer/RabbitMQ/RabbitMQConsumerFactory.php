@@ -2,6 +2,7 @@
 
 namespace Cmp\Task\Infrastructure\Consumer\RabbitMQ;
 
+use Cmp\Queue\Infrastructure\RabbitMQ\RabbitMQMessageHandler;
 use Cmp\Task\Domain\Task\JSONTaskFactory;
 use PhpAmqpLib\Connection\AMQPLazyConnection;
 use Psr\Log\LoggerInterface;
@@ -20,9 +21,7 @@ class RabbitMQConsumerFactory
 
     public function create($config)
     {
-        $this->logger->info('Using RabbitMQ Producer');
-
-
+        $this->logger->info('Using RabbitMQ Consumer');
 
         $amqpLazyConnection = new AMQPLazyConnection($config['host'], $config['port'], $config['user'], $config['password']);
         $rabbitMQConsumerInitializer = new RabbitMQConsumerInitializer($amqpLazyConnection, $config, $this->logger);

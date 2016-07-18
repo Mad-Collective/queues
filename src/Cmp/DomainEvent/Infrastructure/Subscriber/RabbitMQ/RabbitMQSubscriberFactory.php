@@ -3,6 +3,7 @@
 namespace Cmp\DomainEvent\Infrastructure\Subscriber\RabbitMQ;
 
 use Cmp\DomainEvent\Domain\Event\JSONDomainEventFactory;
+use Cmp\Queue\Infrastructure\RabbitMQ\RabbitMQMessageHandler;
 use PhpAmqpLib\Connection\AMQPLazyConnection;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use Psr\Log\LoggerInterface;

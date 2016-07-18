@@ -2,6 +2,7 @@
 
 namespace Cmp\Task\Infrastructure\Consumer\RabbitMQ;
 
+use Cmp\Queue\Infrastructure\RabbitMQ\RabbitMQMessageHandler;
 use Cmp\Task\Domain\Consumer\AbstractConsumer;
 use PhpAmqpLib\Channel\AMQPChannel;
 use Psr\Log\LoggerInterface;

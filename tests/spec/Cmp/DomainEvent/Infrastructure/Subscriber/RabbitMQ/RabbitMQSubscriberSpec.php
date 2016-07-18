@@ -2,9 +2,8 @@
 
 namespace spec\Cmp\DomainEvent\Infrastructure\Subscriber\RabbitMQ;
 
-use Cmp\DomainEvent\Domain\Event\JSONDomainEventFactory;
-use Cmp\DomainEvent\Infrastructure\Subscriber\RabbitMQ\RabbitMQMessageHandler;
 use Cmp\DomainEvent\Infrastructure\Subscriber\RabbitMQ\RabbitMQSubscriberInitializer;
+use Cmp\Queue\Infrastructure\RabbitMQ\RabbitMQMessageHandler;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Message\AMQPMessage;
 use PhpSpec\ObjectBehavior;

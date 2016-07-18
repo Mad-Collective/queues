@@ -2,7 +2,9 @@
 
 namespace Cmp\DomainEvent\Domain\Event;
 
-class JSONDomainEventFactory
+use Cmp\Queue\Domain\JSONDomainObjectFactory;
+
+class JSONDomainEventFactory implements JSONDomainObjectFactory
 {
 
     public function create($json)
