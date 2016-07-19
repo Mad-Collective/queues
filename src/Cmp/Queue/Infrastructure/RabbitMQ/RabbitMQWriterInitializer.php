@@ -4,7 +4,7 @@ namespace Cmp\Queue\Infrastructure\RabbitMQ;
 
 use Cmp\Queue\Domain\ConnectionException;
 
-interface RabbitMQInitializer
+interface RabbitMQWriterInitializer
 {
     /**
      * @throws ConnectionException
