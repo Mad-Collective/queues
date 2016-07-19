@@ -2,7 +2,9 @@
 
 namespace Cmp\DomainEvent\Domain\Event;
 
+use Cmp\DomainEvent\Domain\Event\Exception\InvalidJSONDomainEventException;
 use Cmp\Queue\Domain\JSONMessageFactory;
+
 
 class JSONDomainEventFactory implements JSONMessageFactory
 {
