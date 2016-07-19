@@ -3,6 +3,7 @@
 namespace Cmp\DomainEvent\Application\Subscriber;
 
 use Cmp\DomainEvent\Infrastructure\Subscriber\RabbitMQ\RabbitMQSubscriberFactory;
+use Cmp\Queue\Infrastructure\RabbitMQ\RabbitMQConfig;
 use Psr\Log\LoggerInterface;
 
 class SubscriberFactory
@@ -17,8 +18,8 @@ class SubscriberFactory
         $this->logger = $logger;
     }
 
-    public function create($host, $port, $user, $password, $exchange, $queue, $domainTopics) {
+    public function create(RabbitMQConfig $config, $domainTopics) {
         $rabbitMQSubscriberFactory = new RabbitMQSubscriberFactory($this->logger);
-        return $rabbitMQSubscriberFactory->create($host, $port, $user, $password, $exchange, $queue, $domainTopics);
+        return $rabbitMQSubscriberFactory->create($config, $domainTopics);
     }
 }

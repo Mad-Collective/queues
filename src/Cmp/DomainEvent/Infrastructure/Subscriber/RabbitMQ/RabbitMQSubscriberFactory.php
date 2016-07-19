@@ -4,6 +4,7 @@ namespace Cmp\DomainEvent\Infrastructure\Subscriber\RabbitMQ;
 
 use Cmp\DomainEvent\Domain\Event\JSONDomainEventFactory;
 use Cmp\DomainEvent\Domain\Subscriber\Subscriber;
+use Cmp\Queue\Infrastructure\RabbitMQ\RabbitMQConfig;
 use Cmp\Queue\Infrastructure\RabbitMQ\RabbitMQMessageHandler;
 use Cmp\Queue\Infrastructure\RabbitMQ\RabbitMQReader;
 use PhpAmqpLib\Connection\AMQPLazyConnection;
@@ -23,16 +24,16 @@ class RabbitMQSubscriberFactory
         $this->logger = $logger;
     }
 
-    public function create($host, $port, $user, $password, $exchange, $queue, $domainTopics)
+    public function create(RabbitMQConfig $config, $domainTopics)
     {
         $this->logger->info('Using RabbitMQ Subscriber');
 
         $jsonDomainEventFactory = new JSONDomainEventFactory();
 
-        $amqpLazyConnection = new AMQPLazyConnection($host, $port, $user, $password);
+        $amqpLazyConnection = new AMQPLazyConnection($config->getHost(), $config->getPort(), $config->getUser(), $config->getPassword());
         $this->logger->info(sprintf('RabbitMQ Configuration, Host: %s, Port: %s, User: %s, Exchange: %s, Queue: %s',
-            $host, $port, $user, $exchange, $queue));
-        $rabbitMQSubscriberInitializer = new RabbitMQSubscriberInitializer($amqpLazyConnection, $exchange, $queue, $domainTopics, $this->logger);
+            $config->getHost(), $config->getPort(), $config->getUser(), $config->getExchange(), $config->getQueue()));
+        $rabbitMQSubscriberInitializer = new RabbitMQSubscriberInitializer($amqpLazyConnection, $config->getExchange(), $config->getQueue(), $domainTopics, $this->logger);
 
         $rabbitMQMessageHandler = new RabbitMQMessageHandler($jsonDomainEventFactory);
 

@@ -2,6 +2,7 @@
 
 namespace Cmp\Task\Infrastructure\Consumer\RabbitMQ;
 
+use Cmp\Queue\Infrastructure\RabbitMQ\RabbitMQConfig;
 use Cmp\Queue\Infrastructure\RabbitMQ\RabbitMQMessageHandler;
 use Cmp\Queue\Infrastructure\RabbitMQ\RabbitMQReader;
 use Cmp\Task\Domain\Consumer\Consumer;
@@ -21,14 +22,14 @@ class RabbitMQConsumerFactory
         $this->logger = $logger;
     }
 
-    public function create($host, $port, $user, $password, $exchange, $queue)
+    public function create(RabbitMQConfig $config)
     {
         $this->logger->info('Using RabbitMQ Consumer');
 
-        $amqpLazyConnection = new AMQPLazyConnection($host, $port, $user, $password);
+        $amqpLazyConnection = new AMQPLazyConnection($config->getHost(), $config->getPort(), $config->getUser(), $config->getPassword());
         $this->logger->info(sprintf('RabbitMQ Configuration, Host: %s, Port: %s, User: %s, Exchange: %s, Queue: %s',
-            $host, $port, $user, $exchange, $queue));
-        $rabbitMQConsumerInitializer = new RabbitMQConsumerInitializer($amqpLazyConnection, $exchange, $queue, $this->logger);
+            $config->getHost(), $config->getPort(), $config->getUser(), $config->getExchange(), $config->getQueue()));
+        $rabbitMQConsumerInitializer = new RabbitMQConsumerInitializer($amqpLazyConnection, $config->getExchange(), $config->getQueue(), $this->logger);
 
         $jsonTaskFactory = new JSONTaskFactory();
         $rabbitMQMessageHandler = new RabbitMQMessageHandler($jsonTaskFactory);

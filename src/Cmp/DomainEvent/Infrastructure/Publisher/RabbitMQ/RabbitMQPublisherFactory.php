@@ -2,6 +2,7 @@
 
 namespace Cmp\DomainEvent\Infrastructure\Publisher\RabbitMQ;
 
+use Cmp\Queue\Infrastructure\RabbitMQ\RabbitMQConfig;
 use Cmp\Queue\Infrastructure\RabbitMQ\RabbitMQWriter;
 use PhpAmqpLib\Connection\AMQPLazyConnection;
 use Psr\Log\LoggerInterface;
@@ -18,14 +19,14 @@ class RabbitMQPublisherFactory
         $this->logger = $logger;
     }
 
-    public function create($host, $port, $user, $password, $exchange)
+    public function create(RabbitMQConfig $config)
     {
         $this->logger->info('Using RabbitMQ Writer');
-        $amqpLazyConnection = new AMQPLazyConnection($host, $port, $user, $password);
+        $amqpLazyConnection = new AMQPLazyConnection($config->getHost(), $config->getPort(), $config->getUser(), $config->getPassword());
         $this->logger->info(sprintf('RabbitMQ Configuration, Host: %s, Port: %s, User: %s, Exchange: %s',
-            $host, $port, $user, $exchange));
-        $rabbitMQPublisherInitializer = new RabbitMQPublisherInitializer($amqpLazyConnection, $exchange, $this->logger);
-        return new RabbitMQWriter($rabbitMQPublisherInitializer, $exchange, $this->logger);
+            $config->getHost(), $config->getPort(), $config->getUser(), $config->getExchange()));
+        $rabbitMQPublisherInitializer = new RabbitMQPublisherInitializer($amqpLazyConnection, $config->getExchange(), $this->logger);
+        return new RabbitMQWriter($rabbitMQPublisherInitializer, $config->getExchange(), $this->logger);
     }
 
 }

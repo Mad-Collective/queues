@@ -2,6 +2,7 @@
 
 namespace Cmp\Task\Domain\Consumer;
 
+use Cmp\Queue\Infrastructure\RabbitMQ\RabbitMQConfig;
 use Cmp\Task\Infrastructure\Consumer\RabbitMQ\RabbitMQConsumerFactory;
 use Psr\Log\LoggerInterface;
 
@@ -18,10 +19,10 @@ class ConsumerFactory
         $this->logger = $logger;
     }
 
-    public function create($host, $port, $user, $password, $exchange, $queue)
+    public function create(RabbitMQConfig $config)
     {
         $rabbitMQConsumerFactory = new RabbitMQConsumerFactory($this->logger);
-        return $rabbitMQConsumerFactory->create($host, $port, $user, $password, $exchange, $queue);
+        return $rabbitMQConsumerFactory->create($config);
     }
 
 }
