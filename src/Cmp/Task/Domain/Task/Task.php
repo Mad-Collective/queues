@@ -3,10 +3,10 @@
 namespace Cmp\Task\Domain\Task;
 
 
-use Cmp\Queue\Domain\WritableDomainObject;
+use Cmp\Queue\Domain\Message;
 
 // @TODO: Rethink this object
-class Task implements \JsonSerializable, WritableDomainObject
+class Task implements Message
 {
 
     private $id;

@@ -6,28 +6,28 @@ namespace Cmp\Queue\Domain;
 abstract class AbstractWriter
 {
 
-    private $writableDomainObjects = [];
+    private $messages = [];
 
     /**
-     * @param WritableDomainObject $writableDomainObject
+     * @param Message $message
      *
      * @return mixed
      */
-    abstract protected function writeOne(WritableDomainObject $writableDomainObject);
+    abstract protected function writeOne(Message $message);
 
     /**
-     * @param WritableDomainObject[] $writableDomainObjects
+     * @param Message[] $messages
      *
      * @return mixed
      */
-    abstract protected function writeSome(array $writableDomainObjects);
+    abstract protected function writeSome(array $messages);
 
     /**
-     * @param WritableDomainObject $writableDomainObject
+     * @param Message $message
      */
-    public function add(WritableDomainObject $writableDomainObject)
+    public function add(Message $message)
     {
-        array_push($this->writableDomainObjects, $writableDomainObject);
+        array_push($this->messages, $message);
     }
 
     /**
@@ -35,12 +35,12 @@ abstract class AbstractWriter
      */
     public function write()
     {
-        $numOfDomainObjects = count($this->writableDomainObjects);
+        $numOfDomainObjects = count($this->messages);
 
         if ($numOfDomainObjects === 1) {
-            $this->writeOne($this->writableDomainObjects[0]);
+            $this->writeOne($this->messages[0]);
         } else if($numOfDomainObjects > 1) {
-            $this->writeSome($this->writableDomainObjects);
+            $this->writeSome($this->messages);
         }
     }
 

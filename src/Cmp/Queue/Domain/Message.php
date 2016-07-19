@@ -2,11 +2,9 @@
 
 namespace Cmp\Queue\Domain;
 
-interface WritableDomainObject
+interface Message extends \JsonSerializable
 {
 
     public function getName();
-
-    public function jsonSerialize();
 
 }

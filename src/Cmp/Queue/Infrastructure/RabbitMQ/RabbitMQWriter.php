@@ -4,7 +4,7 @@ namespace Cmp\Queue\Infrastructure\RabbitMQ;
 
 
 use Cmp\Queue\Domain\AbstractWriter;
-use Cmp\Queue\Domain\WritableDomainObject;
+use Cmp\Queue\Domain\Message;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Message\AMQPMessage;
 use Psr\Log\LoggerInterface;
@@ -17,7 +17,7 @@ class RabbitMQWriter extends AbstractWriter
     private $exchange;
 
     /**
-     * @var RabbitMQInitializer
+     * @var RabbitMQWriterInitializer
      */
     private $rabbitMQInitializer;
 
@@ -34,11 +34,11 @@ class RabbitMQWriter extends AbstractWriter
     /**
      * RabbitMQPublisher constructor.
      *
-     * @param RabbitMQInitializer $rabbitMQInitializer
+     * @param RabbitMQWriterInitializer $rabbitMQInitializer
      * @param string                       $exchange
      * @param LoggerInterface              $logger
      */
-    public function __construct(RabbitMQInitializer $rabbitMQInitializer, $exchange, LoggerInterface $logger)
+    public function __construct(RabbitMQWriterInitializer $rabbitMQInitializer, $exchange, LoggerInterface $logger)
     {
 
         $this->rabbitMQInitializer = $rabbitMQInitializer;
@@ -47,33 +47,33 @@ class RabbitMQWriter extends AbstractWriter
     }
 
     /**
-     * @param WritableDomainObject[] $writableDomainObjects
+     * @param Message[] $messages
      *
      * @throws \Cmp\Queue\Domain\ConnectionException
      */
-    public function writeSome(array $writableDomainObjects)
+    public function writeSome(array $messages)
     {
         if (!$this->channel) {
             $this->channel = $this->rabbitMQInitializer->initialize();
         }
 
-        foreach($writableDomainObjects as $writableDomainObject) {
-            $this->logger->debug('Writing:' . json_encode($writableDomainObject));
-            $msg = new AMQPMessage(json_encode($writableDomainObject), array('delivery_mode' => 2));
-            $this->channel->batch_basic_publish($msg, $this->exchange, $writableDomainObject->getName());
+        foreach($messages as $message) {
+            $this->logger->debug('Writing:' . json_encode($message));
+            $msg = new AMQPMessage(json_encode($message), array('delivery_mode' => 2));
+            $this->channel->batch_basic_publish($msg, $this->exchange, $message->getName());
         }
 
         $this->channel->publish_batch();
     }
 
-    public function writeOne(WritableDomainObject $writableDomainObject)
+    public function writeOne(Message $message)
     {
         if (!$this->channel) {
             $this->channel = $this->rabbitMQInitializer->initialize();
         }
 
-        $this->logger->debug('Writing:' . json_encode($writableDomainObject));
-        $msg = new AMQPMessage(json_encode($writableDomainObject), array('delivery_mode' => 2));
-        $this->channel->basic_publish($msg, $this->exchange, $writableDomainObject->getName());
+        $this->logger->debug('Writing:' . json_encode($message));
+        $msg = new AMQPMessage(json_encode($message), array('delivery_mode' => 2));
+        $this->channel->basic_publish($msg, $this->exchange, $message->getName());
     }
 }
