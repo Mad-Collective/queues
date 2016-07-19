@@ -51,7 +51,7 @@ class RabbitMQWriter extends AbstractWriter
      *
      * @throws \Cmp\Queue\Domain\ConnectionException
      */
-    public function writeSome(array $messages)
+    protected function writeSome(array $messages)
     {
         if (!$this->channel) {
             $this->channel = $this->rabbitMQInitializer->initialize();
@@ -66,7 +66,7 @@ class RabbitMQWriter extends AbstractWriter
         $this->channel->publish_batch();
     }
 
-    public function writeOne(Message $message)
+    protected function writeOne(Message $message)
     {
         if (!$this->channel) {
             $this->channel = $this->rabbitMQInitializer->initialize();
