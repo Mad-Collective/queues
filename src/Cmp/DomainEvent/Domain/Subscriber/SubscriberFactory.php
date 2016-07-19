@@ -17,8 +17,8 @@ class SubscriberFactory
         $this->logger = $logger;
     }
 
-    public function create($config, $domainTopics) {
+    public function create($host, $port, $user, $password, $exchange, $queue, $domainTopics) {
         $rabbitMQSubscriberFactory = new RabbitMQSubscriberFactory($this->logger);
-        return $rabbitMQSubscriberFactory->create($config, $domainTopics);
+        return $rabbitMQSubscriberFactory->create($host, $port, $user, $password, $exchange, $queue, $domainTopics);
     }
 }

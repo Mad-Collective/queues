@@ -23,14 +23,16 @@ class RabbitMQSubscriberFactory
         $this->logger = $logger;
     }
 
-    public function create($config, $domainTopics)
+    public function create($host, $port, $user, $password, $exchange, $queue, $domainTopics)
     {
         $this->logger->info('Using RabbitMQ Subscriber');
 
         $jsonDomainEventFactory = new JSONDomainEventFactory();
 
-        $amqpLazyConnection = new AMQPLazyConnection($config['host'], $config['port'], $config['user'], $config['password']);
-        $rabbitMQSubscriberInitializer = new RabbitMQSubscriberInitializer($amqpLazyConnection, $config, $domainTopics, $this->logger);
+        $amqpLazyConnection = new AMQPLazyConnection($host, $port, $user, $password);
+        $this->logger->info(sprintf('RabbitMQ Configuration, Host: %s, Port: %s, User: %s, Exchange: %s, Queue: %s',
+            $host, $port, $user, $exchange, $queue));
+        $rabbitMQSubscriberInitializer = new RabbitMQSubscriberInitializer($amqpLazyConnection, $exchange, $queue, $domainTopics, $this->logger);
 
         $rabbitMQMessageHandler = new RabbitMQMessageHandler($jsonDomainEventFactory);
 

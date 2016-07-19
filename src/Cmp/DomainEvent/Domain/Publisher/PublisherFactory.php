@@ -17,10 +17,10 @@ class PublisherFactory
         $this->logger = $logger;
     }
 
-    public function create($config)
+    public function create($host, $port, $user, $password, $exchange)
     {
         $rabbitMQPublisherFactory = new RabbitMQPublisherFactory($this->logger);
-        return $rabbitMQPublisherFactory->create($config);
+        return $rabbitMQPublisherFactory->create($host, $port, $user, $password, $exchange);
     }
 
 }
