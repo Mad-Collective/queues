@@ -1,6 +1,5 @@
 # Domain Events
 
-
 ## Publisher
 
 Example code to publish Domain Events:
@@ -52,7 +51,7 @@ class TestEventSubscriptor implements \Cmp\DomainEvent\Domain\Event\EventSubscri
 }
 
 $config = [
-    'host' => '54.152.82.164',
+    'host' => 'rabbit_host',
     'port' => '5672',
     'user' => 'rabbitmq-server',
     'password' => 'teamcmp',
