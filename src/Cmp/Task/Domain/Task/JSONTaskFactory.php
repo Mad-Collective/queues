@@ -3,6 +3,7 @@
 namespace Cmp\Task\Domain\Task;
 
 use Cmp\Queue\Domain\JSONMessageFactory;
+use Cmp\Task\Domain\Task\Exception\InvalidJSONTaskException;
 
 class JSONTaskFactory implements JSONMessageFactory
 {

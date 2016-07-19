@@ -1,6 +1,6 @@
 <?php
 
-namespace Cmp\Task\Domain\Task;
+namespace Cmp\Task\Domain\Task\Exception;
 
 use Cmp\Queue\Domain\InvalidJSONDomainObjectException;
 

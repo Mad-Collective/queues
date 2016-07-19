@@ -23,6 +23,6 @@ class JSONTaskFactorySpec extends ObjectBehavior
     public function it_should_throw_exception_if_invalid_task()
     {
         $json = '{"unrelated":"json"}';
-        $this->shouldThrow('Cmp\Task\Domain\Task\InvalidJSONTaskException')->during('create', array($json));
+        $this->shouldThrow('Cmp\Task\Domain\Task\Exception\InvalidJSONTaskException')->during('create', array($json));
     }
 }

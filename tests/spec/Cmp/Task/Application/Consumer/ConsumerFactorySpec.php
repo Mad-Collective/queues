@@ -1,6 +1,6 @@
 <?php
 
-namespace spec\Cmp\Task\Domain\Consumer;
+namespace spec\Cmp\Task\Application\Consumer;
 
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
@@ -16,6 +16,6 @@ class ConsumerFactorySpec extends ObjectBehavior
 
     function it_is_initializable()
     {
-        $this->shouldHaveType('Cmp\Task\Domain\Consumer\ConsumerFactory');
+        $this->shouldHaveType('Cmp\Task\Application\Consumer\ConsumerFactory');
     }
 }

@@ -24,7 +24,7 @@ class JSONDomainEventFactorySpec extends ObjectBehavior
     public function it_should_throw_exception_if_invalid_domainevent()
     {
         $json = '{"unrelated":"json"}';
-        $this->shouldThrow('Cmp\DomainEvent\Domain\Event\InvalidJSONDomainEventException')->during('create', array($json));
+        $this->shouldThrow('Cmp\DomainEvent\Domain\Event\Exception\InvalidJSONDomainEventException')->during('create', array($json));
     }
 
 }

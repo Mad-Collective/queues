@@ -1,6 +1,6 @@
 <?php
 
-namespace spec\Cmp\Task\Domain\Producer;
+namespace spec\Cmp\Task\Appliation\Producer;
 
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
@@ -16,6 +16,6 @@ class ProducerFactorySpec extends ObjectBehavior
 
     public function it_is_initializable()
     {
-        $this->shouldHaveType('Cmp\Task\Domain\Producer\ProducerFactory');
+        $this->shouldHaveType('Cmp\Task\Application\Producer\ProducerFactory');
     }
 }

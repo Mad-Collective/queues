@@ -1,6 +1,6 @@
 <?php
 
-namespace Cmp\Task\Domain\Consumer;
+namespace Cmp\Task\Application\Consumer;
 
 use Cmp\Queue\Infrastructure\RabbitMQ\RabbitMQConfig;
 use Cmp\Task\Infrastructure\Consumer\RabbitMQ\RabbitMQConsumerFactory;
