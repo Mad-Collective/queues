@@ -5,17 +5,31 @@ namespace Cmp\DomainEvent\Domain\Subscriber;
 use Cmp\DomainEvent\Domain\Event\EventSubscribable;
 use Cmp\DomainEvent\Domain\Event\EventSubscriptor;
 use Cmp\DomainEvent\Domain\Event\DomainEvent;
+use Cmp\Queue\Domain\QueueReader;
+use Psr\Log\LoggerInterface;
 
-abstract class AbstractSubscriber implements EventSubscribable
+class Subscriber implements EventSubscribable
 {
     /**
      * @var array
      */
     private $subscriptors = [];
 
-    abstract public function process();
+    /**
+     * @var QueueReader
+     */
+    private $queueReader;
 
-    abstract protected function isSubscribed(DomainEvent $domainEvent);
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    public function __construct(QueueReader $queueReader, LoggerInterface $logger)
+    {
+        $this->queueReader = $queueReader;
+        $this->logger = $logger;
+    }
 
     public function subscribe(EventSubscriptor $eventSubscriptor)
     {
@@ -26,16 +40,14 @@ abstract class AbstractSubscriber implements EventSubscribable
     {
         $this->logger->debug('Domain Event received, notifying subscribers');
         foreach($this->subscriptors as $subscriptor) {
-            if ($this->isSubscribed($domainEvent)) {
-                $subscriptor->notify($domainEvent);
-            }
+            $subscriptor->notify($domainEvent);
         }
     }
 
     public function start()
     {
         while(true) {
-            $this->process();
+            $this->queueReader->process(array($this, 'notify'));
         }
     }
 

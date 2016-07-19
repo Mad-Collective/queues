@@ -3,6 +3,8 @@
 namespace Cmp\Task\Infrastructure\Consumer\RabbitMQ;
 
 use Cmp\Queue\Infrastructure\RabbitMQ\RabbitMQMessageHandler;
+use Cmp\Queue\Infrastructure\RabbitMQ\RabbitMQReader;
+use Cmp\Task\Domain\Consumer\Consumer;
 use Cmp\Task\Domain\Task\JSONTaskFactory;
 use PhpAmqpLib\Connection\AMQPLazyConnection;
 use Psr\Log\LoggerInterface;
@@ -29,6 +31,8 @@ class RabbitMQConsumerFactory
         $jsonTaskFactory = new JSONTaskFactory();
         $rabbitMQMessageHandler = new RabbitMQMessageHandler($jsonTaskFactory);
 
-        return new RabbitMQConsumer($rabbitMQConsumerInitializer, $rabbitMQMessageHandler, $this->logger);
+        $rabbitMQReader = new RabbitMQReader($rabbitMQConsumerInitializer, $rabbitMQMessageHandler, $this->logger);
+
+        return new Consumer($rabbitMQReader, $this->logger);
     }
 }

@@ -3,6 +3,8 @@
 namespace spec\Cmp\Queue\Infrastructure\RabbitMQ;
 
 use Cmp\DomainEvent\Domain\Event\DomainEvent;
+use Cmp\Queue\Infrastructure\RabbitMQ\RabbitMQReader;
+use Cmp\Task\Domain\Consumer\Consumer;
 use Cmp\Task\Domain\Task\JSONTaskFactory;
 use Cmp\Task\Domain\Task\Task;
 use Cmp\Task\Infrastructure\Consumer\RabbitMQ\RabbitMQConsumer;
@@ -30,14 +32,14 @@ class RabbitMQMessageHandlerSpec extends ObjectBehavior
         AMQPMessage $amqpMessage,
         JSONTaskFactory $jsonTaskFactory,
         Task $task,
-        RabbitMQConsumer $rabbitMQConsumer,
+        Consumer $consumer,
         AMQPChannel $amqpChannel
     ) {
         $amqpMessage->delivery_info = ['channel' => $amqpChannel, 'delivery_tag' => $this->deliveryTag];
         $jsonTaskFactory->create($amqpMessage->body)->shouldBeCalled()->willReturn($task);
-        $rabbitMQConsumer->notify($task)->shouldBeCalled();
+        $consumer->notify($task)->shouldBeCalled();
 
-        $this->setEventCallback(array($rabbitMQConsumer, 'notify'));
+        $this->setEventCallback(array($consumer, 'notify'));
         $this->handleMessage($amqpMessage);
     }
 
@@ -45,14 +47,14 @@ class RabbitMQMessageHandlerSpec extends ObjectBehavior
         AMQPMessage $amqpMessage,
         JSONTaskFactory $jsonTaskFactory,
         Task $task,
-        RabbitMQConsumer $rabbitMQConsumer,
+        Consumer $consumer,
         AMQPChannel $amqpChannel
     ) {
         $amqpMessage->delivery_info = ['channel' => $amqpChannel, 'delivery_tag' => $this->deliveryTag];
         $jsonTaskFactory->create($amqpMessage->body)->shouldBeCalled()->willReturn($task);
         $amqpChannel->basic_ack($this->deliveryTag)->shouldBeCalled();
 
-        $this->setEventCallback(array($rabbitMQConsumer, 'notify'));
+        $this->setEventCallback(array($consumer, 'notify'));
         $this->handleMessage($amqpMessage);
     }
 

@@ -3,23 +3,39 @@
 namespace Cmp\Task\Domain\Consumer;
 
 
+use Cmp\Queue\Domain\QueueReader;
 use Cmp\Task\Domain\Task\Task;
 use Cmp\Task\Domain\Task\TaskConsumible;
+use Psr\Log\LoggerInterface;
 
-abstract class AbstractConsumer implements TaskConsumible
+class Consumer implements TaskConsumible
 {
     /**
      * @var callable
      */
     private $consumeCallback;
 
-    abstract public function process();
+    /**
+     * @var QueueReader
+     */
+    private $queueReader;
+
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    public function __construct(QueueReader $queueReader, LoggerInterface $logger)
+    {
+        $this->queueReader = $queueReader;
+        $this->logger = $logger;
+    }
 
     public function consume(callable $consumeCallback)
     {
         $this->consumeCallback = $consumeCallback;
         while(true) {
-            $this->process();
+            $this->queueReader->process(array($this, 'notify'));
         }
     }
 
@@ -27,13 +43,6 @@ abstract class AbstractConsumer implements TaskConsumible
     {
         $this->logger->debug('Task received, calling consume callback');
         call_user_func($this->consumeCallback, $task);
-    }
-
-    public function start()
-    {
-        while(true) {
-            $this->process();
-        }
     }
 
 }

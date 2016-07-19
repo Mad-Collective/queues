@@ -3,7 +3,9 @@
 namespace Cmp\DomainEvent\Infrastructure\Subscriber\RabbitMQ;
 
 use Cmp\DomainEvent\Domain\Event\JSONDomainEventFactory;
+use Cmp\DomainEvent\Domain\Subscriber\Subscriber;
 use Cmp\Queue\Infrastructure\RabbitMQ\RabbitMQMessageHandler;
+use Cmp\Queue\Infrastructure\RabbitMQ\RabbitMQReader;
 use PhpAmqpLib\Connection\AMQPLazyConnection;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use Psr\Log\LoggerInterface;
@@ -32,7 +34,8 @@ class RabbitMQSubscriberFactory
 
         $rabbitMQMessageHandler = new RabbitMQMessageHandler($jsonDomainEventFactory);
 
-        return new RabbitMQSubscriber($rabbitMQSubscriberInitializer, $rabbitMQMessageHandler, $this->logger);
+        $rabbitMQReader = new RabbitMQReader($rabbitMQSubscriberInitializer, $rabbitMQMessageHandler, $this->logger);
+        return new Subscriber($rabbitMQReader, $this->logger);
     }
 
 }
