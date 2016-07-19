@@ -21,12 +21,14 @@ class RabbitMQConsumerFactory
         $this->logger = $logger;
     }
 
-    public function create($config)
+    public function create($host, $port, $user, $password, $exchange, $queue)
     {
         $this->logger->info('Using RabbitMQ Consumer');
 
-        $amqpLazyConnection = new AMQPLazyConnection($config['host'], $config['port'], $config['user'], $config['password']);
-        $rabbitMQConsumerInitializer = new RabbitMQConsumerInitializer($amqpLazyConnection, $config, $this->logger);
+        $amqpLazyConnection = new AMQPLazyConnection($host, $port, $user, $password);
+        $this->logger->info(sprintf('RabbitMQ Configuration, Host: %s, Port: %s, User: %s, Exchange: %s, Queue: %s',
+            $host, $port, $user, $exchange, $queue));
+        $rabbitMQConsumerInitializer = new RabbitMQConsumerInitializer($amqpLazyConnection, $exchange, $queue, $this->logger);
 
         $jsonTaskFactory = new JSONTaskFactory();
         $rabbitMQMessageHandler = new RabbitMQMessageHandler($jsonTaskFactory);

@@ -12,18 +12,15 @@ use Psr\Log\LoggerInterface;
 class RabbitMQConsumerInitializerSpec extends ObjectBehavior
 {
 
-    private $config;
+    private $exchange;
+
+    private $queue;
 
     public function let(AMQPLazyConnection $connection, LoggerInterface $logger)
     {
-        $this->config = [
-            'host' => 'a host',
-            'port' => 'a port',
-            'user' => 'a user',
-            'exchange' => 'a exchange',
-            'queue' => 'a queue'
-        ];
-        $this->beConstructedWith($connection, $this->config, $logger);
+        $this->exchange = 'a exchange';
+        $this->queue = 'a queue';
+        $this->beConstructedWith($connection, $this->exchange, $this->queue, $logger);
     }
 
     public function it_is_initializable()
@@ -35,11 +32,11 @@ class RabbitMQConsumerInitializerSpec extends ObjectBehavior
     {
         $callable = function() {};
         $connection->channel()->willReturn($channel);
-        $channel->exchange_declare($this->config['exchange'], 'fanout', false, true, false)->shouldBeCalled();
-        $channel->queue_declare($this->config['queue'], false, true, false, false)->willReturn([$this->config['queue'], '', ''])->shouldBeCalled();
-        $channel->queue_bind($this->config['queue'], $this->config['exchange'])->shouldBeCalled();
+        $channel->exchange_declare($this->exchange, 'fanout', false, true, false)->shouldBeCalled();
+        $channel->queue_declare($this->queue, false, true, false, false)->willReturn([$this->queue, '', ''])->shouldBeCalled();
+        $channel->queue_bind($this->queue, $this->exchange)->shouldBeCalled();
 
-        $channel->basic_consume($this->config['queue'], '', false, false, false, false, $callable)->shouldBeCalled();
+        $channel->basic_consume($this->queue, '', false, false, false, false, $callable)->shouldBeCalled();
         $this->initialize($callable)->shouldReturn($channel);
     }
 
@@ -55,8 +52,7 @@ class RabbitMQConsumerInitializerSpec extends ObjectBehavior
         $callable = function() {};
         $errorMessage = 'error message in test';
         $connection->channel()->willThrow(new \ErrorException($errorMessage));
-        $logger->info(sprintf('Connecting to RabbitMQ, Host: %s, Port: %s, User: %s, Queue: %s',
-            $this->config['host'], $this->config['port'], $this->config['user'], $this->config['queue']))->shouldBeCalled();
+        $logger->info('Connecting to RabbitMQ')->shouldBeCalled();
         $logger->error('Error trying to connect to rabbitMQ:' . $errorMessage)->shouldBeCalled();
         $this->shouldThrow(new ConnectionException('Error trying to connect to the queue backend'))->duringInitialize($callable);
     }

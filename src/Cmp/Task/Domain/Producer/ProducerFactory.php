@@ -17,9 +17,9 @@ class ProducerFactory
         $this->logger = $logger;
     }
 
-    public function create($config)
+    public function create($host, $port, $user, $password, $exchange)
     {
         $rabbitMQProducerFactory = new RabbitMQProducerFactory($this->logger);
-        return $rabbitMQProducerFactory->create($config);
+        return $rabbitMQProducerFactory->create($host, $port, $user, $password, $exchange);
     }
 }

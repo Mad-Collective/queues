@@ -18,11 +18,13 @@ class RabbitMQProducerFactory
         $this->logger = $logger;
     }
 
-    public function create($config)
+    public function create($host, $port, $user, $password, $exchange)
     {
         $this->logger->info('Using RabbitMQ Writer');
-        $amqpLazyConnection = new AMQPLazyConnection($config['host'], $config['port'], $config['user'], $config['password']);
-        $rabbitMQProducerInitializer = new RabbitMQProducerInitializer($amqpLazyConnection, $config, $this->logger);
-        return new RabbitMQWriter($rabbitMQProducerInitializer, $config['exchange'], $this->logger);
+        $amqpLazyConnection = new AMQPLazyConnection($host, $port, $user, $password);
+        $this->logger->info(sprintf('Connecting to RabbitMQ, Host: %s, Port: %s, User: %s, Exchange: %s',
+            $host, $port, $user, $password, $exchange));
+        $rabbitMQProducerInitializer = new RabbitMQProducerInitializer($amqpLazyConnection, $exchange, $this->logger);
+        return new RabbitMQWriter($rabbitMQProducerInitializer, $exchange, $this->logger);
     }
 }

@@ -18,10 +18,10 @@ class ConsumerFactory
         $this->logger = $logger;
     }
 
-    public function create($config)
+    public function create($host, $port, $user, $password, $exchange, $queue)
     {
         $rabbitMQConsumerFactory = new RabbitMQConsumerFactory($this->logger);
-        return $rabbitMQConsumerFactory->create($config);
+        return $rabbitMQConsumerFactory->create($host, $port, $user, $password, $exchange, $queue);
     }
 
 }

@@ -15,19 +15,19 @@ class RabbitMQProducerInitializer implements RabbitMQWriterInitializer
     private $connection;
 
     /**
-     * @var array
+     * @var string
      */
-    private $config;
+    private $exchange;
 
     /**
      * @var LoggerInterface
      */
     private $logger;
 
-    public function __construct(AMQPLazyConnection $connection, array $config, LoggerInterface $logger)
+    public function __construct(AMQPLazyConnection $connection, $exchange, LoggerInterface $logger)
     {
         $this->connection = $connection;
-        $this->config = $config;
+        $this->exchange = $exchange;
         $this->logger = $logger;
     }
 
@@ -37,12 +37,11 @@ class RabbitMQProducerInitializer implements RabbitMQWriterInitializer
      */
     public function initialize()
     {
-        $this->logger->info(sprintf('Connecting to RabbitMQ, Host: %s, Port: %s, User: %s, Exchange: %s',
-            $this->config['host'], $this->config['port'], $this->config['user'], $this->config['exchange']));
+        $this->logger->info('Connecting to RabbitMQ');
 
         try {
             $channel = $this->connection->channel(); // this is the one starting the connection
-            $channel->exchange_declare($this->config['exchange'], 'fanout', false, true, false);
+            $channel->exchange_declare($this->exchange, 'fanout', false, true, false);
             return $channel;
         } catch (\ErrorException $e) {
             $this->logger->error('Error trying to connect to rabbitMQ:' . $e->getMessage());

@@ -12,17 +12,12 @@ use Psr\Log\LoggerInterface;
 class RabbitMQProducerInitializerSpec extends ObjectBehavior
 {
 
-    private $config;
+    private $exchange;
 
     public function let(AMQPLazyConnection $connection, LoggerInterface $logger)
     {
-        $this->config = [
-            'host' => 'a host',
-            'port' => 'a port',
-            'user' => 'a user',
-            'exchange' => 'a exchange',
-        ];
-        $this->beConstructedWith($connection, $this->config, $logger);
+        $this->exchange = 'a exchange';
+        $this->beConstructedWith($connection, $this->exchange, $logger);
     }
 
     function it_is_initializable()
@@ -33,7 +28,7 @@ class RabbitMQProducerInitializerSpec extends ObjectBehavior
     public function it_should_declare_the_rabbit_queue(AMQPLazyConnection $connection, AMQPChannel $channel)
     {
         $connection->channel()->willReturn($channel);
-        $channel->exchange_declare($this->config['exchange'], 'fanout', false, true, false);
+        $channel->exchange_declare($this->exchange, 'fanout', false, true, false);
         $this->initialize()->shouldReturn($channel);
     }
 
@@ -48,8 +43,7 @@ class RabbitMQProducerInitializerSpec extends ObjectBehavior
         $callable = function() {};
         $errorMessage = 'error message in test';
         $connection->channel()->willThrow(new \ErrorException($errorMessage));
-        $logger->info(sprintf('Connecting to RabbitMQ, Host: %s, Port: %s, User: %s, Exchange: %s',
-            $this->config['host'], $this->config['port'], $this->config['user'], $this->config['exchange']))->shouldBeCalled();
+        $logger->info('Connecting to RabbitMQ')->shouldBeCalled();
         $logger->error('Error trying to connect to rabbitMQ:' . $errorMessage)->shouldBeCalled();
         $this->shouldThrow(new ConnectionException('Error trying to connect to the queue backend'))->duringInitialize($callable);
     }
