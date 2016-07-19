@@ -2,7 +2,7 @@
 
 namespace Cmp\DomainEvent\Domain\Event;
 
-use Cmp\Queue\Domain\Message;
+use Cmp\Queue\Domain\Message\Message;
 
 class DomainEvent implements Message
 {

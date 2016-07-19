@@ -1,6 +1,6 @@
 <?php
 
-namespace Cmp\Queue\Domain;
+namespace Cmp\Queue\Domain\Reader;
 
 interface QueueReader
 {

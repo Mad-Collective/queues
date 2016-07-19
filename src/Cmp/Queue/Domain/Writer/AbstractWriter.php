@@ -1,7 +1,9 @@
 <?php
 
-namespace Cmp\Queue\Domain;
+namespace Cmp\Queue\Domain\Writer;
 
+
+use Cmp\Queue\Domain\Message\Message;
 
 abstract class AbstractWriter
 {

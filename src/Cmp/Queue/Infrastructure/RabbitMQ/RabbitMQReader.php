@@ -4,7 +4,7 @@ namespace Cmp\Queue\Infrastructure\RabbitMQ;
 
 use Cmp\DomainEvent\Domain\Event\DomainEvent;
 use Cmp\DomainEvent\Domain\Subscriber\AbstractSubscriber;
-use Cmp\Queue\Domain\QueueReader;
+use Cmp\Queue\Domain\Reader\QueueReader;
 use Psr\Log\LoggerInterface;
 
 class RabbitMQReader implements QueueReader

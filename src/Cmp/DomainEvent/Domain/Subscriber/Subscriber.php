@@ -5,7 +5,7 @@ namespace Cmp\DomainEvent\Domain\Subscriber;
 use Cmp\DomainEvent\Domain\Event\EventSubscribable;
 use Cmp\DomainEvent\Domain\Event\EventSubscriptor;
 use Cmp\DomainEvent\Domain\Event\DomainEvent;
-use Cmp\Queue\Domain\QueueReader;
+use Cmp\Queue\Domain\Reader\QueueReader;
 use Psr\Log\LoggerInterface;
 
 class Subscriber implements EventSubscribable

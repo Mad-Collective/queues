@@ -10,6 +10,4 @@ interface RabbitMQWriterInitializer
      * @throws ConnectionException
      */
     public function initialize();
-
-
 }

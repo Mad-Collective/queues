@@ -3,8 +3,8 @@
 namespace Cmp\Queue\Infrastructure\RabbitMQ;
 
 
-use Cmp\Queue\Domain\AbstractWriter;
-use Cmp\Queue\Domain\Message;
+use Cmp\Queue\Domain\Message\Message;
+use Cmp\Queue\Domain\Writer\AbstractWriter;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Message\AMQPMessage;
 use Psr\Log\LoggerInterface;
