@@ -2,7 +2,7 @@
 
 namespace Cmp\Queue\Domain;
 
-interface JSONDomainObjectFactory
+interface JSONMessageFactory
 {
     /**
      * @param $json

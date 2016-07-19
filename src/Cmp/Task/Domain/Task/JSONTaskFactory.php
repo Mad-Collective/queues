@@ -2,9 +2,9 @@
 
 namespace Cmp\Task\Domain\Task;
 
-use Cmp\Queue\Domain\JSONDomainObjectFactory;
+use Cmp\Queue\Domain\JSONMessageFactory;
 
-class JSONTaskFactory implements JSONDomainObjectFactory
+class JSONTaskFactory implements JSONMessageFactory
 {
 
     public function create($json)

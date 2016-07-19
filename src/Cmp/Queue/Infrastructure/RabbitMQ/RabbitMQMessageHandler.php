@@ -2,31 +2,31 @@
 
 namespace Cmp\Queue\Infrastructure\RabbitMQ;
 
-use Cmp\Queue\Domain\JSONDomainObjectFactory;
+use Cmp\Queue\Domain\JSONMessageFactory;
 use PhpAmqpLib\Message\AMQPMessage;
 use PhpSpec\Exception\Exception;
 
 class RabbitMQMessageHandler
 {
     /**
-     * @var JSONDomainObjectFactory
+     * @var JSONMessageFactory
      */
-    private $jsonDomainObjectFactory;
+    private $jsonMessageFactory;
 
     /**
      * @var callable
      */
     private $eventCallback;
 
-    public function __construct(JSONDomainObjectFactory $jsonDomainObjectFactory)
+    public function __construct(JSONMessageFactory $jsonMessageFactory)
     {
-        $this->jsonDomainObjectFactory = $jsonDomainObjectFactory;
+        $this->jsonMessageFactory = $jsonMessageFactory;
     }
 
     public function handleMessage(AMQPMessage $msg)
     {
         try {
-            $task = $this->jsonDomainObjectFactory->create($msg->body);
+            $task = $this->jsonMessageFactory->create($msg->body);
             call_user_func_array($this->eventCallback, [$task]);
             $msg->delivery_info['channel']->basic_ack($msg->delivery_info['delivery_tag']);
         } catch (Exception $e) {
