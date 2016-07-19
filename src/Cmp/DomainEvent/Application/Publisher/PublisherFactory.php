@@ -1,6 +1,6 @@
 <?php
 
-namespace Cmp\DomainEvent\Domain\Publisher;
+namespace Cmp\DomainEvent\Application\Publisher;
 
 use Cmp\DomainEvent\Infrastructure\Publisher\RabbitMQ\RabbitMQPublisherFactory;
 use Psr\Log\LoggerInterface;

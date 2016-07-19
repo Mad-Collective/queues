@@ -2,8 +2,7 @@
 
 namespace Cmp\Task\Domain\Task;
 
-
-use Cmp\Queue\Domain\Message;
+use Cmp\Queue\Domain\Message\Message;
 
 // @TODO: Rethink this object
 class Task implements Message

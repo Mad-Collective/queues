@@ -1,11 +1,11 @@
 <?php
 
-namespace spec\Cmp\DomainEvent\Domain\Publisher;
+namespace spec\Cmp\DomainEvent\Application\Subscriber;
 
 use PhpSpec\ObjectBehavior;
 use Psr\Log\LoggerInterface;
 
-class PublisherFactorySpec extends ObjectBehavior
+class SubscriberFactorySpec extends ObjectBehavior
 {
 
     public function let(LoggerInterface $logger)
@@ -15,7 +15,7 @@ class PublisherFactorySpec extends ObjectBehavior
 
     public function it_is_initializable()
     {
-        $this->shouldHaveType('Cmp\DomainEvent\Domain\Publisher\PublisherFactory');
+        $this->shouldHaveType('Cmp\DomainEvent\Application\Subscriber\SubscriberFactory');
     }
 
 }
