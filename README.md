@@ -1,8 +1,12 @@
 # queues
 
-This is the Queues Abstraction Library. For the moment it will allow you to publish and subscribe to Domain Events.
+This is the Queues Abstraction Library. It will provide you with two main abstractions:
 
-In the future it will allow you to handle Task Queues also.
+**[DomainEvent][1]**: Publish and subscribe to Domain Events.
+**[Tasks][2]**: Produce and Consume Tasks.
+
+[1]: doc/DomainEvents.md
+[2]: doc/Tasks.md
 
 ## Installation
 
@@ -23,74 +27,4 @@ Then require it as usual:
 composer require "cmp/queues"
 ```
 
-## Domain Events
 
-
-
-### Publisher
-
-Example code:
-
-````php
-
-$config = [
-    'host' => 'rabbitmq_host',
-    'port' => '5672',
-    'user' => 'rabbitmq_user',
-    'password' => 'rabbitmq_password',
-    'exchange' => 'rabbitmq_exchange',
-];
-
-$logger = new \Cmp\DomainEvent\Infrastructure\Log\NullLogger();
-
-$publisherFactory = new \Cmp\DomainEvent\Domain\Publisher\PublisherFactory($logger);
-$publisher = $publisherFactory->create($config);
-
-$domainEvent = new \Cmp\DomainEvent\Domain\Event\DomainEvent('origin', 'wh.email.send', '1467905896', ['extraData1' => 'extraValue1', 'extraData2' => 'extraValue2']);
-
-$publisher->publish($domainEvent);
-
-````
-
-### Subscriber
-
-Example code:
-
-````php
-
-class TestEventSubscriptor implements \Cmp\DomainEvent\Domain\Event\EventSubscriptor
-{
-
-    public function notify(\Cmp\DomainEvent\Domain\Event\DomainEvent $event)
-    {
-        var_dump($event);
-    }
-
-    public function isSubscribed(\Cmp\DomainEvent\Domain\Event\DomainEvent $event)
-    {
-        return true;
-    }
-}
-
-$logger = new \Cmp\DomainEvent\Infrastructure\Log\NullLogger();
-
-$config = [
-    'host' => 'rabbitmq_host',
-    'port' => '5672',
-    'user' => 'rabbitmq_user',
-    'password' => 'rabbitmq_password',
-    'exchange' => 'rabbitmq_exchange',
-];
-
-$domainTopics = ['wh.email.#', 'wh.user.#'];
-
-$subscriberFactory = new \Cmp\DomainEvent\Domain\Subscriber\SubscriberFactory($logger);
-$subscriber = $subscriberFactory->create($config, $domainTopics);
-
-$testEventSubscriptor = new TestEventSubscriptor();
-
-$subscriber->subscribe($testEventSubscriptor);
-
-$subscriber->start();
-
-````
