@@ -5,10 +5,9 @@ namespace Cmp\Task\Domain\Consumer;
 
 use Cmp\Queue\Domain\Reader\QueueReader;
 use Cmp\Task\Domain\Task\Task;
-use Cmp\Task\Domain\Task\TaskConsumible;
 use Psr\Log\LoggerInterface;
 
-class Consumer implements TaskConsumible
+class Consumer
 {
     /**
      * @var callable
