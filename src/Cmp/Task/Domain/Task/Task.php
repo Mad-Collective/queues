@@ -4,22 +4,18 @@ namespace Cmp\Task\Domain\Task;
 
 use Cmp\Queue\Domain\Message\Message;
 
-// @TODO: Rethink this object
 class Task implements Message
 {
 
     private $id;
-    private $request;
+    private $body;
 
-    public function __construct($id, $request)
+    public function __construct($id, array $body)
     {
         $this->id = $id;
-        $this->request = $request;
+        $this->body = $body;
     }
 
-    /**
-     * @return mixed
-     */
     public function getId()
     {
         return $this->id;
@@ -30,19 +26,16 @@ class Task implements Message
         return $this->id;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getRequest()
+    public function getBody()
     {
-        return $this->request;
+        return $this->body;
     }
 
     public function jsonSerialize()
     {
         return [
             'id' => $this->id,
-            'request' => $this->request
+            'body' => $this->body
         ];
     }
 }

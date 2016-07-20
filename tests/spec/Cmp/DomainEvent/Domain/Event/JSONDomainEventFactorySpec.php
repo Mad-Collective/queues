@@ -16,8 +16,8 @@ class JSONDomainEventFactorySpec extends ObjectBehavior
 
     public function it_should_return_a_valid_domainevent()
     {
-        $domainEvent = new DomainEvent('a origin', 'a name', 'a ocurred on', ['extraData1' => 'extraValue1', 'extraData2' => 'extraValue2']);
-        $json = '{"origin":"a origin","name":"a name","ocurredOn":"a ocurred on","extra":{"extraData1":"extraValue1","extraData2":"extraValue2"}}';
+        $domainEvent = new DomainEvent('a origin', 'a name', 'a ocurred on', ['bodyData1' => 'bodyValue1', 'bodyData2' => 'bodyValue2']);
+        $json = '{"origin":"a origin","name":"a name","ocurredOn":"a ocurred on","body":{"bodyData1":"bodyValue1","bodyData2":"bodyValue2"}}';
         $this->create($json)->shouldBeLike($domainEvent);
     }
 

@@ -5,4 +5,6 @@ namespace Cmp\Queue\Domain\Message;
 interface Message extends \JsonSerializable
 {
     public function getName();
+
+    public function getBody();
 }

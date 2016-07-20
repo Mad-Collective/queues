@@ -25,14 +25,14 @@ class DomainEvent implements Message
      * @var array
      */
 
-    protected $extra = array();
+    protected $body = array();
 
-    public function __construct($origin, $name, $ocurredOn, $extra = [])
+    public function __construct($origin, $name, $ocurredOn, array $body = [])
     {
         $this->origin = $origin;
         $this->name = $name;
         $this->ocurredOn = $ocurredOn;
-        $this->extra = $extra;
+        $this->body = $body;
     }
 
     /**
@@ -64,9 +64,9 @@ class DomainEvent implements Message
     /**
      * @return array
      */
-    public function getExtra()
+    public function getBody()
     {
-        return $this->extra;
+        return $this->body;
     }
 
     /**
@@ -102,12 +102,12 @@ class DomainEvent implements Message
     }
 
     /**
-     * @param array $extra
+     * @param array $body
      * @return $this
      */
-    public function setExtra(array $extra)
+    public function setBody(array $body)
     {
-        $this->extra = $extra;
+        $this->body = $body;
         return $this;
     }
 
@@ -117,7 +117,7 @@ class DomainEvent implements Message
             'origin' => $this->origin,
             'name' => $this->name,
             'ocurredOn' => $this->ocurredOn,
-            'extra' => $this->extra
+            'body' => $this->body
         ];
     }
 

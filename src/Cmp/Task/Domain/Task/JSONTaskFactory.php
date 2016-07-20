@@ -12,7 +12,7 @@ class JSONTaskFactory implements JSONMessageFactory
     {
         try {
             $taskArray = json_decode($json, true);
-            return new Task($taskArray['id'], $taskArray['request']);
+            return new Task($taskArray['id'], $taskArray['body']);
         } catch (\Exception $e) {
             throw new InvalidJSONTaskException();
         }

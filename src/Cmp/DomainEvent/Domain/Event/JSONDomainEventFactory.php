@@ -13,7 +13,7 @@ class JSONDomainEventFactory implements JSONMessageFactory
     {
         try {
             $domainEventArray = json_decode($json, true);
-            return new DomainEvent($domainEventArray['origin'], $domainEventArray['name'], $domainEventArray['ocurredOn'], $domainEventArray['extra']);
+            return new DomainEvent($domainEventArray['origin'], $domainEventArray['name'], $domainEventArray['ocurredOn'], $domainEventArray['body']);
         } catch (\Exception $e) {
             throw new InvalidJSONDomainEventException();
         }
