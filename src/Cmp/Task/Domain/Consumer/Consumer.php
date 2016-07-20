@@ -38,6 +38,12 @@ class Consumer
         }
     }
 
+    public function consumeOnce(callable $consumeCallback)
+    {
+        $this->consumeCallback = $consumeCallback;
+        $this->queueReader->process(array($this, 'notify'));
+    }
+
     public function notify(Task $task)
     {
         $this->logger->debug('Task received, calling consume callback');

@@ -13,7 +13,6 @@ class Consumer
 
     public function __construct(RabbitMQConfig $config, LoggerInterface $logger)
     {
-
         $rabbitMQConsumerFactory = new RabbitMQConsumerFactory($logger);
         $this->consumer = $rabbitMQConsumerFactory->create($config);
     }
@@ -21,6 +20,16 @@ class Consumer
     public function consume(callable $callback)
     {
         $this->consumer->consume($callback);
+    }
+
+    /**
+     * Consume just once. This method will not block the execution.
+     *
+     * If you want it to keep consuming call it in a loop or use the consume() method.
+     */
+    public function consumeOnce(callable $callback)
+    {
+        $this->consumer->consumeOnce($callback);
     }
 
 }

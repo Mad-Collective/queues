@@ -11,7 +11,7 @@ use Psr\Log\LoggerInterface;
 class Subscriber implements EventSubscribable
 {
     /**
-     * @var array
+     * @var EventSubscriptor[]
      */
     private $subscriptors = [];
 
@@ -49,6 +49,11 @@ class Subscriber implements EventSubscribable
         while(true) {
             $this->queueReader->process(array($this, 'notify'));
         }
+    }
+
+    public function processOnce()
+    {
+        $this->queueReader->process(array($this, 'notify'));
     }
 
 }

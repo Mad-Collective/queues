@@ -27,4 +27,14 @@ class Subscriber
     {
         $this->subscriber->start();
     }
+
+    /**
+     * Process just once. This method will not block the execution.
+     *
+     * If you want it to keep processing call it in a loop or use the start() method.
+     */
+    public function processOnce()
+    {
+        $this->subscriber->processOnce();
+    }
 }
