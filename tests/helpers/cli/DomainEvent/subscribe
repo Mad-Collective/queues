@@ -1,7 +1,7 @@
 #!/usr/bin/env php
 <?php
 
-require_once '../../../vendor/autoload.php';
+require_once '../../../../vendor/autoload.php';
 
 if (!isset($argv[1])) {
     echo "usage: subscribe <domainTopic1> <domainTopic2> ..." . PHP_EOL;
