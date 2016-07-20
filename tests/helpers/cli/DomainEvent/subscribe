@@ -1,0 +1,33 @@
+#!/usr/bin/env php
+<?php
+
+require_once '../../../vendor/autoload.php';
+
+if (!isset($argv[1])) {
+    echo "usage: subscribe <domainTopic1> <domainTopic2> ..." . PHP_EOL;
+    exit(1);
+}
+
+$domainTopics = array_slice($argv, 1);
+
+class TestEventSubscriptor implements \Cmp\DomainEvent\Domain\Event\EventSubscriptor
+{
+
+    public function notify(\Cmp\DomainEvent\Domain\Event\DomainEvent $event)
+    {
+        var_dump($event);
+    }
+
+}
+
+$logger = new \Cmp\DomainEvent\Infrastructure\Log\NullLogger();
+
+$config = new Cmp\Queue\Infrastructure\RabbitMQ\RabbitMQConfig(getenv('QUEUES_RABBITMQ_HOST'), getenv('QUEUES_RABBITMQ_PORT'), getenv('QUEUES_RABBITMQ_USER'), getenv('QUEUES_RABBITMQ_PASS'), getenv('QUEUES_RABBITMQ_EXCHANGE'), getenv('QUEUES_RABBITMQ_QUEUE'));
+
+$subscriber = new \Cmp\DomainEvent\Application\Subscriber\Subscriber($config, $domainTopics, $logger);
+
+$testEventSubscriptor = new TestEventSubscriptor();
+
+$subscriber->subscribe($testEventSubscriptor);
+
+$subscriber->start();
