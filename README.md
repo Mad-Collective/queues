@@ -28,3 +28,10 @@ composer require "cmp/queues"
 ```
 
 
+## Test Helpers
+
+This library is exposed in CLI and HTTP for testing purposes:
+
+[Test Helpers][3]
+
+[3]: tests/helpers/README.md
