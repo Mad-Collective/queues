@@ -1,7 +1,7 @@
 #!/usr/bin/env php
 <?php
 
-require_once '../../../vendor/autoload.php';
+require_once '../../../../vendor/autoload.php';
 
 if (!isset($argv[1]) || !isset($argv[2])) {
     echo "usage: publish <origin> <name>" . PHP_EOL;
