@@ -13,12 +13,30 @@ $config = [
     'exchange' => getenv('QUEUES_RABBITMQ_EXCHANGE')
 ];
 
+// Datadog Metrics
+$datadogAgent = ['ip' => '127.0.0.1', 'port' => 8125];
+
+$metricFactory = new \Cmp\Application\Monitoring\Metric\MetricFactory();
+$eventFactory = new Cmp\Application\Monitoring\Event\EventFactory('queues-testhelper');
+
+$log = new \Monolog\Logger('queues-testhelper');
+$log->pushHandler(new \Monolog\Handler\NullHandler());
+$monitor = new \Cmp\Application\Monitoring\Monitor($metricFactory, $eventFactory, $log);
+
+$socket = new \Cmp\Infrastructure\Application\Monitoring\DataDog\Metric\Socket();
+$metricSender = new \Cmp\Infrastructure\Application\Monitoring\DataDog\Metric\Sender($socket, $datadogAgent['ip'], $datadogAgent['port']);
+
+$monitor->pushMetricSender($metricSender);
+
+// Queues library
 $logger = new \Cmp\DomainEvent\Infrastructure\Log\NullLogger();
+
 $config = new Cmp\Queue\Infrastructure\RabbitMQ\RabbitMQConfig($config['host'], $config['port'], $config['user'], $config['password'], $config['exchange']);
 
 $producer = new \Cmp\Task\Application\Producer\Producer($config, $logger);
 $publisher = new \Cmp\DomainEvent\Application\Publisher\Publisher($config, $logger);
 
+// Silex HTTP
 $app = new Silex\Application();
 
 $app->before(function (Request $request) {
@@ -28,19 +46,23 @@ $app->before(function (Request $request) {
     }
 });
 
-$app->post('/task', function(Request $request) use ($producer) {
+$app->post('/task', function(Request $request) use ($producer, $monitor) {
+    $monitor->increment('queues.testhelper.task.producing');
     $task1 = new \Cmp\Task\Domain\Task\Task($request->request->get('id'), $request->request->get('body'));
     $producer->add($task1);
     $producer->produce();
+    $monitor->increment('queues.testhelper.task.produced');
 
     return new Response('Processed!', 200);
 });
 
-$app->post('/domainevent', function(Request $request) use ($publisher) {
+$app->post('/domainevent', function(Request $request) use ($publisher, $monitor) {
+    $monitor->increment('queues.testhelper.domainevent.publishing');
     $ocurredOn = microtime(true);
     $domainEvent1 = new Cmp\DomainEvent\Domain\Event\DomainEvent($request->request->get('origin'), $request->request->get('name'), $ocurredOn, $request->request->get('body'));
     $publisher->add($domainEvent1);
     $publisher->publish();
+    $monitor->increment('queues.testhelper.domainevent.published');
 
     return new Response('Processed!', 200);
 });
