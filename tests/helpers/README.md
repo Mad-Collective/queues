@@ -4,6 +4,11 @@ The test helpers are little apps exposing the queues library via CLI and HTTP.
 
 None of these applications are production ready and are made just for testing the library (i.e. Load Testing).
 
+You have available two types of apps:
+
+ - Command Line Apps
+ - HTTP App
+
 ## Command Line Apps
 
 The CLI Apps will allow you to Produce and Consume [Tasks][1] and to Publish and Subscribe to [DomainEvents][2].
