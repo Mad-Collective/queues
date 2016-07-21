@@ -92,8 +92,8 @@ You will also need the Queue Backend (RabbitMQ) configuration available in envir
  - QUEUES_RABBITMQ_PORT
  - QUEUES_RABBITMQ_USER
  - QUEUES_RABBITMQ_PASS
- - QUEUES_RABBITMQ_EXCHANGE
- - QUEUES_RABBITMQ_QUEUE
+ - QUEUES_RABBITMQ_TASKS_EXCHANGE
+ - QUEUES_RABBITMQ_DOMAINEVENTS_EXCHANGE
  
 Once all is set up the HTTP app will expose two endpoints:
  

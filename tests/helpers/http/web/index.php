@@ -10,7 +10,8 @@ $config = [
     'port' => getenv('QUEUES_RABBITMQ_PORT'),
     'user' => getenv('QUEUES_RABBITMQ_USER'),
     'password' => getenv('QUEUES_RABBITMQ_PASS'),
-    'exchange' => getenv('QUEUES_RABBITMQ_EXCHANGE')
+    'tasks_exchange' => getenv('QUEUES_RABBITMQ_TASKS_EXCHANGE'),
+    'domainevents_exchange' => getenv('QUEUES_RABBITMQ_DOMAINEVENTS_EXCHANGE'),
 ];
 
 // Datadog Metrics
@@ -31,10 +32,11 @@ $monitor->pushMetricSender($metricSender);
 // Queues library
 $logger = new \Cmp\DomainEvent\Infrastructure\Log\NullLogger();
 
-$config = new Cmp\Queue\Infrastructure\RabbitMQ\RabbitMQConfig($config['host'], $config['port'], $config['user'], $config['password'], $config['exchange']);
+$tasksConfig = new Cmp\Queue\Infrastructure\RabbitMQ\RabbitMQConfig($config['host'], $config['port'], $config['user'], $config['password'], $config['tasks_exchange']);
+$domainEventsConfig = new Cmp\Queue\Infrastructure\RabbitMQ\RabbitMQConfig($config['host'], $config['port'], $config['user'], $config['password'], $config['domainevents_exchange']);
 
-$producer = new \Cmp\Task\Application\Producer\Producer($config, $logger);
-$publisher = new \Cmp\DomainEvent\Application\Publisher\Publisher($config, $logger);
+$producer = new \Cmp\Task\Application\Producer\Producer($tasksConfig, $logger);
+$publisher = new \Cmp\DomainEvent\Application\Publisher\Publisher($domainEventsConfig, $logger);
 
 // Silex HTTP
 $app = new Silex\Application();
