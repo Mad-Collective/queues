@@ -1,7 +1,8 @@
 #!/usr/bin/env php
 <?php
 
-require_once '../../../../vendor/autoload.php';
+require_once '../vendor/autoload.php';
+require_once '../metrics.php';
 
 if (!isset($argv[1]) || !isset($argv[2])) {
     echo "usage: publish <origin> <name>" . PHP_EOL;
@@ -20,6 +21,8 @@ $publisher = new \Cmp\DomainEvent\Application\Publisher\Publisher($config, $logg
 
 
 $domainEvent1 = new Cmp\DomainEvent\Domain\Event\DomainEvent($origin, $name, $ocurredOn, ['extraData1' => 'extraValue1', 'extraData2' => 'extraValue2']);
-$publisher->add($domainEvent1);
 
+$monitor->increment('queues.testhelper.domainevent.publishing');
+$publisher->add($domainEvent1);
 $publisher->publish();
+$monitor->increment('queues.testhelper.domainevent.published');

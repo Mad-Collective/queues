@@ -1,0 +1,19 @@
+{
+    "name": "cmp/queuesclihelpers",
+    "minimum-stability": "dev",
+    "require": {
+        "cmp/queues": "dev-master",
+        "cmp/base": "~2.1",
+        "monolog/monolog": "~1.13"
+    },
+    "repositories": {
+        "cmp/queues": {
+            "type": "vcs",
+            "url": "git@github.com:CMProductions/queues.git"
+        },
+        "cmp-base": {
+            "type": "vcs",
+            "url": "git@github.com:CMProductions/base.git"
+        }
+    }
+}

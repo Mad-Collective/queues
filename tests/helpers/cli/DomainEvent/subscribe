@@ -1,7 +1,8 @@
 #!/usr/bin/env php
 <?php
 
-require_once '../../../../vendor/autoload.php';
+require_once '../vendor/autoload.php';
+require_once '../metrics.php';
 
 if (!isset($argv[1])) {
     echo "usage: subscribe <domainTopic1> <domainTopic2> ..." . PHP_EOL;
@@ -13,8 +14,16 @@ $domainTopics = array_slice($argv, 1);
 class TestEventSubscriptor implements \Cmp\DomainEvent\Domain\Event\EventSubscriptor
 {
 
+    private $monitor;
+
+    public function __construct(\Cmp\Application\Monitoring\Monitor $monitor)
+    {
+        $this->monitor = $monitor;
+    }
+
     public function notify(\Cmp\DomainEvent\Domain\Event\DomainEvent $event)
     {
+        $this->monitor->increment('queues.testhelper.domainevent.notified');
         var_dump($event);
     }
 
@@ -26,7 +35,7 @@ $config = new Cmp\Queue\Infrastructure\RabbitMQ\RabbitMQConfig(getenv('QUEUES_RA
 
 $subscriber = new \Cmp\DomainEvent\Application\Subscriber\Subscriber($config, $domainTopics, $logger);
 
-$testEventSubscriptor = new TestEventSubscriptor();
+$testEventSubscriptor = new TestEventSubscriptor($monitor);
 
 $subscriber->subscribe($testEventSubscriptor);
 

@@ -1,7 +1,8 @@
 #!/usr/bin/env php
 <?php
 
-require_once '../../../../vendor/autoload.php';
+require_once '../vendor/autoload.php';
+require_once '../metrics.php';
 
 $logger = new \Cmp\DomainEvent\Infrastructure\Log\NaiveStdoutLogger();
 
@@ -9,6 +10,7 @@ $config = new Cmp\Queue\Infrastructure\RabbitMQ\RabbitMQConfig(getenv('QUEUES_RA
 
 $consumer = new \Cmp\Task\Application\Consumer\Consumer($config, $logger);
 
-$consumer->consume(function($task) {
+$consumer->consume(function($task) use ($monitor) {
+    $monitor->increment('queues.testhelper.task.consumed');
     var_dump($task);
 });
