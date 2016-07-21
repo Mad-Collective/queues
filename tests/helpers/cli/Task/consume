@@ -5,7 +5,7 @@ require_once '../../../../vendor/autoload.php';
 
 $logger = new \Cmp\DomainEvent\Infrastructure\Log\NaiveStdoutLogger();
 
-$config = new Cmp\Queue\Infrastructure\RabbitMQ\RabbitMQConfig(getenv('QUEUES_RABBITMQ_HOST'), getenv('QUEUES_RABBITMQ_PORT'), getenv('QUEUES_RABBITMQ_USER'), getenv('QUEUES_RABBITMQ_PASS'), getenv('QUEUES_RABBITMQ_EXCHANGE'), getenv('QUEUES_RABBITMQ_QUEUE'));
+$config = new Cmp\Queue\Infrastructure\RabbitMQ\RabbitMQConfig(getenv('QUEUES_RABBITMQ_HOST'), getenv('QUEUES_RABBITMQ_PORT'), getenv('QUEUES_RABBITMQ_USER'), getenv('QUEUES_RABBITMQ_PASS'), getenv('QUEUES_RABBITMQ_TASKS_EXCHANGE'), getenv('QUEUES_RABBITMQ_TASKS_QUEUE'));
 
 $consumer = new \Cmp\Task\Application\Consumer\Consumer($config, $logger);
 
