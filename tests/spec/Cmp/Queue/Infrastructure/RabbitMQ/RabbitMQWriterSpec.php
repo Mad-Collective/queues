@@ -3,7 +3,7 @@
 namespace spec\Cmp\Queue\Infrastructure\RabbitMQ;
 
 use Cmp\DomainEvent\Domain\Event\DomainEvent;
-use Cmp\DomainEvent\Infrastructure\Publisher\RabbitMQ\RabbitMQPublisherInitializer;
+use Cmp\Queue\Infrastructure\RabbitMQ\RabbitMQWriterInitializer;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Message\AMQPMessage;
 use PhpSpec\ObjectBehavior;
@@ -15,10 +15,10 @@ class RabbitMQWriterSpec extends ObjectBehavior
 
     private $exchange;
 
-    public function let(RabbitMQPublisherInitializer $rabbitMQPublisherInitializer, LoggerInterface $logger)
+    public function let(RabbitMQWriterInitializer $rabbitMQWriterInitializer, LoggerInterface $logger)
     {
         $this->exchange = 'test';
-        $this->beConstructedWith($rabbitMQPublisherInitializer, $this->exchange, $logger);
+        $this->beConstructedWith($rabbitMQWriterInitializer, $this->exchange, $logger);
     }
 
     function it_is_initializable()
@@ -28,17 +28,17 @@ class RabbitMQWriterSpec extends ObjectBehavior
 
 
 
-    public function it_calls_rabbitmqpublisherInitializer_if_not_initialized(RabbitMQPublisherInitializer $rabbitMQPublisherInitializer, AMQPChannel $channel, DomainEvent $event)
+    public function it_calls_rabbitmqpublisherInitializer_if_not_initialized(RabbitMQWriterInitializer $rabbitMQWriterInitializer, AMQPChannel $channel, DomainEvent $event)
     {
-        $rabbitMQPublisherInitializer->initialize()->willReturn($channel)->shouldBeCalled();
+        $rabbitMQWriterInitializer->initialize()->willReturn($channel)->shouldBeCalled();
 
         $this->add($event);
         $this->write();
     }
 
-    public function it_should_not_call_rabbitmqpublisherInitializer_if_already_initialized(RabbitMQPublisherInitializer $rabbitMQPublisherInitializer, AMQPChannel $channel, DomainEvent $event)
+    public function it_should_not_call_rabbitmqpublisherInitializer_if_already_initialized(RabbitMQWriterInitializer $rabbitMQWriterInitializer, AMQPChannel $channel, DomainEvent $event)
     {
-        $rabbitMQPublisherInitializer->initialize()->willReturn($channel)->shouldBeCalledTimes(1);
+        $rabbitMQWriterInitializer->initialize()->willReturn($channel)->shouldBeCalledTimes(1);
 
         $this->add($event);
         $this->write();
@@ -46,11 +46,11 @@ class RabbitMQWriterSpec extends ObjectBehavior
         $this->write();
     }
 
-    public function it_calls_basic_publish_with_a_message_when_there_is_only_one_domain_event_added(RabbitMQPublisherInitializer $rabbitMQPublisherInitializer, AMQPChannel $channel, DomainEvent $event)
+    public function it_calls_basic_publish_with_a_message_when_there_is_only_one_domain_event_added(RabbitMQWriterInitializer $rabbitMQWriterInitializer, AMQPChannel $channel, DomainEvent $event)
     {
         $body = ['test' => 'hello'];
         $name = 'test_domain_event_name';
-        $rabbitMQPublisherInitializer->initialize()->willReturn($channel);
+        $rabbitMQWriterInitializer->initialize()->willReturn($channel);
         $event->jsonSerialize()->willReturn($body); // Serialize function is mocked so we need to set the return
         $event->getName()->willReturn($name);
         $msg = new AMQPMessage(json_encode($body), array('delivery_mode' => 2));
@@ -61,9 +61,9 @@ class RabbitMQWriterSpec extends ObjectBehavior
         $this->write();
     }
 
-    public function it_calls_batch_basic_publish_with_a_message_for_every_domain_event_added(RabbitMQPublisherInitializer $rabbitMQPublisherInitializer, AMQPChannel $channel, DomainEvent $event, DomainEvent $event2)
+    public function it_calls_batch_basic_publish_with_a_message_for_every_domain_event_added(RabbitMQWriterInitializer $rabbitMQWriterInitializer, AMQPChannel $channel, DomainEvent $event, DomainEvent $event2)
     {
-        $rabbitMQPublisherInitializer->initialize()->willReturn($channel);
+        $rabbitMQWriterInitializer->initialize()->willReturn($channel);
 
         $body = ['test' => 'hello'];
         $name = 'test_domain_event_name';

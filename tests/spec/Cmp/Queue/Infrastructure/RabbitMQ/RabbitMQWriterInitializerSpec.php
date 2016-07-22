@@ -1,6 +1,6 @@
 <?php
 
-namespace spec\Cmp\Task\Infrastructure\Producer\RabbitMQ;
+namespace spec\Cmp\Queue\Infrastructure\RabbitMQ;
 
 use Cmp\Queue\Domain\ConnectionException;
 use PhpAmqpLib\Channel\AMQPChannel;
@@ -9,26 +9,29 @@ use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use Psr\Log\LoggerInterface;
 
-class RabbitMQProducerInitializerSpec extends ObjectBehavior
+class RabbitMQWriterInitializerSpec extends ObjectBehavior
 {
 
-    private $exchange;
+    private $exchangeName;
+
+    private $exchangeType;
 
     public function let(AMQPLazyConnection $connection, LoggerInterface $logger)
     {
-        $this->exchange = 'a exchange';
-        $this->beConstructedWith($connection, $this->exchange, $logger);
+        $this->exchangeName = 'a exchange';
+        $this->exchangeType = 'fanout';
+        $this->beConstructedWith($connection, $this->exchangeName, $this->exchangeType, $logger);
     }
 
     function it_is_initializable()
     {
-        $this->shouldHaveType('Cmp\Task\Infrastructure\Producer\RabbitMQ\RabbitMQProducerInitializer');
+        $this->shouldHaveType('Cmp\Queue\Infrastructure\RabbitMQ\RabbitMQWriterInitializer');
     }
 
-    public function it_should_declare_the_rabbit_queue(AMQPLazyConnection $connection, AMQPChannel $channel)
+    public function it_should_declare_the_rabbit_exchange(AMQPLazyConnection $connection, AMQPChannel $channel)
     {
         $connection->channel()->willReturn($channel);
-        $channel->exchange_declare($this->exchange, 'fanout', false, true, false);
+        $channel->exchange_declare($this->exchangeName, $this->exchangeType, false, false, false);
         $this->initialize()->shouldReturn($channel);
     }
 
@@ -49,3 +52,5 @@ class RabbitMQProducerInitializerSpec extends ObjectBehavior
     }
 
 }
+
+

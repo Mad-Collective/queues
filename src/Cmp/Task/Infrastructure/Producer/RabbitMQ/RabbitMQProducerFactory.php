@@ -4,6 +4,7 @@ namespace Cmp\Task\Infrastructure\Producer\RabbitMQ;
 
 use Cmp\Queue\Infrastructure\RabbitMQ\RabbitMQConfig;
 use Cmp\Queue\Infrastructure\RabbitMQ\RabbitMQWriter;
+use Cmp\Queue\Infrastructure\RabbitMQ\RabbitMQWriterInitializer;
 use PhpAmqpLib\Connection\AMQPLazyConnection;
 use Psr\Log\LoggerInterface;
 
@@ -25,7 +26,7 @@ class RabbitMQProducerFactory
         $amqpLazyConnection = new AMQPLazyConnection($config->getHost(), $config->getPort(), $config->getUser(), $config->getPassword());
         $this->logger->info(sprintf('Connecting to RabbitMQ, Host: %s, Port: %s, User: %s, Exchange: %s',
             $config->getHost(), $config->getPort(), $config->getUser(), $config->getExchange()));
-        $rabbitMQProducerInitializer = new RabbitMQProducerInitializer($amqpLazyConnection, $config->getExchange(), $this->logger);
+        $rabbitMQProducerInitializer = new RabbitMQWriterInitializer($amqpLazyConnection, $config->getExchange(), 'fanout', $this->logger);
         return new RabbitMQWriter($rabbitMQProducerInitializer, $config->getExchange(), $this->logger);
     }
 }
