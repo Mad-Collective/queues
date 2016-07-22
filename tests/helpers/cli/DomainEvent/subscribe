@@ -31,6 +31,10 @@ class TestEventSubscriptor implements \Cmp\DomainEvent\Domain\Event\EventSubscri
         sleep($this->delay);
     }
 
+    public function isSubscribed(\Cmp\DomainEvent\Domain\Event\DomainEvent $event)
+    {
+        return true;
+    }
 }
 
 $logger = new \Cmp\DomainEvent\Infrastructure\Log\NullLogger();

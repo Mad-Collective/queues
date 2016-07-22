@@ -40,7 +40,9 @@ class Subscriber implements EventSubscribable
     {
         $this->logger->debug('Domain Event received, notifying subscribers');
         foreach($this->subscriptors as $subscriptor) {
-            $subscriptor->notify($domainEvent);
+            if ($subscriptor->isSubscribed($domainEvent)) {
+                $subscriptor->notify($domainEvent);
+            }
         }
     }
 
