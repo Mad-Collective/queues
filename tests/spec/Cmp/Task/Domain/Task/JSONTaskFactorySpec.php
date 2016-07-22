@@ -15,8 +15,8 @@ class JSONTaskFactorySpec extends ObjectBehavior
 
     public function it_should_return_a_valid_task()
     {
-        $task = new Task('an id', 'a body');
-        $json = '{"id":"an id","body":"a body"}';
+        $task = new Task('an id', array('body key' => 'a body'));
+        $json = '{"id":"an id","body":{"body key":"a body"}}';
         $this->create($json)->shouldBeLike($task);
     }
 

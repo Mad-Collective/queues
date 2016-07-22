@@ -28,7 +28,7 @@ class DomainEventSpec extends ObjectBehavior
             'origin' => $this->origin,
             'name' => $this->name,
             'ocurredOn' => $this->ocurredOn,
-            'extra' => $this->extra
+            'body' => $this->extra
         ]);
     }
 

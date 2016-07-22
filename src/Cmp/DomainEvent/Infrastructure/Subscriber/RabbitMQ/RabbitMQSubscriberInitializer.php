@@ -54,7 +54,7 @@ class RabbitMQSubscriberInitializer implements RabbitMQReaderInitializer
 
             $channel->exchange_declare($this->exchange, 'topic', false, true, false);
 
-            list($queueName, ,) = $channel->queue_declare($this->queue, false, true, false, false);
+            list($queueName, ,) = $channel->queue_declare($this->queue, false, false, true, true);
 
             foreach($this->domainTopics as $domainTopic) {
                 $this->logger->info('Binding Topic:' . $domainTopic);
@@ -62,7 +62,7 @@ class RabbitMQSubscriberInitializer implements RabbitMQReaderInitializer
             }
 
             $this->logger->info('Starting to consume RabbitMQ Queue:' . $queueName);
-            $channel->basic_consume($queueName, '', false, false, false, false, $msgCallback);
+            $channel->basic_consume($queueName, '', false, false, true, false, $msgCallback);
 
             return $channel;
         } catch (\ErrorException $e) {
