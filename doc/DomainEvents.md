@@ -47,6 +47,12 @@ class TestEventSubscriptor implements \Cmp\DomainEvent\Domain\Event\EventSubscri
     {
         var_dump($event);
     }
+    
+    public function isSubscribed(\Cmp\DomainEvent\Domain\Event\DomainEvent $event)
+    {
+        // You can use this to filter, at eventSubscriptor level, which DomainEvents will receive
+        return true;
+    }
 
 }
 
