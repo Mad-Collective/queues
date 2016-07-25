@@ -9,13 +9,15 @@ use Psr\Log\LoggerInterface;
 
 class Subscriber
 {
-
+    /**
+     * @var \Cmp\DomainEvent\Domain\Subscriber\Subscriber
+     */
     private $subscriber;
 
     public function __construct(RabbitMQConfig $config, array $domainTopics, LoggerInterface $logger)
     {
-        $rabbitMQSubscriberFactory = new RabbitMQSubscriberFactory($logger);
-        $this->subscriber = $rabbitMQSubscriberFactory->create($config, $domainTopics);
+        $subscriberFactory = new SubscriberFactory($logger);
+        $this->subscriber = $subscriberFactory->create($config, $domainTopics);
     }
 
     public function subscribe(EventSubscriptor $eventSubscriptor)

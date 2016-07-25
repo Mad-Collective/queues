@@ -25,6 +25,12 @@ class Subscriber implements EventSubscribable
      */
     private $logger;
 
+    /**
+     * Subscriber constructor.
+     *
+     * @param QueueReader     $queueReader
+     * @param LoggerInterface $logger
+     */
     public function __construct(QueueReader $queueReader, LoggerInterface $logger)
     {
         $this->queueReader = $queueReader;

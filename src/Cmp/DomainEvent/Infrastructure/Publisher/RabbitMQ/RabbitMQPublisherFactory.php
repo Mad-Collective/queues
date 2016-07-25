@@ -2,6 +2,7 @@
 
 namespace Cmp\DomainEvent\Infrastructure\Publisher\RabbitMQ;
 
+use Cmp\DomainEvent\Domain\Publisher\Publisher;
 use Cmp\Queue\Infrastructure\RabbitMQ\RabbitMQConfig;
 use Cmp\Queue\Infrastructure\RabbitMQ\RabbitMQWriter;
 use Cmp\Queue\Infrastructure\RabbitMQ\RabbitMQWriterInitializer;
@@ -20,6 +21,11 @@ class RabbitMQPublisherFactory
         $this->logger = $logger;
     }
 
+    /**
+     * @param RabbitMQConfig $config
+     *
+     * @return Publisher
+     */
     public function create(RabbitMQConfig $config)
     {
         $this->logger->info('Using RabbitMQ Writer');
@@ -27,7 +33,8 @@ class RabbitMQPublisherFactory
         $this->logger->info(sprintf('RabbitMQ Configuration, Host: %s, Port: %s, User: %s, Exchange: %s',
             $config->getHost(), $config->getPort(), $config->getUser(), $config->getExchange()));
         $rabbitMQPublisherInitializer = new RabbitMQWriterInitializer($amqpLazyConnection, $config->getExchange(), 'topic', $this->logger);
-        return new RabbitMQWriter($rabbitMQPublisherInitializer, $config->getExchange(), $this->logger);
+        $rabbitMQWriter = new RabbitMQWriter($rabbitMQPublisherInitializer, $config->getExchange(), $this->logger);
+        return new Publisher($rabbitMQWriter, $this->logger);
     }
 
 }

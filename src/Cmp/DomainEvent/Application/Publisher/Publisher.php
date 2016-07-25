@@ -9,18 +9,20 @@ use Psr\Log\LoggerInterface;
 
 class Publisher
 {
-
+    /**
+     * @var \Cmp\DomainEvent\Domain\Publisher\Publisher
+     */
     private $publisher;
 
     public function __construct(RabbitMQConfig $config, LoggerInterface $logger)
     {
-        $rabbitMQPublisherFactory = new RabbitMQPublisherFactory($logger);
-        $this->publisher = $rabbitMQPublisherFactory->create($config);
+        $publisherFactory = new PublisherFactory($logger);
+        $this->publisher = $publisherFactory->create($config);
     }
 
     public function publish()
     {
-        $this->publisher->write();
+        $this->publisher->publish();
     }
 
     public function add(DomainEvent $domainEvent)
