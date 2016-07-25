@@ -2,8 +2,8 @@
 
 namespace Cmp\DomainEvent\Application\Publisher;
 
-use Cmp\DomainEvent\Infrastructure\Publisher\RabbitMQ\RabbitMQPublisherFactory;
-use Cmp\Queue\Domain\Writer\AbstractWriter;
+use Cmp\DomainEvent\Domain\Publisher\Publisher as DomainPublisher;
+use Cmp\Queue\Application\Writer\WriterFactory;
 use Cmp\Queue\Infrastructure\RabbitMQ\RabbitMQConfig;
 use Psr\Log\LoggerInterface;
 
@@ -17,15 +17,12 @@ class PublisherFactory
         $this->logger = $logger;
     }
 
-    /**
-     * @param RabbitMQConfig $config
-     *
-     * @return Cmp\DomainEvent\Domain\Publisher\Publisher
-     */
+
     public function create(RabbitMQConfig $config)
     {
-        $rabbitMQPublisherFactory = new RabbitMQPublisherFactory($this->logger);
-        return $rabbitMQPublisherFactory->create($config);
+        $queueWriterFactory = new WriterFactory($this->logger);
+        $queueWriter = $queueWriterFactory->create($config);
+        return new DomainPublisher($queueWriter, $this->logger);
     }
 
 }
