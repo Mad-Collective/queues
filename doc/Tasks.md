@@ -15,7 +15,7 @@ $config = [
 ];
 
 // Dont use this naive logger in production, inject your application logger ;)
-$logger = new \Cmp\DomainEvent\Infrastructure\Log\NaiveStdoutLogger();
+$logger = new \Cmp\Queue\Infrastructure\Log\NaiveStdoutLogger();
 
 $config = new Cmp\Queue\Infrastructure\RabbitMQ\RabbitMQConfig($config['host'], $config['port'], $config['user'], $config['password'], $config['exchange']);
 
@@ -46,7 +46,7 @@ $config = [
 ];
 
 // Dont use this naive logger in production, inject your application logger ;)
-$logger = new \Cmp\DomainEvent\Infrastructure\Log\NaiveStdoutLogger();
+$logger = new \Cmp\Queue\Infrastructure\Log\NaiveStdoutLogger();
 
 $config = new Cmp\Queue\Infrastructure\RabbitMQ\RabbitMQConfig($config['host'], $config['port'], $config['user'], $config['password'], $config['exchange'], $config['queue']);
 

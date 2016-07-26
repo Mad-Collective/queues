@@ -30,7 +30,7 @@ $metricSender = new \Cmp\Infrastructure\Application\Monitoring\DataDog\Metric\Se
 $monitor->pushMetricSender($metricSender);
 
 // Queues library
-$logger = new \Cmp\DomainEvent\Infrastructure\Log\NullLogger();
+$logger = new \Cmp\Queue\Infrastructure\Log\NullLogger();
 
 $tasksConfig = new Cmp\Queue\Infrastructure\RabbitMQ\RabbitMQConfig($config['host'], $config['port'], $config['user'], $config['password'], $config['tasks_exchange']);
 $domainEventsConfig = new Cmp\Queue\Infrastructure\RabbitMQ\RabbitMQConfig($config['host'], $config['port'], $config['user'], $config['password'], $config['domainevents_exchange']);

@@ -1,6 +1,6 @@
 <?php
 
-namespace Cmp\DomainEvent\Infrastructure\Log;
+namespace Cmp\Queue\Infrastructure\Log;
 
 class NaiveStdoutLogger implements \Psr\Log\LoggerInterface
 {
