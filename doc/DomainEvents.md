@@ -19,7 +19,7 @@ $logger = new \Cmp\DomainEvent\Infrastructure\Log\NaiveStdoutLogger();
 
 $config = new Cmp\Queue\Infrastructure\RabbitMQ\RabbitMQConfig($config['host'], $config['port'], $config['user'], $config['password'], $config['exchange']);
 
-$publisher = new \Cmp\DomainEvent\Application\Publisher\Publisher($config, $logger);
+$publisher = new Cmp\DomainEvent\Infrastructure\Publisher\RabbitMQ\Publisher($config, $logger);
 
 $domainEvent1 = new Cmp\DomainEvent\Domain\Event\DomainEvent('a origin', 'user.created.female', '1468936678.651', ['extraData1' => 'extraValue1', 'extraData2' => 'extraValue2']);
 $domainEvent2 = new Cmp\DomainEvent\Domain\Event\DomainEvent('a origin', 'user.created.male', '468936678.6515', ['extraData1' => 'extraValue1', 'extraData2' => 'extraValue2']);
@@ -73,7 +73,7 @@ $domainTopics = ['user.#'];
 
 $config = new Cmp\Queue\Infrastructure\RabbitMQ\RabbitMQConfig($config['host'], $config['port'], $config['user'], $config['password'], $config['exchange'], $config['queue']);
 
-$subscriber = new \Cmp\DomainEvent\Application\Subscriber\Subscriber($config, $domainTopics, $logger);
+$subscriber = new Cmp\DomainEvent\Infrastructure\Subscriber\RabbitMQ\Subscriber($config, $domainTopics, $logger);
 
 $testEventSubscriptor = new TestEventSubscriptor();
 
