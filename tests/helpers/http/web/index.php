@@ -35,8 +35,8 @@ $logger = new \Cmp\DomainEvent\Infrastructure\Log\NullLogger();
 $tasksConfig = new Cmp\Queue\Infrastructure\RabbitMQ\RabbitMQConfig($config['host'], $config['port'], $config['user'], $config['password'], $config['tasks_exchange']);
 $domainEventsConfig = new Cmp\Queue\Infrastructure\RabbitMQ\RabbitMQConfig($config['host'], $config['port'], $config['user'], $config['password'], $config['domainevents_exchange']);
 
-$producer = new \Cmp\Task\Application\Producer\Producer($tasksConfig, $logger);
-$publisher = new \Cmp\DomainEvent\Application\Publisher\Publisher($domainEventsConfig, $logger);
+$producer = new \Cmp\Task\Infrastructure\Producer\RabbitMQ\Producer($tasksConfig, $logger);
+$publisher = new Cmp\DomainEvent\Infrastructure\Publisher\RabbitMQ\Publisher($domainEventsConfig, $logger);
 
 // Silex HTTP
 $app = new Silex\Application();

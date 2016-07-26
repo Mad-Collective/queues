@@ -13,12 +13,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "041c0de0513311c0567f450ea047b8293676d3dc"
+                "reference": "64fa4b07f056e338a5f0f29eece75babaa83af68"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/041c0de0513311c0567f450ea047b8293676d3dc",
-                "reference": "041c0de0513311c0567f450ea047b8293676d3dc",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/64fa4b07f056e338a5f0f29eece75babaa83af68",
+                "reference": "64fa4b07f056e338a5f0f29eece75babaa83af68",
                 "shasum": ""
             },
             "require": {
@@ -68,7 +68,7 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2016-06-15 19:40:50"
+            "time": "2016-07-25 18:03:20"
         },
         {
             "name": "cmp/base",
@@ -146,12 +146,12 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:CMProductions/queues.git",
-                "reference": "a88bc9445361432f1fbe9c7e65b662c22700f51b"
+                "reference": "5d75807eeae1de70564a1dfb09596f652c7407f5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/CMProductions/queues/zipball/a88bc9445361432f1fbe9c7e65b662c22700f51b",
-                "reference": "a88bc9445361432f1fbe9c7e65b662c22700f51b",
+                "url": "https://api.github.com/repos/CMProductions/queues/zipball/5d75807eeae1de70564a1dfb09596f652c7407f5",
+                "reference": "5d75807eeae1de70564a1dfb09596f652c7407f5",
                 "shasum": ""
             },
             "require": {
@@ -171,7 +171,7 @@
                 "source": "https://github.com/CMProductions/queues/tree/master",
                 "issues": "https://github.com/CMProductions/queues/issues"
             },
-            "time": "2016-07-22 11:57:13"
+            "time": "2016-07-22 16:03:25"
         },
         {
             "name": "doctrine/annotations",
@@ -1106,12 +1106,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/debug.git",
-                "reference": "2477199ad1dd1c43fe18a84d7907fffa025eff10"
+                "reference": "bec6ab977efcf989fd000219f91a09c826cab2e6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/debug/zipball/2477199ad1dd1c43fe18a84d7907fffa025eff10",
-                "reference": "2477199ad1dd1c43fe18a84d7907fffa025eff10",
+                "url": "https://api.github.com/repos/symfony/debug/zipball/bec6ab977efcf989fd000219f91a09c826cab2e6",
+                "reference": "bec6ab977efcf989fd000219f91a09c826cab2e6",
                 "shasum": ""
             },
             "require": {
@@ -1155,7 +1155,7 @@
             ],
             "description": "Symfony Debug Component",
             "homepage": "https://symfony.com",
-            "time": "2016-06-29 05:29:29"
+            "time": "2016-07-26 08:02:44"
         },
         {
             "name": "symfony/event-dispatcher",
@@ -1278,12 +1278,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/http-kernel.git",
-                "reference": "37c7be00fbd75ee5baf7316e5682a59302641b30"
+                "reference": "3fcd053186b76e4a402d863fef679a861005424e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/http-kernel/zipball/37c7be00fbd75ee5baf7316e5682a59302641b30",
-                "reference": "37c7be00fbd75ee5baf7316e5682a59302641b30",
+                "url": "https://api.github.com/repos/symfony/http-kernel/zipball/3fcd053186b76e4a402d863fef679a861005424e",
+                "reference": "3fcd053186b76e4a402d863fef679a861005424e",
                 "shasum": ""
             },
             "require": {
@@ -1352,7 +1352,7 @@
             ],
             "description": "Symfony HttpKernel Component",
             "homepage": "https://symfony.com",
-            "time": "2016-07-19 10:40:24"
+            "time": "2016-07-26 08:02:44"
         },
         {
             "name": "symfony/polyfill-mbstring",
