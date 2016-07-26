@@ -7,7 +7,6 @@ use Cmp\Queue\Infrastructure\RabbitMQ\AMQPLazyConnectionSingleton;
 use Cmp\Queue\Infrastructure\RabbitMQ\RabbitMQConfig;
 use Cmp\Queue\Infrastructure\RabbitMQ\RabbitMQWriter;
 use Cmp\Queue\Infrastructure\RabbitMQ\RabbitMQWriterInitializer;
-use PhpAmqpLib\Connection\AMQPLazyConnection;
 use Psr\Log\LoggerInterface;
 
 class Publisher implements \Cmp\DomainEvent\Domain\Publisher\Publisher
