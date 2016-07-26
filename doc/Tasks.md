@@ -19,7 +19,7 @@ $logger = new \Cmp\DomainEvent\Infrastructure\Log\NaiveStdoutLogger();
 
 $config = new Cmp\Queue\Infrastructure\RabbitMQ\RabbitMQConfig($config['host'], $config['port'], $config['user'], $config['password'], $config['exchange']);
 
-$producer = new \Cmp\Task\Application\Producer\Producer($config, $logger);
+$producer = new \Cmp\Task\Infrastructure\Producer\RabbitMQ\Producer($config, $logger);
 
 $task1 = new \Cmp\Task\Domain\Task\Task('id', 'Request');
 $task2 = new \Cmp\Task\Domain\Task\Task('id2', 'Request2');
@@ -50,7 +50,7 @@ $logger = new \Cmp\DomainEvent\Infrastructure\Log\NaiveStdoutLogger();
 
 $config = new Cmp\Queue\Infrastructure\RabbitMQ\RabbitMQConfig($config['host'], $config['port'], $config['user'], $config['password'], $config['exchange'], $config['queue']);
 
-$consumer = new \Cmp\Task\Application\Consumer\Consumer($config, $logger);
+$consumer = new \Cmp\Task\Infrastructure\Consumer\RabbitMQ\Consumer($config, $logger);
 
 $consumer->consume(function($task) {
     var_dump($task);
