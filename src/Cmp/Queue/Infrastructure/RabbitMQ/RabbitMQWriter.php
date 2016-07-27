@@ -58,8 +58,9 @@ class RabbitMQWriter extends AbstractWriter
         }
 
         foreach($messages as $message) {
-            $this->logger->debug('Writing:' . json_encode($message));
-            $msg = new AMQPMessage(json_encode($message), array('delivery_mode' => 2));
+            $encodedMessage = json_encode($message);
+            $this->logger->debug('Writing:' . $encodedMessage);
+            $msg = new AMQPMessage($encodedMessage, array('delivery_mode' => 2));
             $this->channel->batch_basic_publish($msg, $this->exchange, $message->getName());
         }
 
