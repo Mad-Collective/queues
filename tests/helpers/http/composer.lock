@@ -146,12 +146,12 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:CMProductions/queues.git",
-                "reference": "5d75807eeae1de70564a1dfb09596f652c7407f5"
+                "reference": "3f0afa7db89f9a04e56bf716ee45225c7be3919d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/CMProductions/queues/zipball/5d75807eeae1de70564a1dfb09596f652c7407f5",
-                "reference": "5d75807eeae1de70564a1dfb09596f652c7407f5",
+                "url": "https://api.github.com/repos/CMProductions/queues/zipball/3f0afa7db89f9a04e56bf716ee45225c7be3919d",
+                "reference": "3f0afa7db89f9a04e56bf716ee45225c7be3919d",
                 "shasum": ""
             },
             "require": {
@@ -171,7 +171,7 @@
                 "source": "https://github.com/CMProductions/queues/tree/master",
                 "issues": "https://github.com/CMProductions/queues/issues"
             },
-            "time": "2016-07-22 16:03:25"
+            "time": "2016-07-27 10:48:25"
         },
         {
             "name": "doctrine/annotations",
