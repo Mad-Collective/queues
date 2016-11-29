@@ -85,4 +85,20 @@ class RabbitMQWriterSpec extends ObjectBehavior
         $this->add($event2);
         $this->write();
     }
+
+    public function it_process_messages_just_once(RabbitMQWriterInitializer $rabbitMQWriterInitializer, AMQPChannel $channel, DomainEvent $event)
+    {
+        $body = ['test' => 'hello'];
+        $name = 'test_domain_event_name';
+        $rabbitMQWriterInitializer->initialize()->willReturn($channel);
+        $event->jsonSerialize()->willReturn($body); // Serialize function is mocked so we need to set the return
+        $event->getName()->willReturn($name);
+        $msg = new AMQPMessage(json_encode($body), array('delivery_mode' => 2));
+
+        $channel->basic_publish(Argument::exact($msg), $this->exchange, $name)->shouldBeCalledTimes(1);
+
+        $this->add($event);
+        $this->write();
+        $this->write();
+    }
 }

@@ -44,6 +44,7 @@ abstract class AbstractWriter
         } else if($numOfDomainObjects > 1) {
             $this->writeSome($this->messages);
         }
+        $this->messages = [];
     }
 
 }
