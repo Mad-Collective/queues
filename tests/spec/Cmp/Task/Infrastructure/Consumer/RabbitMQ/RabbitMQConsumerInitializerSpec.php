@@ -33,7 +33,20 @@ class RabbitMQConsumerInitializerSpec extends ObjectBehavior
         $callable = function() {};
         $connection->channel()->willReturn($channel);
         $channel->exchange_declare($this->exchange, 'fanout', false, true, false)->shouldBeCalled();
-        $channel->queue_declare($this->queue, false, true, false, false)->willReturn([$this->queue, '', ''])->shouldBeCalled();
+        $channel->queue_declare($this->queue, false, true, false, false, false, [])->willReturn([$this->queue, '', ''])->shouldBeCalled();
+        $channel->queue_bind($this->queue, $this->exchange)->shouldBeCalled();
+
+        $channel->basic_consume($this->queue, '', false, false, false, false, $callable)->shouldBeCalled();
+        $this->initialize($callable)->shouldReturn($channel);
+    }
+
+    public function it_should_initialize_the_channel_with_delay_options(AMQPLazyConnection $connection, AMQPChannel $channel, LoggerInterface $logger)
+    {
+        $this->beConstructedWith($connection, $this->exchange, $this->queue, $logger, ['test-options' => 'test']);
+        $callable = function() {};
+        $connection->channel()->willReturn($channel);
+        $channel->exchange_declare($this->exchange, 'fanout', false, true, false)->shouldBeCalled();
+        $channel->queue_declare($this->queue, false, true, false, false, false, ['test-options' => 'test'])->willReturn([$this->queue, '', ''])->shouldBeCalled();
         $channel->queue_bind($this->queue, $this->exchange)->shouldBeCalled();
 
         $channel->basic_consume($this->queue, '', false, false, false, false, $callable)->shouldBeCalled();
@@ -56,6 +69,4 @@ class RabbitMQConsumerInitializerSpec extends ObjectBehavior
         $logger->error('Error trying to connect to rabbitMQ:' . $errorMessage)->shouldBeCalled();
         $this->shouldThrow(new ConnectionException('Error trying to connect to the queue backend'))->duringInitialize($callable);
     }
-
-
 }
