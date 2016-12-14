@@ -51,6 +51,15 @@ class RabbitMQWriterInitializerSpec extends ObjectBehavior
         $this->shouldThrow(new ConnectionException('Error trying to connect to the queue backend'))->duringInitialize($callable);
     }
 
+    public function it_should_create_a_delay_queue_if_initialize_delay_queue_is_called(AMQPLazyConnection $connection, AMQPChannel $channel)
+    {
+        $connection->channel()->willReturn($channel);
+        $channel->exchange_declare('Delay60a exchange', 'fanout', false, true, false)->shouldBeCalled();
+        $channel->queue_declare('Delay60Queue', false, true, false, false, false, [
+            'x-message-ttl' => array('I', 60000),
+            'x-dead-letter-exchange' => array('S', 'a exchange')
+        ])->shouldBeCalled();
+        $channel->queue_bind('Delay60Queue', 'Delay60a exchange')->shouldBeCalled();
+        $this->initializeDelayQueue(60);
+    }
 }
-
-
