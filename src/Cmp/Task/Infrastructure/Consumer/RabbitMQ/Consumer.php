@@ -21,20 +21,15 @@ class Consumer
      * Consumer constructor.
      * @param RabbitMQConfig $config
      * @param LoggerInterface $logger
-     * @param int $delay
-     * @param null $bindingExchange
      */
-    public function __construct(RabbitMQConfig $config, LoggerInterface $logger, $delay = 0, $bindingExchange = null)
+    public function __construct(RabbitMQConfig $config, LoggerInterface $logger)
     {
         $logger->info('Using RabbitMQ Consumer');
 
         $amqpLazyConnection = AMQPLazyConnectionSingleton::getInstance($config->getHost(), $config->getPort(), $config->getUser(), $config->getPassword());
         $logger->info(sprintf('RabbitMQ Configuration, Host: %s, Port: %s, User: %s, Exchange: %s, Queue: %s',
             $config->getHost(), $config->getPort(), $config->getUser(), $config->getExchange(), $config->getQueue()));
-
-        $options = $this->getOptions($delay, $bindingExchange);
-
-        $rabbitMQConsumerInitializer = new RabbitMQConsumerInitializer($amqpLazyConnection, $config->getExchange(), $config->getQueue(), $logger, $options);
+        $rabbitMQConsumerInitializer = new RabbitMQConsumerInitializer($amqpLazyConnection, $config->getExchange(), $config->getQueue(), $logger);
 
         $jsonTaskFactory = new JSONTaskFactory();
         $rabbitMQMessageHandler = new RabbitMQMessageHandler($jsonTaskFactory);
@@ -58,24 +53,5 @@ class Consumer
     public function consumeOnce(callable $consumeCallback)
     {
         $this->consumer->consumeOnce($consumeCallback);
-    }
-
-    /**
-     * @param $delay
-     * @param $bindingExchange
-     * @return array
-     */
-    private function getOptions($delay, $bindingExchange)
-    {
-        $options = [];
-
-        if ($delay && $bindingExchange) {
-            $options = [
-                'x-message-ttl' => array('I', $delay*1000),
-                'x-dead-letter-exchange' => array('S', $bindingExchange)
-            ];
-        }
-
-        return $options;
     }
 }

@@ -29,10 +29,6 @@ class RabbitMQConsumerInitializer implements RabbitMQReaderInitializer
      */
     private $logger;
 
-    /**
-     * @var array
-     */
-    private $options;
 
     /**
      * RabbitMQConsumerInitializer constructor.
@@ -40,15 +36,13 @@ class RabbitMQConsumerInitializer implements RabbitMQReaderInitializer
      * @param $exchange
      * @param $queue
      * @param LoggerInterface $logger
-     * @param array $options
      */
-    public function __construct(AMQPLazyConnection $connection, $exchange, $queue, LoggerInterface $logger, $options = [])
+    public function __construct(AMQPLazyConnection $connection, $exchange, $queue, LoggerInterface $logger)
     {
         $this->connection = $connection;
         $this->exchange = $exchange;
         $this->queue = $queue;
         $this->logger = $logger;
-        $this->options = $options;
     }
 
     public function initialize(callable $msgCallback)
@@ -60,7 +54,7 @@ class RabbitMQConsumerInitializer implements RabbitMQReaderInitializer
 
             $channel->exchange_declare($this->exchange, 'fanout', false, true, false);
 
-            list($queueName, ,) = $channel->queue_declare($this->queue, false, true, false, false, false, $this->options);
+            list($queueName, ,) = $channel->queue_declare($this->queue, false, true, false, false);
 
             $channel->queue_bind($queueName, $this->exchange);
 
