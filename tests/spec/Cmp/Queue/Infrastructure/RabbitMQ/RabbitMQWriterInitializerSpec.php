@@ -54,8 +54,9 @@ class RabbitMQWriterInitializerSpec extends ObjectBehavior
     public function it_should_create_a_delay_queue_if_initialize_delay_queue_is_called(AMQPLazyConnection $connection, AMQPChannel $channel)
     {
         $connection->channel()->willReturn($channel);
-        $channel->exchange_declare('Delay60a exchange', 'fanout', false, true, false)->shouldBeCalled();
-        $channel->queue_declare('Delay60Queue', false, true, false, false, false, [
+        $channel->exchange_declare('Delay60a exchange', 'fanout', false, true, true)->shouldBeCalled();
+        $channel->queue_declare('Delay60Queue', false, true, false, true, false, [
+            'x-expires' => array('I', 65000),
             'x-message-ttl' => array('I', 60000),
             'x-dead-letter-exchange' => array('S', 'a exchange')
         ])->shouldBeCalled();
