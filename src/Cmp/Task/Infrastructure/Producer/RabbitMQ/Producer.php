@@ -17,7 +17,7 @@ class Producer implements \Cmp\Task\Domain\Producer\Producer
     public function __construct(RabbitMQConfig $config, LoggerInterface $logger)
     {
         $logger->info('Using RabbitMQ Writer');
-        $amqpLazyConnection = AMQPLazyConnectionSingleton::getInstance($config->getHost(), $config->getPort(), $config->getUser(), $config->getPassword());
+        $amqpLazyConnection = AMQPLazyConnectionSingleton::getInstance($config->getHost(), $config->getPort(), $config->getUser(), $config->getPassword(), $config->getVhost());
         $logger->info(sprintf('Connecting to RabbitMQ, Host: %s, Port: %s, User: %s, Exchange: %s',
             $config->getHost(), $config->getPort(), $config->getUser(), $config->getExchange()));
         $rabbitMQProducerInitializer = new RabbitMQWriterInitializer($amqpLazyConnection, $config->getExchange(), 'fanout', $logger);
