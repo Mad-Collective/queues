@@ -25,7 +25,7 @@ class Publisher implements \Cmp\DomainEvent\Domain\Publisher\Publisher
     public function __construct(RabbitMQConfig $config, LoggerInterface $logger)
     {
         $logger->info('Using RabbitMQ Publisher');
-        $amqpLazyConnection = AMQPLazyConnectionSingleton::getInstance($config->getHost(), $config->getPort(), $config->getUser(), $config->getPassword());
+        $amqpLazyConnection = AMQPLazyConnectionSingleton::getInstance($config->getHost(), $config->getPort(), $config->getUser(), $config->getPassword(), $config->getVhost());
         $logger->info(sprintf('RabbitMQ Configuration, Host: %s, Port: %s, User: %s, Exchange: %s',
             $config->getHost(), $config->getPort(), $config->getUser(), $config->getExchange()));
         $rabbitMQWriterInitializer = new RabbitMQWriterInitializer($amqpLazyConnection, $config->getExchange(), 'topic', $logger);

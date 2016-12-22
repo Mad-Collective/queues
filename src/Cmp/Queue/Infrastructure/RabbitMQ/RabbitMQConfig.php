@@ -4,20 +4,51 @@ namespace Cmp\Queue\Infrastructure\RabbitMQ;
 
 class RabbitMQConfig
 {
-
+    /**
+     * @var string
+     */
     private $host;
 
+    /**
+     * @var string
+     */
     private $port;
 
+    /**
+     * @var string
+     */
     private $user;
 
+    /**
+     * @var string
+     */
     private $password;
 
+    /**
+     * @var string
+     */
     private $exchange;
 
+    /**
+     * @var string
+     */
     private $queue;
 
-    public function __construct($host, $port, $user, $password, $exchange, $queue='')
+    /**
+     * @var string
+     */
+    private $vhost;
+
+    /**
+     * @param string $host
+     * @param string $port
+     * @param string $user
+     * @param string $password
+     * @param string $exchange
+     * @param string $queue
+     * @param string $vhost
+     */
+    public function __construct($host, $port, $user, $password, $exchange, $queue='', $vhost='/')
     {
         $this->host = $host;
         $this->port = $port;
@@ -25,6 +56,7 @@ class RabbitMQConfig
         $this->password = $password;
         $this->exchange = $exchange;
         $this->queue = $queue;
+        $this->vhost = $vhost;
     }
 
     /**
@@ -75,4 +107,11 @@ class RabbitMQConfig
         return $this->queue;
     }
 
+    /**
+     * @return string
+     */
+    public function getVhost()
+    {
+        return $this->vhost;
+    }
 }

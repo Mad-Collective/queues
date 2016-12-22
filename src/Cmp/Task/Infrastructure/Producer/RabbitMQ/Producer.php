@@ -13,11 +13,6 @@ use Psr\Log\LoggerInterface;
 class Producer implements \Cmp\Task\Domain\Producer\Producer
 {
     /**
-     * @var RabbitMQWriter
-     */
-    private $writer;
-
-    /**
      * @var RabbitMQConfig
      */
     private $config;
@@ -33,20 +28,37 @@ class Producer implements \Cmp\Task\Domain\Producer\Producer
     private $connection;
 
     /**
+     * @var RabbitMQWriter
+     */
+    private $writer;
+
+    /**
      * Producer constructor.
      * @param RabbitMQConfig $config
      * @param LoggerInterface $logger
      */
     public function __construct(RabbitMQConfig $config, LoggerInterface $logger)
     {
-        $logger->info('Using RabbitMQ Writer');
-
         $this->config = $config;
         $this->logger = $logger;
-        $this->connection = AMQPLazyConnectionSingleton::getInstance($config->getHost(), $config->getPort(), $config->getUser(), $config->getPassword());
 
-        $logger->info(sprintf('Connecting to RabbitMQ, Host: %s, Port: %s, User: %s, Exchange: %s',
-            $config->getHost(), $config->getPort(), $config->getUser(), $config->getExchange()));
+        $this->logger->info('Using RabbitMQ Writer');
+        $this->connection = AMQPLazyConnectionSingleton::getInstance(
+            $config->getHost(),
+            $config->getPort(),
+            $config->getUser(),
+            $config->getPassword(),
+            $config->getVhost()
+        );
+
+        $logger->info(sprintf(
+            'Connecting to RabbitMQ, Host: %s, Port: %s, VHost: %s, User: %s, Exchange: %s',
+            $config->getHost(),
+            $config->getPort(),
+            $config->getVhost(),
+            $config->getUser(),
+            $config->getExchange()
+        ));
 
         $this->generateWriter();
     }
@@ -72,11 +84,10 @@ class Producer implements \Cmp\Task\Domain\Producer\Producer
     protected function generateWriter($delay = 0)
     {
         $rabbitMQProducerInitializer = new RabbitMQWriterInitializer($this->connection, $this->config->getExchange(), 'fanout', $this->logger);
-
-        $exchange = $this->config->getExchange();
-        if ($delay > 0) {
-            $exchange = $rabbitMQProducerInitializer->initializeDelayQueue($delay);
-        }
+        $exchange = $delay > 0
+            ? $rabbitMQProducerInitializer->initializeDelayQueue($delay)
+            : $this->config->getExchange();
+        
         $this->writer = new RabbitMQWriter($rabbitMQProducerInitializer, $exchange, $this->logger);
     }
 }

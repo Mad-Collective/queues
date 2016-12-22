@@ -9,10 +9,10 @@ class AMQPLazyConnectionSingleton
 
     private static $amqpLazyConnection;
 
-    public static function getInstance($host, $port, $user, $password)
+    public static function getInstance($host, $port, $user, $password, $vhost = '/')
     {
         if(null === static::$amqpLazyConnection) {
-            static::$amqpLazyConnection = new AMQPLazyConnection($host, $port, $user, $password);
+            static::$amqpLazyConnection = new AMQPLazyConnection($host, $port, $user, $password, $vhost);
         }
 
         return static::$amqpLazyConnection;
