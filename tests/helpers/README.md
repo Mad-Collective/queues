@@ -27,7 +27,7 @@ All of them require the Queue Backend (RabbitMQ) configuration available in envi
 A way to set this is to declare them right before launching the app:
  
 ````
-QUEUES_RABBITMQ_HOST="a__host" QUEUES_RABBITMQ_PORT=5672 QUEUES_RABBITMQ_USER="a_user_" QUEUES_RABBITMQ_PASS="a_pass_" QUEUES_RABBITMQ_DOMAINEVENTS_EXCHANGE="a_exchange_name" QUEUES_RABBITMQ_DOMAINEVENTS_QUEUE="a_queue_name" ./subscribe 0 user.#
+QUEUES_RABBITMQ_HOST=a__host QUEUES_RABBITMQ_PORT=5672 QUEUES_RABBITMQ_USER=a_user_ QUEUES_RABBITMQ_PASS=a_pass_ QUEUES_RABBITMQ_DOMAINEVENTS_EXCHANGE=a_exchange_name QUEUES_RABBITMQ_DOMAINEVENTS_QUEUE=a_queue_name ./subscribe 0 user.#
 ````
 
 REMEMBER: Tasks and Domain Events use diferent rabbitMQ internal routing mecanisms, so you cannot use the same exchange or queue name for the two.

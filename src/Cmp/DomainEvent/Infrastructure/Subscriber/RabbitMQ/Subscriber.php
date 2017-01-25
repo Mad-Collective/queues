@@ -22,9 +22,10 @@ class Subscriber
         $jsonDomainEventFactory = new JSONDomainEventFactory();
 
         $amqpLazyConnection = AMQPLazyConnectionSingleton::getInstance($config->getHost(), $config->getPort(), $config->getUser(), $config->getPassword(), $config->getVhost());
+        $queueName = uniqid($config->getQueue() . '_');
         $logger->info(sprintf('RabbitMQ Configuration, Host: %s, Port: %s, User: %s, Exchange: %s, Queue: %s',
-            $config->getHost(), $config->getPort(), $config->getUser(), $config->getExchange(), $config->getQueue()));
-        $rabbitMQSubscriberInitializer = new RabbitMQSubscriberInitializer($amqpLazyConnection, $config->getExchange(), $config->getQueue(), $domainTopics, $logger);
+            $config->getHost(), $config->getPort(), $config->getUser(), $config->getExchange(), $queueName));
+        $rabbitMQSubscriberInitializer = new RabbitMQSubscriberInitializer($amqpLazyConnection, $config->getExchange(), $queueName, $domainTopics, $logger);
 
         $rabbitMQMessageHandler = new RabbitMQMessageHandler($jsonDomainEventFactory);
 
