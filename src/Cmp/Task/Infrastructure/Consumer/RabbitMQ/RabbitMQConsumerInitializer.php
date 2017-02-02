@@ -29,6 +29,14 @@ class RabbitMQConsumerInitializer implements RabbitMQReaderInitializer
      */
     private $logger;
 
+
+    /**
+     * RabbitMQConsumerInitializer constructor.
+     * @param AMQPLazyConnection $connection
+     * @param $exchange
+     * @param $queue
+     * @param LoggerInterface $logger
+     */
     public function __construct(AMQPLazyConnection $connection, $exchange, $queue, LoggerInterface $logger)
     {
         $this->connection = $connection;

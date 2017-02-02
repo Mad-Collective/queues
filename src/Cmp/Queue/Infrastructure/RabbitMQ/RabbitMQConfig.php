@@ -40,7 +40,6 @@ class RabbitMQConfig
     private $vhost;
 
     /**
-     * RabbitMQConfig constructor.
      * @param string $host
      * @param string $port
      * @param string $user
@@ -115,5 +114,4 @@ class RabbitMQConfig
     {
         return $this->vhost;
     }
-
 }

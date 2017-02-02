@@ -40,7 +40,6 @@ class RabbitMQWriter extends AbstractWriter
      */
     public function __construct(RabbitMQWriterInitializer $rabbitMQInitializer, $exchange, LoggerInterface $logger)
     {
-
         $this->rabbitMQInitializer = $rabbitMQInitializer;
         $this->exchange = $exchange;
         $this->logger = $logger;

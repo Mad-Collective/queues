@@ -12,9 +12,16 @@ use Psr\Log\LoggerInterface;
 
 class Consumer
 {
-
+    /**
+     * @var DomainConsumer
+     */
     private $consumer;
 
+    /**
+     * Consumer constructor.
+     * @param RabbitMQConfig $config
+     * @param LoggerInterface $logger
+     */
     public function __construct(RabbitMQConfig $config, LoggerInterface $logger)
     {
         $logger->info('Using RabbitMQ Consumer');
@@ -32,11 +39,17 @@ class Consumer
         $this->consumer = new DomainConsumer($rabbitMQReader, $logger);
     }
 
+    /**
+     * @param callable $consumeCallback
+     */
     public function consume(callable $consumeCallback)
     {
         $this->consumer->consume($consumeCallback);
     }
 
+    /**
+     * @param callable $consumeCallback
+     */
     public function consumeOnce(callable $consumeCallback)
     {
         $this->consumer->consumeOnce($consumeCallback);

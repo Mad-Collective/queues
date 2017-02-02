@@ -56,6 +56,4 @@ class RabbitMQConsumerInitializerSpec extends ObjectBehavior
         $logger->error('Error trying to connect to rabbitMQ:' . $errorMessage)->shouldBeCalled();
         $this->shouldThrow(new ConnectionException('Error trying to connect to the queue backend'))->duringInitialize($callable);
     }
-
-
 }
