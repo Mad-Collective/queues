@@ -34,7 +34,7 @@ class Consumer
         $jsonTaskFactory = new JSONTaskFactory();
         $rabbitMQMessageHandler = new RabbitMQMessageHandler($jsonTaskFactory);
 
-        $rabbitMQReader = new RabbitMQReader($rabbitMQConsumerInitializer, $rabbitMQMessageHandler, $logger);
+        $rabbitMQReader = new RabbitMQReader($rabbitMQConsumerInitializer, $rabbitMQMessageHandler);
 
         $this->consumer = new DomainConsumer($rabbitMQReader, $logger);
     }

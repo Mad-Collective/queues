@@ -29,7 +29,7 @@ class Subscriber
 
         $rabbitMQMessageHandler = new RabbitMQMessageHandler($jsonDomainEventFactory);
 
-        $rabbitMQReader = new RabbitMQReader($rabbitMQSubscriberInitializer, $rabbitMQMessageHandler, $logger);
+        $rabbitMQReader = new RabbitMQReader($rabbitMQSubscriberInitializer, $rabbitMQMessageHandler);
         $this->subscriber = new \Cmp\DomainEvent\Domain\Subscriber\Subscriber($rabbitMQReader, $logger);
     }
 
