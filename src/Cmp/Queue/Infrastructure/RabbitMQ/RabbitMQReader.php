@@ -2,7 +2,9 @@
 namespace Cmp\Queue\Infrastructure\RabbitMQ;
 
 use Cmp\Queue\Domain\Reader\QueueReader;
+use Cmp\Queue\Domain\Reader\ReadTimeoutException;
 use PhpAmqpLib\Channel\AMQPChannel;
+use PhpAmqpLib\Exception\AMQPTimeoutException;
 
 class RabbitMQReader implements QueueReader
 {
@@ -27,14 +29,17 @@ class RabbitMQReader implements QueueReader
         $this->rabbitMQMessageHandler = $rabbitMQMessageHandler;
     }
 
-    public function process(callable $callback)
+    public function process(callable $callback, $timeout = 0)
     {
-
         if (!$this->channel) {
             $this->initialize($callback);
         }
 
-        $this->channel->wait();
+        try {
+            $this->channel->wait(null, false, $timeout);
+        } catch(AMQPTimeoutException $e) {
+            throw new ReadTimeoutException("Reading timed out", $e);
+        }
     }
 
     private function initialize(callable $callback)

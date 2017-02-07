@@ -41,17 +41,19 @@ class Consumer
 
     /**
      * @param callable $consumeCallback
+     * @param int      $timeout
      */
-    public function consume(callable $consumeCallback)
+    public function consume(callable $consumeCallback, $timeout = 0)
     {
-        $this->consumer->consume($consumeCallback);
+        $this->consumer->consume($consumeCallback, $timeout);
     }
 
     /**
      * @param callable $consumeCallback
+     * @param int      $timeout
      */
-    public function consumeOnce(callable $consumeCallback)
+    public function consumeOnce(callable $consumeCallback, $timeout = 0)
     {
-        $this->consumer->consumeOnce($consumeCallback);
+        $this->consumer->consumeOnce($consumeCallback, $timeout);
     }
 }

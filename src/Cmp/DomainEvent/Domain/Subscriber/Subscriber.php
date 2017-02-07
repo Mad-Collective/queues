@@ -1,11 +1,11 @@
 <?php
-
 namespace Cmp\DomainEvent\Domain\Subscriber;
 
 use Cmp\DomainEvent\Domain\Event\EventSubscribable;
 use Cmp\DomainEvent\Domain\Event\EventSubscriptor;
 use Cmp\DomainEvent\Domain\Event\DomainEvent;
 use Cmp\Queue\Domain\Reader\QueueReader;
+use Cmp\Queue\Domain\Reader\ReadTimeoutException;
 use Psr\Log\LoggerInterface;
 
 class Subscriber implements EventSubscribable
@@ -52,16 +52,25 @@ class Subscriber implements EventSubscribable
         }
     }
 
-    public function start()
+    /**
+     * @param int $timeout If set to 0, it waits indefinitely
+     *
+     * @throws ReadTimeoutException
+     */
+    public function start($timeout = 0)
     {
         while(true) {
-            $this->queueReader->process(array($this, 'notify'));
+            $this->queueReader->process(array($this, 'notify'), $timeout);
         }
     }
 
-    public function processOnce()
+    /**
+     * @param int $timeout If set to 0, it waits indefinitely
+     *
+     * @throws ReadTimeoutException
+     */
+    public function processOnce($timeout = 0)
     {
-        $this->queueReader->process(array($this, 'notify'));
+        $this->queueReader->process(array($this, 'notify'), $timeout);
     }
-
 }

@@ -38,10 +38,11 @@ class Subscriber
         $this->subscriber->subscribe($eventSubscriptor);
     }
 
-    public function start()
+    /**
+     * @param int $timeout In seconds. 0 is disabled
+     */
+    public function start($timeout=0)
     {
-        $this->subscriber->start();
+        $this->subscriber->start($timeout);
     }
-
-
 }
