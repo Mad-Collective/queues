@@ -28,9 +28,9 @@ class Producer implements \Cmp\Task\Domain\Producer\Producer
     private $connection;
 
     /**
-     * @var RabbitMQWriter
+     * @var RabbitMQWriter[]
      */
-    private $writer;
+    private $writerForDelay = [];
 
     /**
      * Producer constructor.
@@ -60,7 +60,7 @@ class Producer implements \Cmp\Task\Domain\Producer\Producer
             $config->getExchange()
         ));
 
-        $this->generateWriter();
+        $this->writerForDelay[0] = $this->generateWriter(0);
     }
 
     /**
@@ -69,17 +69,37 @@ class Producer implements \Cmp\Task\Domain\Producer\Producer
      */
     public function add(Message $message, $delay = 0)
     {
-        $this->generateWriter($delay);
-        $this->writer->add($message);
+        $this->getWriter($delay)->add($message);
     }
 
     public function produce()
     {
-        $this->writer->write();
+        foreach($this->writerForDelay as $writer) {
+            $writer->write();
+        }
+
+        //Purge all writers with delay bigger than 0
+        $this->writerForDelay = [$this->writerForDelay[0]];
     }
 
     /**
      * @param int $delay
+     *
+     * @return RabbitMQWriter
+     */
+    protected function getWriter($delay = 0)
+    {
+        if (!isset($this->writerForDelay[$delay])) {
+            $this->writerForDelay[$delay] = $this->generateWriter($delay);
+        }
+
+        return $this->writerForDelay[$delay];
+    }
+
+    /**
+     * @param int $delay
+     *
+     * @return RabbitMQWriter
      */
     protected function generateWriter($delay = 0)
     {
@@ -88,6 +108,6 @@ class Producer implements \Cmp\Task\Domain\Producer\Producer
             ? $rabbitMQProducerInitializer->initializeDelayQueue($delay)
             : $this->config->getExchange();
         
-        $this->writer = new RabbitMQWriter($rabbitMQProducerInitializer, $exchange, $this->logger);
+        return new RabbitMQWriter($rabbitMQProducerInitializer, $exchange, $this->logger);
     }
 }
