@@ -1,14 +1,20 @@
 <?php
-
 namespace spec\Cmp\Queue\Infrastructure\RabbitMQ;
 
 use Cmp\Queue\Infrastructure\RabbitMQ\RabbitMQMessageHandler;
+use Cmp\Queue\Infrastructure\RabbitMQ\RabbitMQReader;
 use Cmp\Task\Infrastructure\Consumer\RabbitMQ\RabbitMQConsumerInitializer;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use Psr\Log\LoggerInterface;
 
+/**
+ * Class RabbitMQReaderSpec
+ *
+ * @package spec\Cmp\Queue\Infrastructure\RabbitMQ
+ * @mixin RabbitMQReader
+ */
 class RabbitMQReaderSpec extends ObjectBehavior
 {
 
@@ -26,7 +32,7 @@ class RabbitMQReaderSpec extends ObjectBehavior
     {
         $callback = function() {};
         $rabbitMQConsumerInitializer->initialize(Argument::type('callable'))->shouldBeCalled()->willReturn($channel);
-        $channel->wait()->shouldBeCalled();
+        $channel->wait(null, false, 0)->shouldBeCalled();
         $this->process($callback);
     }
 
@@ -34,7 +40,7 @@ class RabbitMQReaderSpec extends ObjectBehavior
     {
         $callback = function() {};
         $rabbitMQConsumerInitializer->initialize(Argument::type('callable'))->willReturn($channel)->shouldBeCalledTimes(1);
-        $channel->wait()->shouldBeCalled();
+        $channel->wait(null, false, 0)->shouldBeCalled();
         $this->process($callback);
         $this->process($callback);
     }
@@ -44,7 +50,17 @@ class RabbitMQReaderSpec extends ObjectBehavior
         $callback = function() {};
         $rabbitMQMessageHandler->setEventCallback(Argument::type('callable'))->shouldBeCalled();
         $rabbitMQConsumerInitializer->initialize(Argument::type('callable'))->willReturn($channel);
-        $channel->wait()->shouldBeCalled();
+        $channel->wait(null, false, 0)->shouldBeCalled();
         $this->process($callback);
+    }
+
+    public function it_should_pass_timeout_argument(RabbitMQConsumerInitializer $rabbitMQConsumerInitializer, AMQPChannel $channel)
+    {
+        $callback = function() {};
+        $rabbitMQConsumerInitializer->initialize(Argument::type('callable'))->willReturn($channel);
+        $timeoutAmount = 123;
+
+        $channel->wait(null, false, $timeoutAmount)->shouldBeCalled();
+        $this->process($callback, $timeoutAmount);
     }
 }

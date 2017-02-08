@@ -29,7 +29,7 @@ class Subscriber
 
         $rabbitMQMessageHandler = new RabbitMQMessageHandler($jsonDomainEventFactory);
 
-        $rabbitMQReader = new RabbitMQReader($rabbitMQSubscriberInitializer, $rabbitMQMessageHandler, $logger);
+        $rabbitMQReader = new RabbitMQReader($rabbitMQSubscriberInitializer, $rabbitMQMessageHandler);
         $this->subscriber = new \Cmp\DomainEvent\Domain\Subscriber\Subscriber($rabbitMQReader, $logger);
     }
 
@@ -38,10 +38,11 @@ class Subscriber
         $this->subscriber->subscribe($eventSubscriptor);
     }
 
-    public function start()
+    /**
+     * @param int $timeout In seconds. 0 is disabled
+     */
+    public function start($timeout=0)
     {
-        $this->subscriber->start();
+        $this->subscriber->start($timeout);
     }
-
-
 }

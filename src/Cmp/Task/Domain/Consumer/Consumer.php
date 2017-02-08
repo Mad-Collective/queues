@@ -1,9 +1,8 @@
 <?php
-
 namespace Cmp\Task\Domain\Consumer;
 
-
 use Cmp\Queue\Domain\Reader\QueueReader;
+use Cmp\Queue\Domain\Reader\ReadTimeoutException;
 use Cmp\Task\Domain\Task\Task;
 use Psr\Log\LoggerInterface;
 
@@ -30,18 +29,30 @@ class Consumer
         $this->logger = $logger;
     }
 
-    public function consume(callable $consumeCallback)
+    /**
+     * @param callable $consumeCallback
+     * @param int      $timeout In seconds. If set to 0 it waits indefinitely
+     *
+     * @throws ReadTimeoutException
+     */
+    public function consume(callable $consumeCallback, $timeout = 0)
     {
         $this->consumeCallback = $consumeCallback;
         while(true) {
-            $this->queueReader->process(array($this, 'notify'));
+            $this->queueReader->process(array($this, 'notify'), $timeout);
         }
     }
 
-    public function consumeOnce(callable $consumeCallback)
+    /**
+     * @param callable $consumeCallback
+     * @param int      $timeout In seconds. If set to 0 it waits indefinitely
+     *
+     * @throws ReadTimeoutException
+     */
+    public function consumeOnce(callable $consumeCallback, $timeout = 0)
     {
         $this->consumeCallback = $consumeCallback;
-        $this->queueReader->process(array($this, 'notify'));
+        $this->queueReader->process(array($this, 'notify'), $timeout);
     }
 
     public function notify(Task $task)

@@ -1,16 +1,15 @@
 <?php
-
 namespace Cmp\Queue\Infrastructure\RabbitMQ;
 
-use Cmp\DomainEvent\Domain\Event\DomainEvent;
-use Cmp\DomainEvent\Domain\Subscriber\AbstractSubscriber;
 use Cmp\Queue\Domain\Reader\QueueReader;
-use Psr\Log\LoggerInterface;
+use Cmp\Queue\Domain\Reader\ReadTimeoutException;
+use PhpAmqpLib\Channel\AMQPChannel;
+use PhpAmqpLib\Exception\AMQPTimeoutException;
 
 class RabbitMQReader implements QueueReader
 {
     /**
-     * @var RabbitMQInitializer
+     * @var RabbitMQReaderInitializer
      */
     private $rabbitMQInitializer;
 
@@ -24,41 +23,28 @@ class RabbitMQReader implements QueueReader
      */
     private $rabbitMQMessageHandler;
 
-    /**
-     * @var LoggerInterface
-     */
-    protected $logger;
-
-    /**
-     * @var bool
-     */
-    private $initialized = false;
-
-    public function __construct(RabbitMQReaderInitializer $rabbitMQInitializer, RabbitMQMessageHandler $rabbitMQMessageHandler, LoggerInterface $logger)
+    public function __construct(RabbitMQReaderInitializer $rabbitMQInitializer, RabbitMQMessageHandler $rabbitMQMessageHandler)
     {
         $this->rabbitMQInitializer = $rabbitMQInitializer;
         $this->rabbitMQMessageHandler = $rabbitMQMessageHandler;
-        $this->logger = $logger;
     }
 
-    public function process(callable $callback)
+    public function process(callable $callback, $timeout = 0)
     {
-
         if (!$this->channel) {
             $this->initialize($callback);
         }
 
-        $this->channel->wait();
+        try {
+            $this->channel->wait(null, false, $timeout);
+        } catch(AMQPTimeoutException $e) {
+            throw new ReadTimeoutException("Reading timed out", $e);
+        }
     }
 
-    private function initialize($callback)
+    private function initialize(callable $callback)
     {
         $this->rabbitMQMessageHandler->setEventCallback($callback);
         $this->channel = $this->rabbitMQInitializer->initialize(array($this->rabbitMQMessageHandler, 'handleMessage'));
-    }
-
-    protected function isSubscribed(DomainEvent $domainEvent)
-    {
-        return true; // RabbitMQ Topic Exchanges are handling this
     }
 }
