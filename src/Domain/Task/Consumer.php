@@ -19,11 +19,15 @@ class Consumer
         $this->queueReader = $queueReader;
     }
 
-    /**
-     * @param callable $callback
-     */
-    public function consume(callable $callback)
+    public function consume()
     {
-        $this->queueReader->read($callback);
+        while(true) {
+            $this->consumeOnce();
+        }
+    }
+
+    public function consumeOnce()
+    {
+        $this->queueReader->read();
     }
 }

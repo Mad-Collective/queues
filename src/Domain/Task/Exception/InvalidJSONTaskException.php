@@ -2,7 +2,7 @@
 
 namespace Domain\Task\Exception;
 
-use Domain\Queue\InvalidJSONMessageException;
+use Domain\Queue\Exception\InvalidJSONMessageException;
 
 class InvalidJSONTaskException extends InvalidJSONMessageException
 {

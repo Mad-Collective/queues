@@ -6,7 +6,7 @@
  * Time: 11:44
  */
 
-namespace Domain\Queue;
+namespace Domain\Queue\Exception;
 
 
 class WriterException extends \Exception

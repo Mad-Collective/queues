@@ -1,24 +1,26 @@
 #!/usr/bin/env php
 <?php
 
-require_once '../vendor/autoload.php';
-require_once '../metrics.php';
+use Domain\Task\Task;
+use Infrastructure\AmqpLib\v26\RabbitMQ\Task\Consumer;
+use Infrastructure\Logger\NaiveStdoutLogger;
 
-if (!isset($argv[1])) {
-    echo "usage: consume <delay>" . PHP_EOL;
-    exit(1);
-}
+require_once '/app/queues/vendor/autoload.php';
 
-$delay = $argv[1];
+$logger = new NaiveStdoutLogger();
 
-$logger = new \Cmp\Queue\Infrastructure\Log\NaiveStdoutLogger();
-
-$config = new Cmp\Queue\Infrastructure\RabbitMQ\RabbitMQConfig(getenv('QUEUES_RABBITMQ_HOST'), getenv('QUEUES_RABBITMQ_PORT'), getenv('QUEUES_RABBITMQ_USER'), getenv('QUEUES_RABBITMQ_PASS'), getenv('QUEUES_RABBITMQ_TASKS_EXCHANGE'), getenv('QUEUES_RABBITMQ_TASKS_QUEUE'));
-
-$consumer = new \Cmp\Task\Infrastructure\Consumer\RabbitMQ\Consumer($config, $logger);
-
-$consumer->consume(function($task) use ($monitor, $delay) {
-    $monitor->increment('queues.testhelper.task.consumed');
-    var_dump($task);
-    sleep($delay);
-});
+$callback = function(Task $message) {
+    var_dump($message);
+};
+$consumer = new Consumer(
+    'rabbitmq',
+    5672,
+    'guest',
+    'guest',
+    '/',
+    'test',
+    'test',
+    $logger,
+    $callback
+);
+$consumer->consume();

@@ -8,11 +8,13 @@
 
 namespace Domain\Queue;
 
+use Domain\Queue\Exception\ReaderException;
+
 interface QueueReader
 {
     /**
-     * @param $callback
-     * @return mixed
+     * @throws ReaderException
+     * @return boolean
      */
-    public function read($callback);
+    public function read();
 }

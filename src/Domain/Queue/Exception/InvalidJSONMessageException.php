@@ -1,6 +1,6 @@
 <?php
 
-namespace Domain\Queue;
+namespace Domain\Queue\Exception;
 
 class InvalidJSONMessageException extends \Exception
 {

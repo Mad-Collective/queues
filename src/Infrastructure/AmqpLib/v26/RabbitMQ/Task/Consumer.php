@@ -9,28 +9,29 @@
 namespace Infrastructure\AmqpLib\v26\RabbitMQ\Task;
 
 use \Domain\Task\Consumer as DomainConsumer;
-use Infrastructure\AmqpLib\v26\Queue\Config\BindConfig;
-use Infrastructure\AmqpLib\v26\Queue\Config\ConnectionConfig;
-use Infrastructure\AmqpLib\v26\Queue\Config\ConsumeConfig;
-use Infrastructure\AmqpLib\v26\Queue\Config\ExchangeConfig;
-use Infrastructure\AmqpLib\v26\Queue\Config\QueueConfig;
-use Infrastructure\AmqpLib\v26\Queue\QueueReader;
+use Domain\Task\JSONTaskFactory;
+use Infrastructure\AmqpLib\v26\RabbitMQ\Queue\Config\BindConfig;
+use Infrastructure\AmqpLib\v26\RabbitMQ\Queue\Config\ConnectionConfig;
+use Infrastructure\AmqpLib\v26\RabbitMQ\Queue\Config\ConsumeConfig;
+use Infrastructure\AmqpLib\v26\RabbitMQ\Queue\Config\ExchangeConfig;
+use Infrastructure\AmqpLib\v26\RabbitMQ\Queue\Config\QueueConfig;
+use Infrastructure\AmqpLib\v26\RabbitMQ\Queue\MessageHandler;
+use Infrastructure\AmqpLib\v26\RabbitMQ\Queue\QueueReader;
 use Psr\Log\LoggerInterface;
-
 
 class Consumer extends DomainConsumer
 {
     /**
      * Consumer constructor.
-     * @param \Domain\Queue\QueueReader $host
+     * @param string $host
      * @param $port
      * @param $user
      * @param $password
      * @param $vHost
      * @param $exchangeName
      * @param $queueName
-     * @param BindConfig $bindConfig
      * @param LoggerInterface $logger
+     * @param callable $callback
      */
     public function __construct(
         $host,
@@ -40,17 +41,18 @@ class Consumer extends DomainConsumer
         $vHost,
         $exchangeName,
         $queueName,
-        BindConfig $bindConfig,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        callable $callback
     )
     {
         $queueReader = new QueueReader(
             new ConnectionConfig($host, $port, $user, $password, $vHost),
             new QueueConfig($queueName, false, true, false, false),
             new ExchangeConfig($exchangeName, 'fanout', false, true, false),
-            $bindConfig,
+            new BindConfig(),
             new ConsumeConfig(false, false, false, false),
-            $logger
+            $logger,
+            new MessageHandler(new JSONTaskFactory(), $callback)
         );
         parent::__construct($queueReader);
     }

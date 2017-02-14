@@ -4,6 +4,10 @@ MAINTAINER Marc Lopez <marc5.12@outlook.com>
 
 ENV USER queues
 ENV FOLDER /app/queues
+ENV QUEUES_RABBITMQ_HOST rabbitmq
+ENV QUEUES_RABBITMQ_PORT 5672
+ENV QUEUES_RABBITMQ_USER guest
+ENV QUEUES_RABBITMQ_PASSWORD guest
 
 ### Application specific stuff ###
 

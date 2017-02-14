@@ -2,7 +2,7 @@
 
 namespace Domain\Event\Exception;
 
-use Domain\Queue\InvalidJSONMessageException;
+use Domain\Queue\Exception\InvalidJSONMessageException;
 
 class InvalidJSONDomainEventException extends InvalidJSONMessageException
 {

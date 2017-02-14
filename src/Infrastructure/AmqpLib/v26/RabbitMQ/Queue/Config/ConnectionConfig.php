@@ -6,7 +6,7 @@
  * Time: 16:23
  */
 
-namespace Infrastructure\AmqpLib\v26\Queue\Config;
+namespace Infrastructure\AmqpLib\v26\RabbitMQ\Queue\Config;
 
 class ConnectionConfig
 {

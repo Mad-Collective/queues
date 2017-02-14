@@ -9,19 +9,19 @@
 namespace Infrastructure\AmqpLib\v26\RabbitMQ\DomainEvent;
 
 use Domain\Event\Subscriber as DomainSubscriber;
-use Infrastructure\AmqpLib\v26\Queue\Config\BindConfig;
-use Infrastructure\AmqpLib\v26\Queue\Config\ConnectionConfig;
-use Infrastructure\AmqpLib\v26\Queue\Config\ConsumeConfig;
-use Infrastructure\AmqpLib\v26\Queue\Config\ExchangeConfig;
-use Infrastructure\AmqpLib\v26\Queue\Config\QueueConfig;
-use Infrastructure\AmqpLib\v26\Queue\QueueReader;
+use Infrastructure\AmqpLib\v26\RabbitMQ\Queue\Config\BindConfig;
+use Infrastructure\AmqpLib\v26\RabbitMQ\Queue\Config\ConnectionConfig;
+use Infrastructure\AmqpLib\v26\RabbitMQ\Queue\Config\ConsumeConfig;
+use Infrastructure\AmqpLib\v26\RabbitMQ\Queue\Config\ExchangeConfig;
+use Infrastructure\AmqpLib\v26\RabbitMQ\Queue\Config\QueueConfig;
+use Infrastructure\AmqpLib\v26\RabbitMQ\Queue\QueueReader;
 use Psr\Log\LoggerInterface;
 
 class Subscriber extends DomainSubscriber
 {
     /**
      * Subscriber constructor.
-     * @param \Domain\Queue\QueueReader $host
+     * @param string $host
      * @param $port
      * @param $user
      * @param $password
@@ -30,6 +30,7 @@ class Subscriber extends DomainSubscriber
      * @param $queueName
      * @param BindConfig $bindConfig
      * @param LoggerInterface $logger
+     * @param callable $callback
      */
     public function __construct(
         $host,
@@ -40,7 +41,8 @@ class Subscriber extends DomainSubscriber
         $exchangeName,
         $queueName,
         BindConfig $bindConfig,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        callable $callback
     )
     {
         $queueReader = new QueueReader(
@@ -49,7 +51,8 @@ class Subscriber extends DomainSubscriber
             new ExchangeConfig($exchangeName, 'topic', false, true, false),
             $bindConfig,
             new ConsumeConfig(false, false, true, false),
-            $logger
+            $logger,
+            $callback
         );
         parent::__construct($queueReader);
     }

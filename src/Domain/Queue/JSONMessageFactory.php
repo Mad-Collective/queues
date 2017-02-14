@@ -2,6 +2,8 @@
 
 namespace Domain\Queue;
 
+use Domain\Queue\Exception\InvalidJSONMessageException;
+
 interface JSONMessageFactory
 {
     /**
