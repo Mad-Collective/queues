@@ -12,3 +12,4 @@ if [[ ! -f $COMPOSER_BIN ]]; then
 fi
 
 composer install --no-interaction
+php -a
