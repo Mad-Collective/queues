@@ -1,7 +1,7 @@
-COMPONENT := notifier
+COMPONENT := queues
 CODE_CONTAINER := phpfpm
 CLI_CONTAINER := phpcli
-APP_ROOT := /app/notifier
+APP_ROOT := /app/queues
 IMAGES ?= false
 CI ?= false
 ENV ?= staging

@@ -9,7 +9,7 @@ ENV FOLDER /app/queues
 
 RUN useradd -u 1000 $USER
 
-# Create app and ssh folder & copy keys
+# Create app and ssh folder
 RUN mkdir -p $FOLDER
 
 # Set the workdir to the base app

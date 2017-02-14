@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Install and/or run composer on the container
 COMPOSER_BIN=`which composer`
 
