@@ -6,21 +6,23 @@
  * Time: 18:55
  */
 
-namespace Factory\AmqpLib\v26\RabbitMQ\Task;
+namespace Infrastructure\AmqpLib\v26\RabbitMQ\Task;
 
 use \Domain\Task\Consumer as DomainConsumer;
-use Infrastructure\AmqpLib\v26\BindConfig;
-use Infrastructure\AmqpLib\v26\ConnectionConfig;
-use Infrastructure\AmqpLib\v26\ConsumeConfig;
-use Infrastructure\AmqpLib\v26\ExchangeConfig;
-use Infrastructure\AmqpLib\v26\QueueConfig;
-use Infrastructure\AmqpLib\v26\QueueReader;
+use Infrastructure\AmqpLib\v26\Queue\Config\BindConfig;
+use Infrastructure\AmqpLib\v26\Queue\Config\ConnectionConfig;
+use Infrastructure\AmqpLib\v26\Queue\Config\ConsumeConfig;
+use Infrastructure\AmqpLib\v26\Queue\Config\ExchangeConfig;
+use Infrastructure\AmqpLib\v26\Queue\Config\QueueConfig;
+use Infrastructure\AmqpLib\v26\Queue\QueueReader;
+use Psr\Log\LoggerInterface;
+
 
 class Consumer extends DomainConsumer
 {
     /**
      * Consumer constructor.
-     * @param QueueReader $host
+     * @param \Domain\Queue\QueueReader $host
      * @param $port
      * @param $user
      * @param $password
@@ -28,6 +30,7 @@ class Consumer extends DomainConsumer
      * @param $exchangeName
      * @param $queueName
      * @param BindConfig $bindConfig
+     * @param LoggerInterface $logger
      */
     public function __construct(
         $host,
@@ -37,7 +40,8 @@ class Consumer extends DomainConsumer
         $vHost,
         $exchangeName,
         $queueName,
-        BindConfig $bindConfig
+        BindConfig $bindConfig,
+        LoggerInterface $logger
     )
     {
         $queueReader = new QueueReader(
@@ -45,7 +49,8 @@ class Consumer extends DomainConsumer
             new QueueConfig($queueName, false, true, false, false),
             new ExchangeConfig($exchangeName, 'fanout', false, true, false),
             $bindConfig,
-            new ConsumeConfig(false, false, false, false)
+            new ConsumeConfig(false, false, false, false),
+            $logger
         );
         parent::__construct($queueReader);
     }

@@ -18,19 +18,18 @@ class DomainEvent implements Message
     /**
      * @var int
      */
-    protected $ocurredOn;
+    protected $occurredOn;
 
     /**
      * @var array
      */
-
     protected $body = array();
 
-    public function __construct($origin, $name, $ocurredOn, array $body = [])
+    public function __construct($origin, $name, $occurredOn, array $body = [])
     {
         $this->origin = $origin;
         $this->name = $name;
-        $this->ocurredOn = $ocurredOn;
+        $this->occurredOn = $occurredOn;
         $this->body = $body;
     }
 
@@ -57,7 +56,7 @@ class DomainEvent implements Message
      */
     public function getOcurredOn()
     {
-        return $this->ocurredOn;
+        return $this->occurredOn;
     }
 
     /**
@@ -91,12 +90,12 @@ class DomainEvent implements Message
     /**
      * Timestamp
      *
-     * @param $ocurredOn
+     * @param $occurredOn
      * @return $this
      */
-    public function setOcurredOn($ocurredOn)
+    public function setOccurredOn($occurredOn)
     {
-        $this->ocurredOn = $ocurredOn;
+        $this->occurredOn = $occurredOn;
         return $this;
     }
 
@@ -118,7 +117,7 @@ class DomainEvent implements Message
         return [
             'origin' => $this->origin,
             'name' => $this->name,
-            'ocurredOn' => $this->ocurredOn,
+            'occurredOn' => $this->occurredOn,
             'body' => $this->body
         ];
     }

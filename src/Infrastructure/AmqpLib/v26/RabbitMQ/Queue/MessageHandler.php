@@ -6,7 +6,7 @@
  * Time: 19:13
  */
 
-namespace Infrastructure\AmqpLib\v26;
+namespace Infrastructure\AmqpLib\v26\Queue;
 
 
 class MessageHandler

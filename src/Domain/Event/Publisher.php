@@ -1,7 +1,7 @@
 <?php
 namespace Domain\Event;
 
-use Infrastructure\AmqpLib\v26\QueueWriter;
+use Domain\Queue\QueueWriter;
 
 class Publisher
 {

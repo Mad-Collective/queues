@@ -1,22 +1,25 @@
 <?php
 
-namespace Factory\AmqpLib\v26\RabbitMQ\Task;
+namespace Infrastructure\AmqpLib\v26\RabbitMQ\Task;
 
 use \Domain\Task\Producer as DomainProducer;
-use Infrastructure\AmqpLib\v26\ConnectionConfig;
-use Infrastructure\AmqpLib\v26\ExchangeConfig;
-use Infrastructure\AmqpLib\v26\QueueWriter;
+use Infrastructure\AmqpLib\v26\Queue\Config\ConnectionConfig;
+use Infrastructure\AmqpLib\v26\Queue\Config\ExchangeConfig;
+use Infrastructure\AmqpLib\v26\Queue\QueueWriter;
+use Psr\Log\LoggerInterface;
+
 
 class Producer extends DomainProducer
 {
     /**
      * Producer constructor.
-     * @param QueueWriter $host
+     * @param \Domain\Queue\QueueWriter $host
      * @param $port
      * @param $user
      * @param $password
      * @param $vHost
      * @param $exchangeName
+     * @param LoggerInterface $logger
      */
     public function __construct(
         $host,
@@ -24,12 +27,14 @@ class Producer extends DomainProducer
         $user,
         $password,
         $vHost,
-        $exchangeName
+        $exchangeName,
+        LoggerInterface $logger
     )
     {
         $queueWriter = new QueueWriter(
             new ConnectionConfig($host, $port, $user, $password, $vHost),
-            new ExchangeConfig($exchangeName, 'fanout', false, true, false)
+            new ExchangeConfig($exchangeName, 'fanout', false, true, false),
+            $logger
         );
         parent::__construct($queueWriter);
     }

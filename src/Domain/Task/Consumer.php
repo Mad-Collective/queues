@@ -1,7 +1,7 @@
 <?php
 namespace Domain\Task;
 
-use Infrastructure\AmqpLib\v26\QueueReader;
+use Domain\Queue\QueueReader;
 
 class Consumer
 {

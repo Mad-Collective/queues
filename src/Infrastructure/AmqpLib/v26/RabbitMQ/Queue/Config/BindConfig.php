@@ -6,7 +6,7 @@
  * Time: 16:13
  */
 
-namespace Infrastructure\AmqpLib\v26;
+namespace Infrastructure\AmqpLib\v26\Queue\Config;
 
 
 class BindConfig
