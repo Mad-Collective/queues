@@ -2,6 +2,7 @@
 namespace Domain\Event;
 
 use Domain\Queue\QueueReader;
+use Psr\Log\LoggerInterface;
 
 class Subscriber
 {
@@ -9,6 +10,11 @@ class Subscriber
      * @var QueueReader
      */
     protected $queueReader;
+
+    /**
+     * @var LoggerInterface
+     */
+    protected $logger;
 
     /**
      * @var EventSubscriptor[]
@@ -19,9 +25,10 @@ class Subscriber
      * Subscriber constructor.
      * @param QueueReader $queueReader
      */
-    public function __construct(QueueReader $queueReader)
+    public function __construct(QueueReader $queueReader, LoggerInterface $logger)
     {
         $this->queueReader = $queueReader;
+        $this->logger = $logger;
     }
 
     /**
@@ -32,21 +39,28 @@ class Subscriber
         $this->subscriptors[] = $eventSubscriptor;
     }
 
-    /**
-     * @param $callback
-     */
-    public function start($callback)
+    public function start()
     {
         while(true) {
-            $this->processOne($callback);
+            $this->processOne();
         }
     }
 
-    /**
-     * @param $callback
-     */
-    public function processOne($callback)
+    public function processOne()
     {
-        $this->queueReader->read($callback);
+        $this->queueReader->read();
+    }
+
+    /**
+     * @param DomainEvent $domainEvent
+     */
+    public function notify(DomainEvent $domainEvent)
+    {
+        $this->logger->info('Domain Event received, notifying subscribers');
+        foreach($this->subscriptors as $subscriptor) {
+            if($subscriptor->isSubscribed($domainEvent)) {
+                $subscriptor->notify($domainEvent);
+            }
+        }
     }
 }

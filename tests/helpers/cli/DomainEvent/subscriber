@@ -1,0 +1,43 @@
+#!/usr/bin/env php
+<?php
+
+use Domain\Event\DomainEvent;
+use Domain\Event\EventSubscriptor;
+use Infrastructure\AmqpLib\v26\RabbitMQ\DomainEvent\Subscriber;
+use Infrastructure\AmqpLib\v26\RabbitMQ\Queue\Config\BindConfig;
+use Infrastructure\Logger\NaiveStdoutLogger;
+
+require_once '/app/queues/vendor/autoload.php';
+
+class TestEventSubscriptor implements EventSubscriptor
+{
+    public function isSubscribed(DomainEvent $domainEvent)
+    {
+        return true;
+    }
+
+    public function notify(DomainEvent $domainEvent)
+    {
+        var_dump($domainEvent);
+    }
+}
+
+$logger = new NaiveStdoutLogger();
+
+$bindConfig = new BindConfig();
+$bindConfig->addTopic('test');
+
+$subscriber = new Subscriber(
+    'rabbitmq',
+    5672,
+    'guest',
+    'guest',
+    '/',
+    'test-domain-event',
+    'test-domain-event',
+    $bindConfig,
+    $logger
+);
+
+$subscriber->subscribe(new TestEventSubscriptor());
+$subscriber->start();

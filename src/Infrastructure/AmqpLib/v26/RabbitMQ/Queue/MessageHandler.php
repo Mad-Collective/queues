@@ -23,12 +23,21 @@ class MessageHandler
      */
     private $callback;
 
+    /**
+     * MessageHandler constructor.
+     * @param JSONMessageFactory $jsonMessageFactory
+     * @param callable $callback
+     */
     public function __construct(JSONMessageFactory $jsonMessageFactory, callable $callback)
     {
         $this->jsonMessageFactory = $jsonMessageFactory;
         $this->callback = $callback;
     }
 
+    /**
+     * @param AMQPMessage $message
+     * @throws \Exception
+     */
     public function handleMessage(AMQPMessage $message)
     {
         try {
@@ -38,6 +47,5 @@ class MessageHandler
         } catch (\Exception $e) {
             throw $e;
         }
-
     }
 }

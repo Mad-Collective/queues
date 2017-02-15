@@ -1,0 +1,22 @@
+#!/usr/bin/env php
+<?php
+
+use Domain\Event\DomainEvent;
+use Infrastructure\AmqpLib\v26\RabbitMQ\DomainEvent\Publisher;
+
+require_once '/app/queues/vendor/autoload.php';
+
+$logger = new \Cmp\Queue\Infrastructure\Log\NaiveStdoutLogger();
+
+$publisher = new Publisher(
+    'rabbitmq',
+    5672,
+    'guest',
+    'guest',
+    '/',
+    'test-domain-event',
+    $logger
+);
+
+$publisher->add(new DomainEvent('queues.helper', 'test', microtime(true), array(1,2,3,4,5)));
+$publisher->publish();

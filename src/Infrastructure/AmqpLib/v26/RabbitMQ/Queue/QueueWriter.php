@@ -3,7 +3,7 @@ namespace Infrastructure\AmqpLib\v26\RabbitMQ\Queue;
 
 use Domain\Queue\Exception\WriterException;
 use Domain\Queue\QueueWriter as DomainQueueWriter;
-    use Infrastructure\AmqpLib\v26\RabbitMQ\Queue\Config\ConnectionConfig;
+use Infrastructure\AmqpLib\v26\RabbitMQ\Queue\Config\ConnectionConfig;
 use Infrastructure\AmqpLib\v26\RabbitMQ\Queue\Config\ExchangeConfig;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AMQPLazyConnection;
@@ -12,6 +12,8 @@ use Psr\Log\LoggerInterface;
 
 class QueueWriter implements DomainQueueWriter
 {
+    const DELAY_QUEUE_PREFIX = 'Delay';
+
     /**
      * @var AMQPLazyConnection
      */
@@ -36,6 +38,8 @@ class QueueWriter implements DomainQueueWriter
      * @var AMQPChannel
      */
     protected $channel;
+
+    protected $delayedExchanges = array();
 
     /**
      * QueueWriter constructor.
@@ -105,5 +109,32 @@ class QueueWriter implements DomainQueueWriter
             $this->logger->error('Error trying to connect to rabbitMQ:' . $exception->getMessage());
             throw new WriterException($exception->getMessage(), $exception->getCode());
         }
+    }
+
+    protected function initializeWithDelay($delay)
+    {
+        $channel = $this->connection->channel();
+
+        $exchangeDelayed = self::DELAY_QUEUE_PREFIX.$delay.$this->exchangeConfig->getName();
+        $queueDelayed = self::DELAY_QUEUE_PREFIX.$delay.'Queue';
+
+        // Delay Queue
+        $channel->exchange_declare($exchangeDelayed, 'fanout', false, true, true);
+        $channel->queue_declare(
+            $queueDelayed,
+            false,
+            true,
+            false,
+            true,
+            false,
+            [
+                'x-expires' => ['I', $delay*1000 + 5000],
+                'x-message-ttl' => array('I', $delay*1000),
+                'x-dead-letter-exchange' => array('S', $this->exchangeConfig->getName())
+            ]
+        );
+        $channel->queue_bind($queueDelayed, $exchangeDelayed);
+        $this->delayedExchanges[] = ;
+        return $exchangeDelayed;
     }
 }

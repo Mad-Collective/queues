@@ -14,11 +14,11 @@ class Producer extends DomainProducer
     /**
      * Producer constructor.
      * @param string $host
-     * @param $port
-     * @param $user
-     * @param $password
-     * @param $vHost
-     * @param $exchangeName
+     * @param int $port
+     * @param string $user
+     * @param string $password
+     * @param string $vHost
+     * @param string $exchangeName
      * @param LoggerInterface $logger
      */
     public function __construct(

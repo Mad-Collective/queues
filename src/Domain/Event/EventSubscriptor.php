@@ -8,10 +8,17 @@
 
 namespace Domain\Event;
 
-
-use Cmp\DomainEvent\Domain\Event\DomainEvent;
-
 interface EventSubscriptor
 {
+    /**
+     * @param DomainEvent $domainEvent
+     * @return mixed
+     */
     public function notify(DomainEvent $domainEvent);
+
+    /**
+     * @param DomainEvent $domainEvent
+     * @return bool
+     */
+    public function isSubscribed(DomainEvent $domainEvent);
 }

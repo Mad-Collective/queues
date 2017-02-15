@@ -24,12 +24,12 @@ class Consumer extends DomainConsumer
     /**
      * Consumer constructor.
      * @param string $host
-     * @param $port
-     * @param $user
-     * @param $password
-     * @param $vHost
-     * @param $exchangeName
-     * @param $queueName
+     * @param int $port
+     * @param string $user
+     * @param string $password
+     * @param string $vHost
+     * @param string $exchangeName
+     * @param string $queueName
      * @param LoggerInterface $logger
      * @param callable $callback
      */

@@ -1,7 +1,7 @@
 <?php
 namespace Domain\Event;
 
-use Cmp\Queue\Domain\Message\Message;
+use Domain\Queue\Message;
 
 class DomainEvent implements Message
 {
@@ -25,6 +25,13 @@ class DomainEvent implements Message
      */
     protected $body = array();
 
+    /**
+     * DomainEvent constructor.
+     * @param $origin
+     * @param $name
+     * @param $occurredOn
+     * @param array $body
+     */
     public function __construct($origin, $name, $occurredOn, array $body = [])
     {
         $this->origin = $origin;
@@ -54,7 +61,7 @@ class DomainEvent implements Message
      *
      * @return int
      */
-    public function getOcurredOn()
+    public function getOccurredOn()
     {
         return $this->occurredOn;
     }
@@ -65,6 +72,14 @@ class DomainEvent implements Message
     public function getBody()
     {
         return $this->body;
+    }
+
+    /**
+     * @return int
+     */
+    public function getDelay()
+    {
+        return 0;
     }
 
     /**

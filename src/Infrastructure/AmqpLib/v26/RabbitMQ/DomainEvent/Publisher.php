@@ -13,12 +13,12 @@ class Publisher extends DomainPublisher
 {
     /**
      * Publisher constructor.
-     * @param \Domain\Queue\QueueWriter $host
-     * @param $port
-     * @param $user
-     * @param $password
-     * @param $vHost
-     * @param $exchangeName
+     * @param string $host
+     * @param int $port
+     * @param string $user
+     * @param string $password
+     * @param string $vHost
+     * @param string $exchangeName
      * @param LoggerInterface $logger
      */
     public function __construct(
