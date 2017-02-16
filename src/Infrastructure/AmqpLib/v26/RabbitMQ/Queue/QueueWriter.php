@@ -2,6 +2,7 @@
 namespace Infrastructure\AmqpLib\v26\RabbitMQ\Queue;
 
 use Domain\Queue\Exception\WriterException;
+use Domain\Queue\Message;
 use Domain\Queue\QueueWriter as DomainQueueWriter;
 use Infrastructure\AmqpLib\v26\RabbitMQ\Queue\Config\ConnectionConfig;
 use Infrastructure\AmqpLib\v26\RabbitMQ\Queue\Config\ExchangeConfig;
@@ -12,17 +13,10 @@ use Psr\Log\LoggerInterface;
 
 class QueueWriter implements DomainQueueWriter
 {
-    const DELAY_QUEUE_PREFIX = 'Delay';
-
     /**
      * @var AMQPLazyConnection
      */
     protected $connection;
-
-    /**
-     * @var ConnectionConfig
-     */
-    protected $connectionConfig;
 
     /**
      * @var ExchangeConfig
@@ -39,34 +33,25 @@ class QueueWriter implements DomainQueueWriter
      */
     protected $channel;
 
-    protected $delayedExchanges = array();
-
     /**
      * QueueWriter constructor.
-     * @param ConnectionConfig $connectionConfig
+     * @param AMQPLazyConnection $connection
      * @param ExchangeConfig $exchangeConfig
      * @param LoggerInterface $logger
      */
     public function __construct(
-        ConnectionConfig $connectionConfig,
+        AMQPLazyConnection $connection,
         ExchangeConfig $exchangeConfig,
         LoggerInterface $logger
     )
     {
-        $this->connection = new AMQPLazyConnection(
-            $connectionConfig->getHost(),
-            $connectionConfig->getPort(),
-            $connectionConfig->getUser(),
-            $connectionConfig->getPassword(),
-            $connectionConfig->getVHost()
-        );
-        $this->connectionConfig = $connectionConfig;
+        $this->connection = $connection;
         $this->exchangeConfig = $exchangeConfig;
         $this->logger = $logger;
     }
 
     /**
-     * @param array $messages
+     * @param Message[] $messages
      * @throws WriterException
      * @return null
      */
@@ -74,13 +59,27 @@ class QueueWriter implements DomainQueueWriter
     {
         $this->initialize();
         try {
+            $messagesWithDelay = [];
             foreach($messages as $message) {
+                if($message->getDelay() > 0) {
+                    $messagesWithDelay[$message->getDelay()][] = $message;
+                    continue;
+                }
                 $encodedMessage = json_encode($message);
                 $this->logger->debug('Writing:' . $encodedMessage);
                 $msg = new AMQPMessage($encodedMessage, array('delivery_mode' => 2));
                 $this->channel->batch_basic_publish($msg, $this->exchangeConfig->getName(), $message->getName());
             }
             $this->channel->publish_batch();
+            foreach($messagesWithDelay as $delay => $delayedMessages) {
+                $delayedQueueWriter = new DelayedQueueWriter(
+                    $this->exchangeConfig->getName(),
+                    $delay,
+                    $this->channel,
+                    $this->logger
+                );
+                $delayedQueueWriter->write($delayedMessages);
+            }
         } catch(\Exception $exception) {
             $this->logger->error('Error writing messages: '.$exception->getMessage());
             throw new WriterException($exception->getMessage(), $exception->getCode());
@@ -109,32 +108,5 @@ class QueueWriter implements DomainQueueWriter
             $this->logger->error('Error trying to connect to rabbitMQ:' . $exception->getMessage());
             throw new WriterException($exception->getMessage(), $exception->getCode());
         }
-    }
-
-    protected function initializeWithDelay($delay)
-    {
-        $channel = $this->connection->channel();
-
-        $exchangeDelayed = self::DELAY_QUEUE_PREFIX.$delay.$this->exchangeConfig->getName();
-        $queueDelayed = self::DELAY_QUEUE_PREFIX.$delay.'Queue';
-
-        // Delay Queue
-        $channel->exchange_declare($exchangeDelayed, 'fanout', false, true, true);
-        $channel->queue_declare(
-            $queueDelayed,
-            false,
-            true,
-            false,
-            true,
-            false,
-            [
-                'x-expires' => ['I', $delay*1000 + 5000],
-                'x-message-ttl' => array('I', $delay*1000),
-                'x-dead-letter-exchange' => array('S', $this->exchangeConfig->getName())
-            ]
-        );
-        $channel->queue_bind($queueDelayed, $exchangeDelayed);
-        $this->delayedExchanges[] = ;
-        return $exchangeDelayed;
     }
 }

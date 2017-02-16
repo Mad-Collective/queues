@@ -6,6 +6,7 @@ use \Domain\Event\Publisher as DomainPublisher;
 use Infrastructure\AmqpLib\v26\RabbitMQ\Queue\Config\ConnectionConfig;
 use Infrastructure\AmqpLib\v26\RabbitMQ\Queue\Config\ExchangeConfig;
 use Infrastructure\AmqpLib\v26\RabbitMQ\Queue\QueueWriter;
+use PhpAmqpLib\Connection\AMQPLazyConnection;
 use Psr\Log\LoggerInterface;
 
 
@@ -32,7 +33,7 @@ class Publisher extends DomainPublisher
     )
     {
         $queueWriter = new QueueWriter(
-            new ConnectionConfig($host, $port, $user, $password, $vHost),
+            new AMQPLazyConnection($host, $port, $user, $password, $vHost),
             new ExchangeConfig($exchangeName, 'topic', false, true, false),
             $logger
         );

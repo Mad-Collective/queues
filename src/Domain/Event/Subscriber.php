@@ -1,6 +1,7 @@
 <?php
 namespace Domain\Event;
 
+use Domain\Event\Exception\DomainEventException;
 use Domain\Queue\QueueReader;
 use Psr\Log\LoggerInterface;
 
@@ -33,22 +34,27 @@ class Subscriber
 
     /**
      * @param EventSubscriptor $eventSubscriptor
+     * @return $this
      */
     public function subscribe(EventSubscriptor $eventSubscriptor)
     {
         $this->subscriptors[] = $eventSubscriptor;
+        return $this;
     }
 
-    public function start()
+    public function start(callable $callback)
     {
         while(true) {
-            $this->processOne();
+            $this->processOne($callback);
         }
     }
 
-    public function processOne()
+    public function processOne(callable $callback)
     {
-        $this->queueReader->read();
+        if(!isset($this->subscriptors[0])) {
+            throw new DomainEventException('You must add at least 1 EventSubscriptor in order to publish start reading from queue.');
+        }
+        $this->queueReader->read($callback);
     }
 
     /**
@@ -62,5 +68,13 @@ class Subscriber
                 $subscriptor->notify($domainEvent);
             }
         }
+    }
+
+    /**
+     * @return EventSubscriptor[]
+     */
+    public function getSubscriptors()
+    {
+        return $this->subscriptors;
     }
 }

@@ -9,9 +9,6 @@ require_once '/app/queues/vendor/autoload.php';
 
 $logger = new NaiveStdoutLogger();
 
-$callback = function(Task $message) {
-    var_dump($message);
-};
 $consumer = new Consumer(
     'rabbitmq',
     5672,
@@ -20,7 +17,8 @@ $consumer = new Consumer(
     '/',
     'test',
     'test',
-    $logger,
-    $callback
+    $logger
 );
-$consumer->consume();
+$consumer->consume(function(Task $message) {
+    var_dump($message);
+});

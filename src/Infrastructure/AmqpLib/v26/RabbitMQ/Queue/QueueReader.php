@@ -10,6 +10,7 @@ namespace Infrastructure\AmqpLib\v26\RabbitMQ\Queue;
 
 use Domain\Queue\Exception\ReaderException;
 use Domain\Queue\QueueReader as DomainQueueReader;
+use Domain\Task\JSONTaskFactory;
 use Infrastructure\AmqpLib\v26\RabbitMQ\Queue\Config\BindConfig;
 use Infrastructure\AmqpLib\v26\RabbitMQ\Queue\Config\ConnectionConfig;
 use Infrastructure\AmqpLib\v26\RabbitMQ\Queue\Config\ConsumeConfig;
@@ -25,11 +26,6 @@ class QueueReader implements DomainQueueReader
      * @var AMQPLazyConnection
      */
     protected $connection;
-
-    /**
-     * @var ConnectionConfig
-     */
-    protected $connectionConfig;
 
     /**
      * @var QueueConfig
@@ -52,6 +48,11 @@ class QueueReader implements DomainQueueReader
     protected $consumeConfig;
 
     /**
+     * @var MessageHandler
+     */
+    protected $messageHandler;
+
+    /**
      * @var LoggerInterface
      */
     protected $logger;
@@ -62,38 +63,26 @@ class QueueReader implements DomainQueueReader
     protected $channel;
 
     /**
-     * @var MessageHandler
-     */
-    protected $messageHandler;
-
-    /**
      * QueueReader constructor.
-     * @param ConnectionConfig $connectionConfig
+     * @param AMQPLazyConnection $connection
      * @param QueueConfig $queueConfig
      * @param ExchangeConfig $exchangeConfig
      * @param BindConfig $bindConfig
      * @param ConsumeConfig $consumeConfig
-     * @param LoggerInterface $logger
      * @param MessageHandler $messageHandler
+     * @param LoggerInterface $logger
      */
     public function __construct(
-        ConnectionConfig $connectionConfig,
+        AMQPLazyConnection $connection,
         QueueConfig $queueConfig,
         ExchangeConfig $exchangeConfig,
         BindConfig $bindConfig,
         ConsumeConfig $consumeConfig,
-        LoggerInterface $logger,
-        MessageHandler $messageHandler
+        MessageHandler $messageHandler,
+        LoggerInterface $logger
     )
     {
-        $this->connection = new AMQPLazyConnection(
-            $connectionConfig->getHost(),
-            $connectionConfig->getPort(),
-            $connectionConfig->getUser(),
-            $connectionConfig->getPassword(),
-            $connectionConfig->getVHost()
-        );
-        $this->connectionConfig = $connectionConfig;
+        $this->connection = $connection;
         $this->queueConfig = $queueConfig;
         $this->exchangeConfig = $exchangeConfig;
         $this->bindConfig = $bindConfig;
@@ -102,12 +91,32 @@ class QueueReader implements DomainQueueReader
         $this->messageHandler = $messageHandler;
     }
 
-    public function read()
+    /**
+     * @param callable $callback
+     * @throws ReaderException
+     */
+    public function read(callable $callback)
     {
         $this->initialize();
+
+        $this->messageHandler->setCallback($callback);
+
+        $this->logger->info('Waiting for messages on queue:' . $this->queueConfig->getName());
+        $this->channel->basic_consume(
+            $this->queueConfig->getName(),
+            '',
+            $this->consumeConfig->getNoLocal(),
+            $this->consumeConfig->getNoAck(),
+            $this->consumeConfig->getExclusive(),
+            $this->consumeConfig->getNoWait(),
+            array($this->messageHandler, 'handleMessage')
+        );
         $this->channel->wait();
     }
 
+    /**
+     * @throws ReaderException
+     */
     protected function initialize()
     {
         if($this->channel) {
@@ -123,6 +132,7 @@ class QueueReader implements DomainQueueReader
                 $this->exchangeConfig->getDurable(),
                 $this->exchangeConfig->getAutoDelete()
             );
+            $this->logger->info('Declaring queue');
             $this->channel->queue_declare(
                 $this->queueConfig->getName(),
                 $this->queueConfig->getPassive(),
@@ -134,16 +144,6 @@ class QueueReader implements DomainQueueReader
                 $this->logger->info('Binding Topic:' . $bindTopic);
                 $this->channel->queue_bind($this->queueConfig->getName(), $this->exchangeConfig->getName(), $bindTopic);
             }
-            $this->logger->info('Starting to consume RabbitMQ Queue:' . $this->queueConfig->getName());
-            $this->channel->basic_consume(
-                $this->queueConfig->getName(),
-                '',
-                $this->consumeConfig->getNoLocal(),
-                $this->consumeConfig->getNoAck(),
-                $this->consumeConfig->getExclusive(),
-                $this->consumeConfig->getNoWait(),
-                array($this->messageHandler, 'handleMessage')
-            );
         } catch (\ErrorException $exception) {
             $this->logger->error('Error trying to connect to rabbitMQ:' . $exception->getMessage());
             throw new ReaderException($exception->getMessage(), $exception->getCode());

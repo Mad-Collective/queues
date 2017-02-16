@@ -6,6 +6,7 @@ use \Domain\Task\Producer as DomainProducer;
 use Infrastructure\AmqpLib\v26\RabbitMQ\Queue\Config\ConnectionConfig;
 use Infrastructure\AmqpLib\v26\RabbitMQ\Queue\Config\ExchangeConfig;
 use Infrastructure\AmqpLib\v26\RabbitMQ\Queue\QueueWriter;
+use PhpAmqpLib\Connection\AMQPLazyConnection;
 use Psr\Log\LoggerInterface;
 
 
@@ -32,7 +33,7 @@ class Producer extends DomainProducer
     )
     {
         $queueWriter = new QueueWriter(
-            new ConnectionConfig($host, $port, $user, $password, $vHost),
+            new AMQPLazyConnection($host, $port, $user, $password, $vHost),
             new ExchangeConfig($exchangeName, 'fanout', false, true, false),
             $logger
         );

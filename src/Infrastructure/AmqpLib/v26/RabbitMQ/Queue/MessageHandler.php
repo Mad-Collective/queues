@@ -28,10 +28,9 @@ class MessageHandler
      * @param JSONMessageFactory $jsonMessageFactory
      * @param callable $callback
      */
-    public function __construct(JSONMessageFactory $jsonMessageFactory, callable $callback)
+    public function __construct(JSONMessageFactory $jsonMessageFactory)
     {
         $this->jsonMessageFactory = $jsonMessageFactory;
-        $this->callback = $callback;
     }
 
     /**
@@ -47,5 +46,10 @@ class MessageHandler
         } catch (\Exception $e) {
             throw $e;
         }
+    }
+
+    public function setCallback(callable $callback)
+    {
+        $this->callback = $callback;
     }
 }

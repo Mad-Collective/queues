@@ -18,5 +18,8 @@ $producer = new Producer(
     $logger
 );
 
-$producer->add(new Task('test', array(1,2,3,4,5)));
+$producer->add(new Task('direct1', array(1,2,3,4,5)));
+$producer->add(new Task('10sec', array(1,2,3,4,5), 10));
+$producer->add(new Task('5sec', array(1,2,3,4,5), 5));
+$producer->add(new Task('direct2', array(1,2,3,4,5)));
 $producer->produce();

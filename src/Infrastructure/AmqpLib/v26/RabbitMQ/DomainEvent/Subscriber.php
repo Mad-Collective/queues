@@ -11,12 +11,12 @@ namespace Infrastructure\AmqpLib\v26\RabbitMQ\DomainEvent;
 use Domain\Event\JSONDomainEventFactory;
 use Domain\Event\Subscriber as DomainSubscriber;
 use Infrastructure\AmqpLib\v26\RabbitMQ\Queue\Config\BindConfig;
-use Infrastructure\AmqpLib\v26\RabbitMQ\Queue\Config\ConnectionConfig;
 use Infrastructure\AmqpLib\v26\RabbitMQ\Queue\Config\ConsumeConfig;
 use Infrastructure\AmqpLib\v26\RabbitMQ\Queue\Config\ExchangeConfig;
 use Infrastructure\AmqpLib\v26\RabbitMQ\Queue\Config\QueueConfig;
 use Infrastructure\AmqpLib\v26\RabbitMQ\Queue\MessageHandler;
 use Infrastructure\AmqpLib\v26\RabbitMQ\Queue\QueueReader;
+use PhpAmqpLib\Connection\AMQPLazyConnection;
 use Psr\Log\LoggerInterface;
 
 class Subscriber extends DomainSubscriber
@@ -45,14 +45,16 @@ class Subscriber extends DomainSubscriber
         LoggerInterface $logger
     )
     {
+        $messageHandler = new MessageHandler(new JSONDomainEventFactory());
+        $messageHandler->setCallback(array($this, 'notify'));
         $queueReader = new QueueReader(
-            new ConnectionConfig($host, $port, $user, $password, $vHost),
+            new AMQPLazyConnection($host, $port, $user, $password, $vHost),
             new QueueConfig(uniqid($queueName.'_', true), false, false, true, true),
             new ExchangeConfig($exchangeName, 'topic', false, true, false),
             $bindConfig,
             new ConsumeConfig(false, false, true, false),
-            $logger,
-            new MessageHandler(new JSONDomainEventFactory(), array($this, 'notify'))
+            $messageHandler,
+            $logger
         );
         parent::__construct($queueReader, $logger);
     }

@@ -13,8 +13,9 @@ use Domain\Queue\Exception\ReaderException;
 interface QueueReader
 {
     /**
+     * @param callable $callback
      * @throws ReaderException
-     * @return boolean
+     * @return void
      */
-    public function read();
+    public function read(callable $callback);
 }

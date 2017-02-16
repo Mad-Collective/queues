@@ -17,6 +17,7 @@ use Infrastructure\AmqpLib\v26\RabbitMQ\Queue\Config\ExchangeConfig;
 use Infrastructure\AmqpLib\v26\RabbitMQ\Queue\Config\QueueConfig;
 use Infrastructure\AmqpLib\v26\RabbitMQ\Queue\MessageHandler;
 use Infrastructure\AmqpLib\v26\RabbitMQ\Queue\QueueReader;
+use PhpAmqpLib\Connection\AMQPLazyConnection;
 use Psr\Log\LoggerInterface;
 
 class Consumer extends DomainConsumer
@@ -31,7 +32,6 @@ class Consumer extends DomainConsumer
      * @param string $exchangeName
      * @param string $queueName
      * @param LoggerInterface $logger
-     * @param callable $callback
      */
     public function __construct(
         $host,
@@ -41,18 +41,17 @@ class Consumer extends DomainConsumer
         $vHost,
         $exchangeName,
         $queueName,
-        LoggerInterface $logger,
-        callable $callback
+        LoggerInterface $logger
     )
     {
         $queueReader = new QueueReader(
-            new ConnectionConfig($host, $port, $user, $password, $vHost),
+            new AMQPLazyConnection($host, $port, $user, $password, $vHost),
             new QueueConfig($queueName, false, true, false, false),
             new ExchangeConfig($exchangeName, 'fanout', false, true, false),
             new BindConfig(),
             new ConsumeConfig(false, false, false, false),
-            $logger,
-            new MessageHandler(new JSONTaskFactory(), $callback)
+            new MessageHandler(new JSONTaskFactory()),
+            $logger
         );
         parent::__construct($queueReader);
     }
