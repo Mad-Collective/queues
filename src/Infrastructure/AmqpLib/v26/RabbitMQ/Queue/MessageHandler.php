@@ -26,7 +26,6 @@ class MessageHandler
     /**
      * MessageHandler constructor.
      * @param JSONMessageFactory $jsonMessageFactory
-     * @param callable $callback
      */
     public function __construct(JSONMessageFactory $jsonMessageFactory)
     {

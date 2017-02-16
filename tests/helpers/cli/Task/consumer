@@ -19,6 +19,7 @@ $consumer = new Consumer(
     'test',
     $logger
 );
-$consumer->consume(function(Task $message) {
-    var_dump($message);
+
+$consumer->consume(function(Task $task){
+    var_dump($task);
 });

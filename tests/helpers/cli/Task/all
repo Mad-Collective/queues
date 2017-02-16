@@ -1,0 +1,58 @@
+#!/usr/bin/env php
+<?php
+
+use Domain\Task\Task;
+use Infrastructure\AmqpLib\v26\RabbitMQ\Task\Consumer;
+use Infrastructure\AmqpLib\v26\RabbitMQ\Task\Producer;
+use Infrastructure\Logger\NaiveStdoutLogger;
+use Infrastructure\Logger\NullLogger;
+
+require_once '/app/queues/vendor/autoload.php';
+
+$logger = new NaiveStdoutLogger();
+
+$consumer = new Consumer(
+    'rabbitmq',
+    5672,
+    'guest',
+    'guest',
+    '/',
+    'behat-test111',
+    'behat-test111',
+    $logger
+);
+try {
+
+    $consumer->consume(function(Task $task){
+        var_dump($task);
+    },1);
+} catch(\Exception $e) {
+
+}
+
+$producer = new Producer(
+    'rabbitmq',
+    5672,
+    'guest',
+    'guest',
+    '/',
+    'behat-test111',
+    $logger
+);
+
+$consumer = new Consumer(
+    'rabbitmq',
+    5672,
+    'guest',
+    'guest',
+    '/',
+    'behat-test111',
+    'behat-test111',
+    $logger
+);
+
+$producer->add(new Task('direct1', array(1,2,3,4,5)));
+$producer->produce();
+$consumer->consume(function(Task $task){
+    var_dump($task);
+});

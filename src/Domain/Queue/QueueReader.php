@@ -17,5 +17,5 @@ interface QueueReader
      * @throws ReaderException
      * @return void
      */
-    public function read(callable $callback);
+    public function read(callable $callback, $timeout=0);
 }

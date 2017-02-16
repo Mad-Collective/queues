@@ -42,19 +42,19 @@ class Subscriber
         return $this;
     }
 
-    public function start(callable $callback)
+    public function start()
     {
         while(true) {
-            $this->processOne($callback);
+            $this->processOne();
         }
     }
 
-    public function processOne(callable $callback)
+    public function processOne()
     {
         if(!isset($this->subscriptors[0])) {
             throw new DomainEventException('You must add at least 1 EventSubscriptor in order to publish start reading from queue.');
         }
-        $this->queueReader->read($callback);
+        $this->queueReader->read(array($this, 'notify'));
     }
 
     /**

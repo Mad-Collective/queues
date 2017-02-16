@@ -3,6 +3,9 @@
     "autoload": {
         "psr-0": {
             "": "src"
+        },
+        "psr-4": {
+            "Tests\\Behat\\": "./tests/behat/features/bootstrap"
         }
     },
     "require": {
@@ -10,7 +13,8 @@
     },
     "require-dev": {
         "phpspec/phpspec": "2.4.1",
-        "php-amqplib/php-amqplib": "^2.6"
+        "php-amqplib/php-amqplib": "^2.6",
+        "behat/behat": "^3.3"
     },
     "config": {
       "bin-dir": "bin"

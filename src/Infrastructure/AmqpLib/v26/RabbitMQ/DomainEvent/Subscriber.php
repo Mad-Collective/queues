@@ -45,15 +45,13 @@ class Subscriber extends DomainSubscriber
         LoggerInterface $logger
     )
     {
-        $messageHandler = new MessageHandler(new JSONDomainEventFactory());
-        $messageHandler->setCallback(array($this, 'notify'));
         $queueReader = new QueueReader(
             new AMQPLazyConnection($host, $port, $user, $password, $vHost),
             new QueueConfig(uniqid($queueName.'_', true), false, false, true, true),
             new ExchangeConfig($exchangeName, 'topic', false, true, false),
             $bindConfig,
             new ConsumeConfig(false, false, true, false),
-            $messageHandler,
+            new MessageHandler(new JSONDomainEventFactory()),
             $logger
         );
         parent::__construct($queueReader, $logger);

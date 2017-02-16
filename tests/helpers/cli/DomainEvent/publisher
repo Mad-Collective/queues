@@ -3,10 +3,11 @@
 
 use Domain\Event\DomainEvent;
 use Infrastructure\AmqpLib\v26\RabbitMQ\DomainEvent\Publisher;
+use Infrastructure\Logger\NaiveStdoutLogger;
 
 require_once '/app/queues/vendor/autoload.php';
 
-$logger = new \Cmp\Queue\Infrastructure\Log\NaiveStdoutLogger();
+$logger = new NaiveStdoutLogger();
 
 $publisher = new Publisher(
     'rabbitmq',

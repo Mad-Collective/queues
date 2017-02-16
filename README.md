@@ -1,4 +1,8 @@
-# queues
+# Pluggit - Queues
+[![Build Status](https://travis-ci.org/CMProductions/queues.svg?branch=master)](https://travis-ci.org/CMProductions/queues)
+[![Build Status](https://scrutinizer-ci.com/g/CMProductions/queues/badges/build.png?b=master)](https://scrutinizer-ci.com/g/CMProductions/queues/build-status/master)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/CMProductions/queues/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/CMProductions/queues/?branch=master)
+
 
 This is the Queues Abstraction Library. It will provide you with two main abstractions:
 

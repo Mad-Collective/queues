@@ -91,25 +91,14 @@ class QueueReader implements DomainQueueReader
 
     /**
      * @param callable $callback
+     * @param int $timeout
      * @throws ReaderException
      */
-    public function read(callable $callback)
+    public function read(callable $callback, $timeout=0)
     {
         $this->initialize();
-
         $this->messageHandler->setCallback($callback);
-
-        $this->logger->info('Waiting for messages on queue:' . $this->queueConfig->getName());
-        $this->channel->basic_consume(
-            $this->queueConfig->getName(),
-            '',
-            $this->consumeConfig->getNoLocal(),
-            $this->consumeConfig->getNoAck(),
-            $this->consumeConfig->getExclusive(),
-            $this->consumeConfig->getNoWait(),
-            array($this->messageHandler, 'handleMessage')
-        );
-        $this->channel->wait();
+        $this->channel->wait(null, false, $timeout);
     }
 
     /**
@@ -138,10 +127,21 @@ class QueueReader implements DomainQueueReader
                 $this->queueConfig->getExclusive(),
                 $this->queueConfig->getAutoDelete()
             );
+            $this->channel->queue_bind($this->queueConfig->getName(), $this->exchangeConfig->getName());
             foreach ($this->bindConfig->getTopics() as $bindTopic) {
                 $this->logger->info('Binding Topic:' . $bindTopic);
                 $this->channel->queue_bind($this->queueConfig->getName(), $this->exchangeConfig->getName(), $bindTopic);
             }
+            $this->logger->info('Waiting for messages on queue:' . $this->queueConfig->getName());
+            $this->channel->basic_consume(
+                $this->queueConfig->getName(),
+                '',
+                $this->consumeConfig->getNoLocal(),
+                $this->consumeConfig->getNoAck(),
+                $this->consumeConfig->getExclusive(),
+                $this->consumeConfig->getNoWait(),
+                array($this->messageHandler, 'handleMessage')
+            );
         } catch (\ErrorException $exception) {
             $this->logger->error('Error trying to connect to rabbitMQ:' . $exception->getMessage());
             throw new ReaderException($exception->getMessage(), $exception->getCode());
