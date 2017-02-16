@@ -4,7 +4,6 @@ namespace spec\Domain\Event;
 
 use Domain\Event\DomainEvent;
 use Domain\Event\EventSubscriptor;
-use Domain\Event\TestEventSubscriptor;
 use Domain\Queue\QueueReader;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;

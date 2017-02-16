@@ -12,7 +12,6 @@ namespace Infrastructure\AmqpLib\v26\RabbitMQ\Queue;
 use Domain\Queue\Exception\WriterException;
 use Domain\Queue\Message;
 use Domain\Queue\QueueWriter as DomainQueueWriter;
-use Infrastructure\AmqpLib\v26\RabbitMQ\Queue\Config\ConnectionConfig;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AMQPLazyConnection;
 use PhpAmqpLib\Message\AMQPMessage;
@@ -21,11 +20,6 @@ use Psr\Log\LoggerInterface;
 class DelayedQueueWriter implements DomainQueueWriter
 {
     const DELAY_QUEUE_PREFIX = 'Delay';
-
-    /**
-     * @var ConnectionConfig
-     */
-    protected $connectionConfig;
 
     /**
      * @var LoggerInterface
@@ -59,9 +53,9 @@ class DelayedQueueWriter implements DomainQueueWriter
 
     /**
      * DelayedQueueWriter constructor.
-     * @param ConnectionConfig $connectionConfig
      * @param $exchangeName
      * @param $delay
+     * @param AMQPChannel $channel
      * @param LoggerInterface $logger
      */
     public function __construct(

@@ -3,7 +3,6 @@
 namespace Infrastructure\AmqpLib\v26\RabbitMQ\Task;
 
 use \Domain\Task\Producer as DomainProducer;
-use Infrastructure\AmqpLib\v26\RabbitMQ\Queue\Config\ConnectionConfig;
 use Infrastructure\AmqpLib\v26\RabbitMQ\Queue\Config\ExchangeConfig;
 use Infrastructure\AmqpLib\v26\RabbitMQ\Queue\QueueWriter;
 use PhpAmqpLib\Connection\AMQPLazyConnection;

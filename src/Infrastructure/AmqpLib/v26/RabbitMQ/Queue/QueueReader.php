@@ -10,9 +10,7 @@ namespace Infrastructure\AmqpLib\v26\RabbitMQ\Queue;
 
 use Domain\Queue\Exception\ReaderException;
 use Domain\Queue\QueueReader as DomainQueueReader;
-use Domain\Task\JSONTaskFactory;
 use Infrastructure\AmqpLib\v26\RabbitMQ\Queue\Config\BindConfig;
-use Infrastructure\AmqpLib\v26\RabbitMQ\Queue\Config\ConnectionConfig;
 use Infrastructure\AmqpLib\v26\RabbitMQ\Queue\Config\ConsumeConfig;
 use Infrastructure\AmqpLib\v26\RabbitMQ\Queue\Config\ExchangeConfig;
 use Infrastructure\AmqpLib\v26\RabbitMQ\Queue\Config\QueueConfig;

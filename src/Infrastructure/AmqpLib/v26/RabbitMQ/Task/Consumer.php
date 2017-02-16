@@ -11,7 +11,6 @@ namespace Infrastructure\AmqpLib\v26\RabbitMQ\Task;
 use \Domain\Task\Consumer as DomainConsumer;
 use Domain\Task\JSONTaskFactory;
 use Infrastructure\AmqpLib\v26\RabbitMQ\Queue\Config\BindConfig;
-use Infrastructure\AmqpLib\v26\RabbitMQ\Queue\Config\ConnectionConfig;
 use Infrastructure\AmqpLib\v26\RabbitMQ\Queue\Config\ConsumeConfig;
 use Infrastructure\AmqpLib\v26\RabbitMQ\Queue\Config\ExchangeConfig;
 use Infrastructure\AmqpLib\v26\RabbitMQ\Queue\Config\QueueConfig;

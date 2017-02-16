@@ -3,7 +3,6 @@
 namespace Infrastructure\AmqpLib\v26\RabbitMQ\DomainEvent;
 
 use \Domain\Event\Publisher as DomainPublisher;
-use Infrastructure\AmqpLib\v26\RabbitMQ\Queue\Config\ConnectionConfig;
 use Infrastructure\AmqpLib\v26\RabbitMQ\Queue\Config\ExchangeConfig;
 use Infrastructure\AmqpLib\v26\RabbitMQ\Queue\QueueWriter;
 use PhpAmqpLib\Connection\AMQPLazyConnection;

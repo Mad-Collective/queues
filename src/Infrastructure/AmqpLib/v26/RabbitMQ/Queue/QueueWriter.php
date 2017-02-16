@@ -4,7 +4,6 @@ namespace Infrastructure\AmqpLib\v26\RabbitMQ\Queue;
 use Domain\Queue\Exception\WriterException;
 use Domain\Queue\Message;
 use Domain\Queue\QueueWriter as DomainQueueWriter;
-use Infrastructure\AmqpLib\v26\RabbitMQ\Queue\Config\ConnectionConfig;
 use Infrastructure\AmqpLib\v26\RabbitMQ\Queue\Config\ExchangeConfig;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AMQPLazyConnection;
