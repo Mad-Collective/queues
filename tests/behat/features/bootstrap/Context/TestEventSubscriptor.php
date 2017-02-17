@@ -13,6 +13,9 @@ use Domain\Event\EventSubscriptor;
 
 class TestEventSubscriptor implements EventSubscriptor
 {
+    /**
+     * @var DomainEvent
+     */
     protected $domainEvent;
 
     public function notify(DomainEvent $domainEvent)
@@ -20,11 +23,18 @@ class TestEventSubscriptor implements EventSubscriptor
         $this->domainEvent = $domainEvent;
     }
 
+    /**
+     * @param DomainEvent $domainEvent
+     * @return bool
+     */
     public function isSubscribed(DomainEvent $domainEvent)
     {
         return true;
     }
 
+    /**
+     * @return DomainEvent
+     */
     public function getDomainEvent()
     {
         return $this->domainEvent;

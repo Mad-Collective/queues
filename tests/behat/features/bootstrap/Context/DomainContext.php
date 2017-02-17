@@ -10,10 +10,16 @@ use Infrastructure\AmqpLib\v26\RabbitMQ\DomainEvent\Subscriber;
 use Infrastructure\AmqpLib\v26\RabbitMQ\Queue\Config\BindConfig;
 use Infrastructure\AmqpLib\v26\RabbitMQ\Task\Consumer;
 use Infrastructure\AmqpLib\v26\RabbitMQ\Task\Producer;
-use Infrastructure\Logger\NullLogger;
+use Psr\Log\NullLogger;
 
 class DomainContext implements Context
 {
+    CONST DOMAIN_EVENT_QUEUE = 'behat-domain-event-queue-test';
+    CONST DOMAIN_EVENT_EXCHANGE = 'behat-domain-event-exchange-test';
+
+    const TASK_QUEUE = 'behat-task-queue-test';
+    const TASK_EXCHANGE = 'behat-task-exchange-test';
+
     /**
      * @var DomainEvent
      */
@@ -25,18 +31,34 @@ class DomainContext implements Context
     protected $task;
 
     /**
+     * @var Subscriber
+     */
+    protected $subscriber;
+
+    /**
+     * @var TestEventSubscriptor
+     */
+    protected $subscriptor;
+
+    /**
+     * @var Consumer
+     */
+    protected $consumer;
+
+    /**
      * @Given I send a random domain event
      */
     public function iSendARandomDomainEvent()
     {
-        $this->domainEvent = new DomainEvent('behat', 'behat.test', microtime(true), array(1,2,3,4,5));
+        $this->startDomainEventConsumer();
+        $this->domainEvent = new DomainEvent('behat', 'behat.test', time(), array(1,2,3,4,5));
         $publisher = new Publisher(
             'rabbitmq',
             5672,
             'guest',
             'guest',
             '/',
-            'behat-test-domain-event',
+            self::DOMAIN_EVENT_EXCHANGE,
             new NullLogger()
         );
         $publisher->add($this->domainEvent);
@@ -48,24 +70,63 @@ class DomainContext implements Context
      */
     public function iShouldConsumeTheRandomDomainEvent()
     {
-        $bindConfig = new BindConfig();
-        $bindConfig->addTopic('behat.test');
+        $this->subscriber->start(2);
+        $incomingDomainEvent = $this->subscriptor->getDomainEvent();
+        assert($incomingDomainEvent instanceof DomainEvent, 'No domain event received');
+        assert($this->domainEvent->getOrigin() === $incomingDomainEvent->getOrigin(), 'Origin doesnt match');
+        assert($this->domainEvent->getName() === $incomingDomainEvent->getName(), 'Name doesnt match');
+        assert($this->domainEvent->getBody() === $incomingDomainEvent->getBody(), 'Body doesnt match');
+        assert($this->domainEvent->getOccurredOn() === $incomingDomainEvent->getOccurredOn(), 'OccurredOn doesnt match');
+    }
 
-        $subscriber = new Subscriber(
+    /**
+     * @Given I send a random domain event with an unwanted topic
+     */
+    public function iSendARandomDomainEventWithAnUnwantedTopic()
+    {
+        $this->startDomainEventConsumer();
+        $this->domainEvent = new DomainEvent('behat', 'unwanted.topic', time(), array(1,2,3,4,5));
+        $publisher = new Publisher(
             'rabbitmq',
             5672,
             'guest',
             'guest',
             '/',
-            'behat-test-domain-event',
-            'behat-test-domain-event',
+            self::DOMAIN_EVENT_EXCHANGE,
+            new NullLogger()
+        );
+        $publisher->add($this->domainEvent);
+        $publisher->publish();
+    }
+
+    /**
+     * @Then I should not consume the random domain event
+     */
+    public function iShouldNotConsumeTheRandomDomainEvent()
+    {
+        $this->subscriber->start(2);
+        $incomingDomainEvent = $this->subscriptor->getDomainEvent();
+        assert($incomingDomainEvent === null);
+    }
+
+    protected function startDomainEventConsumer()
+    {
+        $bindConfig = new BindConfig();
+        $bindConfig->addTopic('behat.test');
+        $this->subscriber = new Subscriber(
+            'rabbitmq',
+            5672,
+            'guest',
+            'guest',
+            '/',
+            self::DOMAIN_EVENT_EXCHANGE,
+            self::DOMAIN_EVENT_QUEUE,
             $bindConfig,
             new NullLogger()
         );
-        $subscriptor = new TestEventSubscriptor();
-        $subscriber->subscribe($subscriptor);
-        $subscriber->processOne();
-        var_dump($subscriptor->getDomainEvent()); exit;
+        $this->subscriptor = new TestEventSubscriptor();
+        $this->subscriber->subscribe($this->subscriptor);
+        $this->subscriber->start(1);
     }
 
     /**
@@ -73,6 +134,7 @@ class DomainContext implements Context
      */
     public function iSendARandomTask()
     {
+        $this->startTaskConsumer();
         $this->task = new Task('name', array(1,2,3,4,5));
         $producer = new Producer(
             'rabbitmq',
@@ -80,7 +142,7 @@ class DomainContext implements Context
             'guest',
             'guest',
             '/',
-            'behat-test',
+            self::TASK_EXCHANGE,
             new NullLogger()
         );
         $producer->add($this->task);
@@ -92,24 +154,28 @@ class DomainContext implements Context
      */
     public function iShouldConsumeTheRandomTask()
     {
-        $consumer = new Consumer(
+        $taskCallback = new TestTaskCallback();
+        $this->consumer->consume(array($taskCallback, 'setTask'), 2);
+        $consumedTask = $taskCallback->getTask();
+
+        assert($consumedTask instanceof Task, 'No task consumed');
+        assert($this->task->getName() === $consumedTask->getName(), 'Name doesnt match');
+        assert($this->task->getBody() === $consumedTask->getBody(), 'Body doesnt match');
+        assert($this->task->getDelay() === $consumedTask->getDelay(), 'Delay doesnt match');
+    }
+
+    protected function startTaskConsumer()
+    {
+        $this->consumer = new Consumer(
             'rabbitmq',
             5672,
             'guest',
             'guest',
             '/',
-            'behat-test',
-            'behat-test',
+            self::TASK_EXCHANGE,
+            self::TASK_QUEUE,
             new NullLogger()
         );
-
-        $producedTask = $this->task;
-        $consumer->consume(function(Task $task) use ($producedTask) {
-            assert($task->getName() === $producedTask->getName());
-            assert($task->getBody() === $producedTask->getBody());
-            assert($task->getDelay() === $producedTask->getDelay());
-        }, 2);
-
+        $this->consumer->consume(function(){},1);
     }
-
 }

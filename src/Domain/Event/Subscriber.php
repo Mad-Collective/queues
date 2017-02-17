@@ -42,19 +42,18 @@ class Subscriber
         return $this;
     }
 
-    public function start()
-    {
-        while(true) {
-            $this->processOne();
-        }
-    }
-
-    public function processOne()
+    public function start($timeout=0)
     {
         if(!isset($this->subscriptors[0])) {
             throw new DomainEventException('You must add at least 1 EventSubscriptor in order to publish start reading from queue.');
         }
-        $this->queueReader->read(array($this, 'notify'));
+        while(true) {
+            try {
+                $this->queueReader->read(array($this, 'notify'), $timeout);
+            } catch(\Exception $e) {
+                break;
+            }
+        }
     }
 
     /**

@@ -9,6 +9,7 @@ phpcli:
     APP_ENV: build
 
 rabbitmq:
-  image: rabbitmq:3.6.6
+  image: gonkulatorlabs/rabbitmq
   ports:
     - "5672:5672"
+    - "15672:15672"

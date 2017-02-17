@@ -22,7 +22,11 @@ class Consumer
     public function consume(callable $callback, $timeout=0)
     {
         while(true) {
-            $this->queueReader->read($callback, $timeout);
+            try {
+                $this->queueReader->read($callback, $timeout);
+            } catch(\Exception $e) {
+                break;
+            }
         }
     }
 }

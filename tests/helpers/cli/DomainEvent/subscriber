@@ -26,6 +26,8 @@ $logger = new NaiveStdoutLogger();
 
 $bindConfig = new BindConfig();
 $bindConfig->addTopic('test');
+$bindConfig->addTopic('a');
+$bindConfig->addTopic('b');
 
 $subscriber = new Subscriber(
     'rabbitmq',

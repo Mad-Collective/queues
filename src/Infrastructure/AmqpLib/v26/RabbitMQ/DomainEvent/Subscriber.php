@@ -47,10 +47,10 @@ class Subscriber extends DomainSubscriber
     {
         $queueReader = new QueueReader(
             new AMQPLazyConnection($host, $port, $user, $password, $vHost),
-            new QueueConfig(uniqid($queueName.'_', true), false, false, true, true),
+            new QueueConfig($queueName, false, true, false, false),
             new ExchangeConfig($exchangeName, 'topic', false, true, false),
             $bindConfig,
-            new ConsumeConfig(false, false, true, false),
+            new ConsumeConfig(false, false, false, false),
             new MessageHandler(new JSONDomainEventFactory()),
             $logger
         );
