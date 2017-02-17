@@ -12,25 +12,25 @@ $logger = new NaiveStdoutLogger();
 
 //produce
 $producer = new Producer(
-    'rabbitmq',
-    5672,
-    'guest',
-    'guest',
-    '/',
+    getenv('RABBITMQ_HOST'),
+    getenv('RABBITMQ_PORT'),
+    getenv('RABBITMQ_USER'),
+    getenv('RABBITMQ_PASSWORD'),
+    getenv('RABBITMQ_VHOST'),
     'test2',
     $logger
 );
 $producer->add(new Task('direct1', array(1,2,3,4,5)));
 $producer->produce();
-    
+
 
 //consume
 $consumer = new Consumer(
-    'rabbitmq',
-    5672,
-    'guest',
-    'guest',
-    '/',
+    getenv('RABBITMQ_HOST'),
+    getenv('RABBITMQ_PORT'),
+    getenv('RABBITMQ_USER'),
+    getenv('RABBITMQ_PASSWORD'),
+    getenv('RABBITMQ_VHOST'),
     'test2',
     'test',
     $logger

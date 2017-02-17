@@ -10,11 +10,11 @@ require_once '/app/queues/vendor/autoload.php';
 $logger = new NaiveStdoutLogger();
 
 $consumer = new Consumer(
-    'rabbitmq',
-    5672,
-    'guest',
-    'guest',
-    '/',
+    getenv('RABBITMQ_HOST'),
+    getenv('RABBITMQ_PORT'),
+    getenv('RABBITMQ_USER'),
+    getenv('RABBITMQ_PASSWORD'),
+    getenv('RABBITMQ_VHOST'),
     'test',
     'test',
     $logger

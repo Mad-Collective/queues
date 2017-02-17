@@ -48,12 +48,11 @@ class SubscriberSpec extends ObjectBehavior
     function it_reads_from_queue(
         QueueReader $queueReader,
         EventSubscriptor $eventSubscriptor
-    )
+    )   
     {
-        $callback = function(){};
-        $queueReader->read($callback)->shouldBeCalled();
+        $queueReader->read(Argument::cetera())->shouldBeCalled();
         $this->subscribe($eventSubscriptor);
-        $this->processOne($callback);
+        $this->processOne(function(){}, 1);
     }
     
     function it_should_not_read_from_queue_if_no_EventSubscriptor_added()

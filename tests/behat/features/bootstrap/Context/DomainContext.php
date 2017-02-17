@@ -45,6 +45,21 @@ class DomainContext implements Context
      */
     protected $consumer;
 
+    protected $host;
+    protected $port;
+    protected $user;
+    protected $password;
+    protected $vHost;
+
+    public function __construct()
+    {
+        $this->host = getenv('RABBITMQ_HOST');
+        $this->port = getenv('RABBITMQ_PORT');
+        $this->user = getenv('RABBITMQ_USER');
+        $this->password = getenv('RABBITMQ_PASSWORD');
+        $this->vHost = getenv('RABBITMQ_VHOST');
+    }
+
     /**
      * @Given I send a random domain event
      */
@@ -53,11 +68,11 @@ class DomainContext implements Context
         $this->startDomainEventConsumer();
         $this->domainEvent = new DomainEvent('behat', 'behat.test', time(), array(1,2,3,4,5));
         $publisher = new Publisher(
-            'rabbitmq',
-            5672,
-            'guest',
-            'guest',
-            '/',
+            $this->host,
+            $this->port,
+            $this->user,
+            $this->password,
+            $this->vHost,
             self::DOMAIN_EVENT_EXCHANGE,
             new NullLogger()
         );
@@ -87,11 +102,11 @@ class DomainContext implements Context
         $this->startDomainEventConsumer();
         $this->domainEvent = new DomainEvent('behat', 'unwanted.topic', time(), array(1,2,3,4,5));
         $publisher = new Publisher(
-            'rabbitmq',
-            5672,
-            'guest',
-            'guest',
-            '/',
+            $this->host,
+            $this->port,
+            $this->user,
+            $this->password,
+            $this->vHost,
             self::DOMAIN_EVENT_EXCHANGE,
             new NullLogger()
         );
@@ -114,11 +129,11 @@ class DomainContext implements Context
         $bindConfig = new BindConfig();
         $bindConfig->addTopic('behat.test');
         $this->subscriber = new Subscriber(
-            'rabbitmq',
-            5672,
-            'guest',
-            'guest',
-            '/',
+            $this->host,
+            $this->port,
+            $this->user,
+            $this->password,
+            $this->vHost,
             self::DOMAIN_EVENT_EXCHANGE,
             self::DOMAIN_EVENT_QUEUE,
             $bindConfig,
@@ -137,11 +152,11 @@ class DomainContext implements Context
         $this->startTaskConsumer();
         $this->task = new Task('name', array(1,2,3,4,5));
         $producer = new Producer(
-            'rabbitmq',
-            5672,
-            'guest',
-            'guest',
-            '/',
+            $this->host,
+            $this->port,
+            $this->user,
+            $this->password,
+            $this->vHost,
             self::TASK_EXCHANGE,
             new NullLogger()
         );
@@ -167,11 +182,11 @@ class DomainContext implements Context
     protected function startTaskConsumer()
     {
         $this->consumer = new Consumer(
-            'rabbitmq',
-            5672,
-            'guest',
-            'guest',
-            '/',
+            $this->host,
+            $this->port,
+            $this->user,
+            $this->password,
+            $this->vHost,
             self::TASK_EXCHANGE,
             self::TASK_QUEUE,
             new NullLogger()

@@ -30,11 +30,11 @@ $bindConfig->addTopic('a');
 $bindConfig->addTopic('b');
 
 $subscriber = new Subscriber(
-    'rabbitmq',
-    5672,
-    'guest',
-    'guest',
-    '/',
+    getenv('RABBITMQ_HOST'),
+    getenv('RABBITMQ_PORT'),
+    getenv('RABBITMQ_USER'),
+    getenv('RABBITMQ_PASSWORD'),
+    getenv('RABBITMQ_VHOST'),
     'test-domain-event',
     'test-domain-event',
     $bindConfig,

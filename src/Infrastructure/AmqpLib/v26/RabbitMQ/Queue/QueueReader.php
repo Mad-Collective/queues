@@ -9,6 +9,7 @@
 namespace Infrastructure\AmqpLib\v26\RabbitMQ\Queue;
 
 use Domain\Queue\Exception\ReaderException;
+use Domain\Queue\Exception\TimeoutReaderException;
 use Domain\Queue\QueueReader as DomainQueueReader;
 use Infrastructure\AmqpLib\v26\RabbitMQ\Queue\Config\BindConfig;
 use Infrastructure\AmqpLib\v26\RabbitMQ\Queue\Config\ConsumeConfig;
@@ -93,12 +94,17 @@ class QueueReader implements DomainQueueReader
      * @param callable $callback
      * @param int $timeout
      * @throws ReaderException
+     * @throws TimeoutReaderException
      */
     public function read(callable $callback, $timeout=0)
     {
         $this->initialize();
         $this->messageHandler->setCallback($callback);
-        $this->channel->wait(null, false, $timeout);
+        try {
+            $this->channel->wait(null, false, $timeout);
+        } catch(\Exception $e) {
+            throw new TimeoutReaderException();
+        }
     }
 
     /**

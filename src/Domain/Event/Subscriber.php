@@ -2,6 +2,7 @@
 namespace Domain\Event;
 
 use Domain\Event\Exception\DomainEventException;
+use Domain\Queue\Exception\TimeoutReaderException;
 use Domain\Queue\QueueReader;
 use Psr\Log\LoggerInterface;
 
@@ -44,16 +45,21 @@ class Subscriber
 
     public function start($timeout=0)
     {
-        if(!isset($this->subscriptors[0])) {
-            throw new DomainEventException('You must add at least 1 EventSubscriptor in order to publish start reading from queue.');
-        }
         while(true) {
             try {
-                $this->queueReader->read(array($this, 'notify'), $timeout);
-            } catch(\Exception $e) {
+                $this->processOne($timeout);
+            } catch(TimeoutReaderException $e) {
                 break;
             }
         }
+    }
+
+    public function processOne($timeout)
+    {
+        if(!isset($this->subscriptors[0])) {
+            throw new DomainEventException('You must add at least 1 EventSubscriptor in order to publish start reading from queue.');
+        }
+        $this->queueReader->read(array($this, 'notify'), $timeout);
     }
 
     /**

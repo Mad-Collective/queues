@@ -1,6 +1,7 @@
 <?php
 namespace Domain\Task;
 
+use Domain\Queue\Exception\TimeoutReaderException;
 use Domain\Queue\QueueReader;
 
 class Consumer
@@ -23,10 +24,15 @@ class Consumer
     {
         while(true) {
             try {
-                $this->queueReader->read($callback, $timeout);
-            } catch(\Exception $e) {
+                $this->consumeOnce($callback, $timeout);
+            } catch(TimeoutReaderException $e) {
                 break;
             }
         }
+    }
+
+    public function consumeOnce(callable $callback, $timeout)
+    {
+        $this->queueReader->read($callback, $timeout);
     }
 }

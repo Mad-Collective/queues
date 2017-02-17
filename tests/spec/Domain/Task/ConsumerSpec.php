@@ -23,7 +23,7 @@ class ConsumerSpec extends ObjectBehavior
     function it_reads_from_queue(QueueReader $queueReader)
     {
         $callback = function(){};
-        $queueReader->read($callback)->shouldBeCalled();
-        $this->consumeOnce($callback);
+        $queueReader->read($callback, 1)->shouldBeCalled();
+        $this->consumeOnce($callback, 1);
     }
 }
