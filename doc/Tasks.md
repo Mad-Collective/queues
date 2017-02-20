@@ -6,26 +6,26 @@ Example code to produce a Task:
 
 ````php
 
-$config = [
-    'host' => 'rabbit_host',
-    'port' => '5672',
-    'user' => 'rabbitmq-server',
-    'password' => 'teamcmp',
-    'exchange' => 'tasksExchange3',
-];
+use Domain\Task\Task;
+use Infrastructure\AmqpLib\v26\RabbitMQ\Task\Producer;
+use Infrastructure\Logger\NaiveStdoutLogger;
 
-// Dont use this naive logger in production, inject your application logger ;)
-$logger = new \Cmp\Queue\Infrastructure\Log\NaiveStdoutLogger();
+// Replace for your app logger!!
+$logger = new NaiveStdoutLogger();
 
-$config = new Cmp\Queue\Infrastructure\RabbitMQ\RabbitMQConfig($config['host'], $config['port'], $config['user'], $config['password'], $config['exchange']);
+$producer = new Producer(
+    'localhost', //host
+    5672, //port
+    'guest', //username
+    'guest', //password
+    '/, //vhost
+    'test', //exchange name
+    $logger
+);
 
-$producer = new \Cmp\Task\Infrastructure\Producer\RabbitMQ\Producer($config, $logger);
-
-$task1 = new \Cmp\Task\Domain\Task\Task('id', 'Request');
-$task2 = new \Cmp\Task\Domain\Task\Task('id2', 'Request2');
-
-$producer->add($task1);
-$producer->add($task2);
+$producer->add(new Task('direct1', array(1,2,3,4,5))); //direct
+$producer->add(new Task('10sec', array(1,2,3,4,5), 10)); // 10sec delay
+$producer->add(new Task('5sec', array(1,2,3,4,5), 5)); //5sec delay
 $producer->produce();
 
 ````
@@ -36,23 +36,25 @@ Example code to consume Tasks:
 
 ````php
 
-$config = [
-    'host' => 'rabbit_host',
-    'port' => '5672',
-    'user' => 'rabbitmq-server',
-    'password' => 'teamcmp',
-    'exchange' => 'tasksExchange3',
-    'queue' => 'tasksQueue3',
-];
+use Domain\Task\Task;
+use Infrastructure\AmqpLib\v26\RabbitMQ\Task\Consumer;
+use Infrastructure\Logger\NaiveStdoutLogger;
 
-// Dont use this naive logger in production, inject your application logger ;)
-$logger = new \Cmp\Queue\Infrastructure\Log\NaiveStdoutLogger();
+// Replace for your app logger!!
+$logger = new NaiveStdoutLogger();
 
-$config = new Cmp\Queue\Infrastructure\RabbitMQ\RabbitMQConfig($config['host'], $config['port'], $config['user'], $config['password'], $config['exchange'], $config['queue']);
+$consumer = new Consumer(
+    'localhost', //host
+    5672, //port
+    'guest', //username
+    'guest', //password
+    '/', //vhost
+    'test', //exchange
+    'test', //queue
+    $logger
+);
 
-$consumer = new \Cmp\Task\Infrastructure\Consumer\RabbitMQ\Consumer($config, $logger);
-
-$consumer->consume(function($task) {
+$consumer->consume(function(Task $task){
     var_dump($task);
 });
 

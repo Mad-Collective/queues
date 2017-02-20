@@ -1,0 +1,15 @@
+phpcli:
+  build: phpcli
+  volumes:
+    - ../../:/app/queues
+    - "./phpcli/run.sh:/run.sh"
+  links:
+    - rabbitmq
+  environment:
+    APP_ENV: build
+
+rabbitmq:
+  image: gonkulatorlabs/rabbitmq
+  ports:
+    - "5672:5672"
+    - "15672:15672"

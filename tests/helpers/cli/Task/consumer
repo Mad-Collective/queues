@@ -1,0 +1,25 @@
+#!/usr/bin/env php
+<?php
+
+use Domain\Task\Task;
+use Infrastructure\AmqpLib\v26\RabbitMQ\Task\Consumer;
+use Infrastructure\Logger\NaiveStdoutLogger;
+
+require_once '/app/queues/vendor/autoload.php';
+
+$logger = new NaiveStdoutLogger();
+
+$consumer = new Consumer(
+    getenv('RABBITMQ_HOST'),
+    getenv('RABBITMQ_PORT'),
+    getenv('RABBITMQ_USER'),
+    getenv('RABBITMQ_PASSWORD'),
+    getenv('RABBITMQ_VHOST'),
+    'test',
+    'test',
+    $logger
+);
+
+$consumer->consume(function(Task $task){
+    var_dump($task);
+});

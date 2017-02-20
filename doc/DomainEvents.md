@@ -6,29 +6,24 @@ Example code to publish Domain Events:
 
 ````php
 
-$config = [
-    'host' => 'rabbit_host',
-    'port' => '5672',
-    'user' => 'rabbitmq-server',
-    'password' => 'teamcmp',
-    'exchange' => 'testExchange4',
-];
+use Domain\Event\DomainEvent;
+use Infrastructure\AmqpLib\v26\RabbitMQ\DomainEvent\Publisher;
+use Infrastructure\Logger\NaiveStdoutLogger;
 
-// Dont use this naive logger in production, inject your application logger ;)
-$logger = new \Cmp\Queue\Infrastructure\Log\NaiveStdoutLogger();
+// Replace for your app logger!!
+$logger = new NaiveStdoutLogger();
 
-$config = new Cmp\Queue\Infrastructure\RabbitMQ\RabbitMQConfig($config['host'], $config['port'], $config['user'], $config['password'], $config['exchange']);
+$publisher = new Publisher(
+    '127.0.0.1', //host
+    5672, //port
+    'guest', //username
+    'guest', //password
+    '/', //vhost
+    'domain-events', //queue
+    $logger
+);
 
-$publisher = new Cmp\DomainEvent\Infrastructure\Publisher\RabbitMQ\Publisher($config, $logger);
-
-$domainEvent1 = new Cmp\DomainEvent\Domain\Event\DomainEvent('a origin', 'user.created.female', '1468936678.651', ['extraData1' => 'extraValue1', 'extraData2' => 'extraValue2']);
-$domainEvent2 = new Cmp\DomainEvent\Domain\Event\DomainEvent('a origin', 'user.created.male', '468936678.6515', ['extraData1' => 'extraValue1', 'extraData2' => 'extraValue2']);
-$domainEvent3 = new Cmp\DomainEvent\Domain\Event\DomainEvent('a origin', 'mail.sent', '1468936678.6515', ['extraData1' => 'extraValue1', 'extraData2' => 'extraValue2']);
-
-$publisher->add($domainEvent1);
-$publisher->add($domainEvent2);
-$publisher->add($domainEvent3);
-
+$publisher->add(new DomainEvent('queues.helper', 'test', microtime(true), array(1,2,3,4,5)));
 $publisher->publish();
 
 ````
@@ -39,46 +34,46 @@ Example code to Subscribe your clases to Domain Events:
 
 ````php
 
-// Your classes listening to Domain Events will need to implement EventSubscriptor
-class TestEventSubscriptor implements \Cmp\DomainEvent\Domain\Event\EventSubscriptor
-{
+use Domain\Event\DomainEvent;
+use Domain\Event\EventSubscriptor;
+use Infrastructure\AmqpLib\v26\RabbitMQ\DomainEvent\Subscriber;
+use Infrastructure\AmqpLib\v26\RabbitMQ\Queue\Config\BindConfig;
+use Infrastructure\Logger\NaiveStdoutLogger;
 
-    public function notify(\Cmp\DomainEvent\Domain\Event\DomainEvent $event)
+// Subscriptor clases need to implement EventSubscriptor
+class TestEventSubscriptor implements EventSubscriptor
+{
+    public function isSubscribed(DomainEvent $domainEvent)
     {
-        var_dump($event);
-    }
-    
-    public function isSubscribed(\Cmp\DomainEvent\Domain\Event\DomainEvent $event)
-    {
-        // You can use this to filter, at eventSubscriptor level, which DomainEvents will receive
         return true;
     }
 
+    public function notify(DomainEvent $domainEvent)
+    {
+        var_dump($domainEvent);
+    }
 }
 
-$config = [
-    'host' => 'rabbit_host',
-    'port' => '5672',
-    'user' => 'rabbitmq-server',
-    'password' => 'teamcmp',
-    'exchange' => 'testExchange4',
-    'queue' => 'testqueues'
-];
+// Replace for your app logger!!
+$logger = new NaiveStdoutLogger();
 
-// Dont use this naive logger in production, inject your application logger ;)
-$logger = new \Cmp\Queue\Infrastructure\Log\NaiveStdoutLogger();
+// Bind topics you want to listen
+$bindConfig = new BindConfig();
+$bindConfig->addTopic('test');
 
-// Subscribing to every user domain event
-$domainTopics = ['user.#'];
+$subscriber = new Subscriber(
+    '127.0.0.1', //host
+    5672, //port
+    'guest', //username
+    'guest', //password
+    '/', //vhost
+    'domain-events', //exchange
+    'application_queue_name', //queue name - specific to each application!!!
+    $bindConfig,
+    $logger
+);
 
-$config = new Cmp\Queue\Infrastructure\RabbitMQ\RabbitMQConfig($config['host'], $config['port'], $config['user'], $config['password'], $config['exchange'], $config['queue']);
-
-$subscriber = new Cmp\DomainEvent\Infrastructure\Subscriber\RabbitMQ\Subscriber($config, $domainTopics, $logger);
-
-$testEventSubscriptor = new TestEventSubscriptor();
-
-$subscriber->subscribe($testEventSubscriptor);
-
+$subscriber->subscribe(new TestEventSubscriptor());
 $subscriber->start();
 
 ````
