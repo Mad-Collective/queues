@@ -215,7 +215,7 @@ class DomainContext implements Context
         $consumedTask = $this->delayedTaskCallback->getTask();
 
         assert($consumedTask instanceof Task, 'No task consumed');
-        assert($this->delayedTaskCallback->getRealDelay() === $this->task->getDelay(), 'Task delay didnt work as expected.');
+        assert($this->delayedTaskCallback->getRealDelay() >= $this->task->getDelay(), 'Task delay didnt work as expected.');
         assert($this->task->getName() === $consumedTask->getName(), 'Name doesnt match');
         assert($this->task->getBody() === $consumedTask->getBody(), 'Body doesnt match');
         assert($this->task->getDelay() === $consumedTask->getDelay(), 'Delay doesnt match');

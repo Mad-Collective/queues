@@ -18,7 +18,7 @@ $producer = new Producer(
     5672, //port
     'guest', //username
     'guest', //password
-    '/, //vhost
+    '/', //vhost
     'test', //exchange name
     $logger
 );

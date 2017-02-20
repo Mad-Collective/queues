@@ -1,5 +1,5 @@
 {
-    "name": "cmp/queues",
+    "name": "pluggit/queues",
     "autoload": {
         "psr-0": {
             "": "src"

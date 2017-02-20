@@ -14,31 +14,9 @@ This is the Queues Abstraction Library. It will provide you with two main abstra
 
 ## Installation
 
-Add this repo to your composer.json 
-
-````json
-"repositories": {
-  "cmp/queues": {
-    "type": "vcs",
-    "url": "git@github.com:CMProductions/queues.git"
-  }
-}
-````
-
-Then require it as usual:
-
 ``` bash
-composer require "cmp/queues"
+composer require "pluggit/queues"
 ```
-
-
-## Test Helpers
-
-This library is exposed in CLI for testing purposes:
-
-[Test Helpers][3]
-
-[3]: tests/helpers/README.md
 
 ## Environment
 
@@ -52,7 +30,7 @@ Enter environment
 make enter
 ```
 
-## Logs
+## Tests
 PhpSpec:
 ```bash
 bin/phpspec run
@@ -62,3 +40,6 @@ Behat:
 ```bash
 bin/behat
 ```
+
+Helpers:
+Small cli tool for manual execution
