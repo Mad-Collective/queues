@@ -14,6 +14,12 @@
     "require": {
         "psr/log": "^1.0"
     },
+    "authors": [
+        {
+            "name": "Quim Manrique Roca",
+            "email": "quim.manrique@gmail.com"
+        }
+    ],
     "require-dev": {
         "phpspec/phpspec": "2.4.1",
         "php-amqplib/php-amqplib": "^2.6",
