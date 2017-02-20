@@ -1,5 +1,8 @@
 {
     "name": "pluggit/queues",
+    "description": "Provides abstractions for Tasks & Domain Events as well as implementations for some queue systems. Easy to extend.",
+    "type": "library",
+    "license": "MIT",
     "autoload": {
         "psr-0": {
             "": "src"
