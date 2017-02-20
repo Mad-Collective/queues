@@ -45,6 +45,11 @@ class DomainContext implements Context
      */
     protected $consumer;
 
+    /**
+     * @var TestDelayedTaskCallback
+     */
+    protected $delayedTaskCallback;
+
     protected $host;
     protected $port;
     protected $user;
@@ -174,6 +179,43 @@ class DomainContext implements Context
         $consumedTask = $taskCallback->getTask();
 
         assert($consumedTask instanceof Task, 'No task consumed');
+        assert($this->task->getName() === $consumedTask->getName(), 'Name doesnt match');
+        assert($this->task->getBody() === $consumedTask->getBody(), 'Body doesnt match');
+        assert($this->task->getDelay() === $consumedTask->getDelay(), 'Delay doesnt match');
+    }
+
+    /**
+     * @Given I send a random delayed task
+     */
+    public function iSendARandomDelayedTask()
+    {
+        $this->startTaskConsumer();
+        $this->task = new Task('name', array(1,2,3,4,5), 1);
+        $producer = new Producer(
+            $this->host,
+            $this->port,
+            $this->user,
+            $this->password,
+            $this->vHost,
+            self::TASK_EXCHANGE,
+            new NullLogger()
+        );
+        $producer->add($this->task);
+        $this->delayedTaskCallback = new TestDelayedTaskCallback();
+        $this->delayedTaskCallback->sent();
+        $producer->produce();
+    }
+
+    /**
+     * @Then I should consume the random delayed task on time
+     */
+    public function iShouldConsumeTheRandomDelayedTaskOnTime()
+    {
+        $this->consumer->consume(array($this->delayedTaskCallback, 'setTask'), $this->task->getDelay()+2);
+        $consumedTask = $this->delayedTaskCallback->getTask();
+
+        assert($consumedTask instanceof Task, 'No task consumed');
+        assert($this->delayedTaskCallback->getRealDelay() === $this->task->getDelay(), 'Task delay didnt work as expected.');
         assert($this->task->getName() === $consumedTask->getName(), 'Name doesnt match');
         assert($this->task->getBody() === $consumedTask->getBody(), 'Body doesnt match');
         assert($this->task->getDelay() === $consumedTask->getDelay(), 'Delay doesnt match');

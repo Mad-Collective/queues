@@ -153,4 +153,9 @@ class QueueReader implements DomainQueueReader
             throw new ReaderException($exception->getMessage(), $exception->getCode());
         }
     }
+
+    public function __destruct()
+    {
+        $this->channel->close();
+    }
 }
