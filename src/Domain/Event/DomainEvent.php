@@ -1,6 +1,7 @@
 <?php
 namespace Domain\Event;
 
+use Domain\Event\Exception\DomainEventException;
 use Domain\Queue\Message;
 
 class DomainEvent implements Message
@@ -34,9 +35,10 @@ class DomainEvent implements Message
      */
     public function __construct($origin, $name, $occurredOn, array $body = [])
     {
-        $this->origin = $origin;
-        $this->name = $name;
-        $this->occurredOn = $occurredOn;
+        $this->setOrigin($origin)
+             ->setName($name)
+             ->setOccurredOn($occurredOn)
+        ;
         $this->body = $body;
     }
 
@@ -85,9 +87,13 @@ class DomainEvent implements Message
     /**
      * @param $origin
      * @return $this
+     * @throws DomainEventException
      */
-    public function setOrigin($origin)
+    protected function setOrigin($origin)
     {
+        if(empty($origin)) {
+            throw new DomainEventException('DomainEvent origin cannot be empty');
+        }
         $this->origin = $origin;
         return $this;
     }
@@ -95,32 +101,28 @@ class DomainEvent implements Message
     /**
      * @param $name
      * @return $this
+     * @throws DomainEventException
      */
-    public function setName($name)
+    protected function setName($name)
     {
+        if(empty($name)) {
+            throw new DomainEventException('DomainEvent name cannot be empty');
+        }
         $this->name = $name;
         return $this;
     }
 
     /**
-     * Timestamp
-     *
      * @param $occurredOn
      * @return $this
+     * @throws DomainEventException
      */
-    public function setOccurredOn($occurredOn)
+    protected function setOccurredOn($occurredOn)
     {
+        if(!is_null($occurredOn) && !preg_match('/^\d+(\.\d{1,4})?$/', $occurredOn)) { // accepts also microseconds
+            throw new DomainEventException("$occurredOn is not a valid unix timestamp.");
+        }
         $this->occurredOn = $occurredOn;
-        return $this;
-    }
-
-    /**
-     * @param array $body
-     * @return $this
-     */
-    public function setBody(array $body)
-    {
-        $this->body = $body;
         return $this;
     }
 

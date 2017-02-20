@@ -3,6 +3,7 @@
 namespace Domain\Task;
 
 use Domain\Queue\Message;
+use Domain\Task\Exception\TaskException;
 
 class Task implements Message
 {
@@ -29,9 +30,10 @@ class Task implements Message
      */
     public function __construct($name, array $body, $delay=0)
     {
-        $this->name = $name;
+        $this->setName($name)
+             ->setDelay($delay)
+        ;
         $this->body = $body;
-        $this->delay = $delay;
     }
 
     /**
@@ -57,6 +59,35 @@ class Task implements Message
     {
         return $this->delay;
     }
+
+    /**
+     * @param $name
+     * @return $this
+     * @throws TaskException
+     */
+    protected function setName($name)
+    {
+        if(empty($name)) {
+            throw new TaskException('Task name cannot be empty');
+        }
+        $this->name = $name;
+        return $this;
+    }
+
+    /**
+     * @param $delay
+     * @return $this
+     * @throws TaskException
+     */
+    protected function setDelay($delay)
+    {
+        if(!is_null($delay) && !preg_match('/^\d+$/', $delay)) {
+            throw new TaskException("Task delay $delay is not a valid delay.");
+        }
+        $this->delay = $delay;
+        return $this;
+    }
+
 
     /**
      * @return array
