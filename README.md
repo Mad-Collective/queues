@@ -34,8 +34,31 @@ composer require "cmp/queues"
 
 ## Test Helpers
 
-This library is exposed in CLI and HTTP for testing purposes:
+This library is exposed in CLI for testing purposes:
 
 [Test Helpers][3]
 
 [3]: tests/helpers/README.md
+
+## Environment
+
+Start environment
+```bash
+make dev
+```
+
+Enter environment
+```bash
+make enter
+```
+
+## Logs
+PhpSpec:
+```bash
+bin/phpspec run
+```
+
+Behat:
+```bash
+bin/behat
+```
