@@ -90,7 +90,7 @@ class DelayedQueueWriter implements DomainQueueWriter
             }
             $this->channel->publish_batch();
         } catch(\Exception $exception) {
-            $this->logger->error('Error writing messages: '.$exception->getMessage());
+            $this->logger->error('Error writing delayed messages: '.$exception->getMessage());
             throw new WriterException($exception->getMessage(), $exception->getCode());
         }
     }
@@ -122,7 +122,7 @@ class DelayedQueueWriter implements DomainQueueWriter
             );
             $this->channel->queue_bind($delayedQueue, $this->delayedExchangeName);
         } catch(\Exception $exception) {
-            $this->logger->error('Error writing delayed messages: '.$exception->getMessage());
+            $this->logger->error('Error configuring delayed queues: '.$exception->getMessage());
             throw new WriterException($exception->getMessage(), $exception->getCode());
         }
     }
