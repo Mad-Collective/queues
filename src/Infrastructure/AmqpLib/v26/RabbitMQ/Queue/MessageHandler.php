@@ -44,7 +44,6 @@ class MessageHandler
             call_user_func_array($this->callback, [$task]);
             $message->delivery_info['channel']->basic_ack($message->delivery_info['delivery_tag']);
         } catch (\Exception $e) {
-            $this->logger->error('Could not process the message: '. $e->getMessage(), $message);
             throw $e;
         }
     }
