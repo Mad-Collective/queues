@@ -33,6 +33,11 @@ class QueueWriter implements DomainQueueWriter
     protected $channel;
 
     /**
+     * @var DelayedQueueWriter[]
+     */
+    protected $delayedQueueWriterRegistry = [];
+
+    /**
      * QueueWriter constructor.
      * @param AMQPLazyConnection $connection
      * @param ExchangeConfig $exchangeConfig
@@ -71,13 +76,15 @@ class QueueWriter implements DomainQueueWriter
             }
             $this->channel->publish_batch();
             foreach($messagesWithDelay as $delay => $delayedMessages) {
-                $delayedQueueWriter = new DelayedQueueWriter(
-                    $this->exchangeConfig->getName(),
-                    $delay,
-                    $this->channel,
-                    $this->logger
-                );
-                $delayedQueueWriter->write($delayedMessages);
+                if(!isset($this->delayedQueueWriterRegistry[$delay])) {
+                    $this->delayedQueueWriterRegistry[$delay] = new DelayedQueueWriter(
+                        $this->exchangeConfig->getName(),
+                        $delay,
+                        $this->channel,
+                        $this->logger
+                    );
+                }
+                $this->delayedQueueWriterRegistry[$delay]->write($delayedMessages);
             }
         } catch(\Exception $exception) {
             $this->logger->error('Error writing messages: '.$exception->getMessage());

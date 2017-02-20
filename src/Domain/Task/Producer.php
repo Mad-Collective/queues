@@ -44,6 +44,7 @@ class Producer
             throw new TaskException('You must add at least 1 Task before producing.');
         }
         $this->queueWriter->write($this->tasks);
+        $this->tasks = [];
     }
 
     /**
