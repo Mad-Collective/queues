@@ -3,13 +3,13 @@
 namespace Tests\Behat\Context;
 
 use Behat\Behat\Context\Context;
-use Domain\Event\DomainEvent;
-use Domain\Task\Task;
-use Infrastructure\AmqpLib\v26\RabbitMQ\DomainEvent\Publisher;
-use Infrastructure\AmqpLib\v26\RabbitMQ\DomainEvent\Subscriber;
-use Infrastructure\AmqpLib\v26\RabbitMQ\Queue\Config\BindConfig;
-use Infrastructure\AmqpLib\v26\RabbitMQ\Task\Consumer;
-use Infrastructure\AmqpLib\v26\RabbitMQ\Task\Producer;
+use Cmp\Queues\Domain\Event\DomainEvent;
+use Cmp\Queues\Domain\Task\Task;
+use Cmp\Queues\Infrastructure\AmqpLib\v26\RabbitMQ\DomainEvent\Publisher;
+use Cmp\Queues\Infrastructure\AmqpLib\v26\RabbitMQ\DomainEvent\Subscriber;
+use Cmp\Queues\Infrastructure\AmqpLib\v26\RabbitMQ\Queue\Config\BindConfig;
+use Cmp\Queues\Infrastructure\AmqpLib\v26\RabbitMQ\Task\Consumer;
+use Cmp\Queues\Infrastructure\AmqpLib\v26\RabbitMQ\Task\Producer;
 use Psr\Log\NullLogger;
 
 class DomainContext implements Context

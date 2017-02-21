@@ -8,8 +8,8 @@
 
 namespace Tests\Behat\Context;
 
-use Domain\Event\DomainEvent;
-use Domain\Event\EventSubscriptor;
+use Cmp\Queues\Domain\Event\DomainEvent;
+use Cmp\Queues\Domain\Event\EventSubscriptor;
 
 class TestEventSubscriptor implements EventSubscriptor
 {

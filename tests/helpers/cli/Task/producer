@@ -1,9 +1,9 @@
 #!/usr/bin/env php
 <?php
 
-use Domain\Task\Task;
-use Infrastructure\AmqpLib\v26\RabbitMQ\Task\Producer;
-use Infrastructure\Logger\NaiveStdoutLogger;
+use Cmp\Queues\Domain\Task\Task;
+use Cmp\Queues\Infrastructure\AmqpLib\v26\RabbitMQ\Task\Producer;
+use Cmp\Queues\Infrastructure\Logger\NaiveStdoutLogger;
 
 require_once '/app/queues/vendor/autoload.php';
 

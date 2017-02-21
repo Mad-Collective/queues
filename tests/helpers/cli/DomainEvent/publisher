@@ -1,9 +1,9 @@
 #!/usr/bin/env php
 <?php
 
-use Domain\Event\DomainEvent;
-use Infrastructure\AmqpLib\v26\RabbitMQ\DomainEvent\Publisher;
-use Infrastructure\Logger\NaiveStdoutLogger;
+use Cmp\Queues\Domain\Event\DomainEvent;
+use Cmp\Queues\Infrastructure\AmqpLib\v26\RabbitMQ\DomainEvent\Publisher;
+use Cmp\Queues\Infrastructure\Logger\NaiveStdoutLogger;
 
 require_once '/app/queues/vendor/autoload.php';
 

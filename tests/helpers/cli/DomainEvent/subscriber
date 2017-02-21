@@ -1,11 +1,11 @@
 #!/usr/bin/env php
 <?php
 
-use Domain\Event\DomainEvent;
-use Domain\Event\EventSubscriptor;
-use Infrastructure\AmqpLib\v26\RabbitMQ\DomainEvent\Subscriber;
-use Infrastructure\AmqpLib\v26\RabbitMQ\Queue\Config\BindConfig;
-use Infrastructure\Logger\NaiveStdoutLogger;
+use Cmp\Queues\Domain\Event\DomainEvent;
+use Cmp\Queues\Domain\Event\EventSubscriptor;
+use Cmp\Queues\Infrastructure\AmqpLib\v26\RabbitMQ\DomainEvent\Subscriber;
+use Cmp\Queues\Infrastructure\AmqpLib\v26\RabbitMQ\Queue\Config\BindConfig;
+use Cmp\Queues\Infrastructure\Logger\NaiveStdoutLogger;
 
 require_once '/app/queues/vendor/autoload.php';
 

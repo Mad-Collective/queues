@@ -6,9 +6,9 @@ Example code to produce a Task:
 
 ````php
 
-use Domain\Task\Task;
-use Infrastructure\AmqpLib\v26\RabbitMQ\Task\Producer;
-use Infrastructure\Logger\NaiveStdoutLogger;
+use Cmp\Queues\Domain\Task\Task;
+use Cmp\Queues\Infrastructure\AmqpLib\v26\RabbitMQ\Task\Producer;
+use Cmp\Queues\Infrastructure\Logger\NaiveStdoutLogger;
 
 // Replace for your app logger!!
 $logger = new NaiveStdoutLogger();
@@ -36,9 +36,9 @@ Example code to consume Tasks:
 
 ````php
 
-use Domain\Task\Task;
-use Infrastructure\AmqpLib\v26\RabbitMQ\Task\Consumer;
-use Infrastructure\Logger\NaiveStdoutLogger;
+use Cmp\Queues\Domain\Task\Task;
+use Cmp\Queues\Infrastructure\AmqpLib\v26\RabbitMQ\Task\Consumer;
+use Cmp\Queues\Infrastructure\Logger\NaiveStdoutLogger;
 
 // Replace for your app logger!!
 $logger = new NaiveStdoutLogger();

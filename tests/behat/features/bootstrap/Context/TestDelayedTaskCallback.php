@@ -9,7 +9,7 @@
 namespace Tests\Behat\Context;
 
 
-use Domain\Task\Task;
+use Cmp\Queues\Domain\Task\Task;
 
 class TestDelayedTaskCallback
 {

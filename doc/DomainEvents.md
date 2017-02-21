@@ -6,9 +6,9 @@ Example code to publish Domain Events:
 
 ````php
 
-use Domain\Event\DomainEvent;
-use Infrastructure\AmqpLib\v26\RabbitMQ\DomainEvent\Publisher;
-use Infrastructure\Logger\NaiveStdoutLogger;
+use Cmp\Queues\Domain\Event\DomainEvent;
+use Cmp\Queues\Infrastructure\AmqpLib\v26\RabbitMQ\DomainEvent\Publisher;
+use Cmp\Queues\Infrastructure\Logger\NaiveStdoutLogger;
 
 // Replace for your app logger!!
 $logger = new NaiveStdoutLogger();
@@ -34,11 +34,11 @@ Example code to Subscribe your clases to Domain Events:
 
 ````php
 
-use Domain\Event\DomainEvent;
-use Domain\Event\EventSubscriptor;
-use Infrastructure\AmqpLib\v26\RabbitMQ\DomainEvent\Subscriber;
-use Infrastructure\AmqpLib\v26\RabbitMQ\Queue\Config\BindConfig;
-use Infrastructure\Logger\NaiveStdoutLogger;
+use Cmp\Queues\Domain\Event\DomainEvent;
+use Cmp\Queues\Domain\Event\EventSubscriptor;
+use Cmp\Queues\Infrastructure\AmqpLib\v26\RabbitMQ\DomainEvent\Subscriber;
+use Cmp\Queues\Infrastructure\AmqpLib\v26\RabbitMQ\Queue\Config\BindConfig;
+use Cmp\Queues\Infrastructure\Logger\NaiveStdoutLogger;
 
 // Subscriptor clases need to implement EventSubscriptor
 class TestEventSubscriptor implements EventSubscriptor
