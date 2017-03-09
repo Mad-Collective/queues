@@ -97,7 +97,9 @@ class QueueReader implements DomainQueueReader
         try {
             $this->channel->wait(null, false, $timeout);
         } catch(AMQPTimeoutException $e) {
-            throw new TimeoutReaderException("Timed out while reading", 0, $e);
+            throw new TimeoutReaderException("Timed out at $timeout seconds while reading.", 0, $e);
+        } catch(\Exception $e) {
+            throw new ReaderException("Error occurred while reading", 0, $e);
         }
     }
 
