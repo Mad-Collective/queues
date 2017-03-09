@@ -1,11 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: quimmanrique
- * Date: 13/02/17
- * Time: 17:33
- */
-
 namespace Cmp\Queues\Infrastructure\AmqpLib\v26\RabbitMQ\Queue;
 
 use Cmp\Queues\Domain\Queue\Exception\ReaderException;
@@ -17,6 +10,7 @@ use Cmp\Queues\Infrastructure\AmqpLib\v26\RabbitMQ\Queue\Config\ExchangeConfig;
 use Cmp\Queues\Infrastructure\AmqpLib\v26\RabbitMQ\Queue\Config\QueueConfig;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AMQPLazyConnection;
+use PhpAmqpLib\Exception\AMQPTimeoutException;
 use Psr\Log\LoggerInterface;
 
 class QueueReader implements DomainQueueReader
@@ -102,8 +96,8 @@ class QueueReader implements DomainQueueReader
         $this->messageHandler->setCallback($callback);
         try {
             $this->channel->wait(null, false, $timeout);
-        } catch(\Exception $e) {
-            throw new TimeoutReaderException();
+        } catch(AMQPTimeoutException $e) {
+            throw new TimeoutReaderException("Timed out while reading", 0, $e);
         }
     }
 
@@ -150,7 +144,7 @@ class QueueReader implements DomainQueueReader
             );
         } catch (\ErrorException $exception) {
             $this->logger->error('Error trying to connect to rabbitMQ:' . $exception->getMessage());
-            throw new ReaderException($exception->getMessage(), $exception->getCode());
+            throw new ReaderException("Error initializing queue reader", 0, $exception);
         }
     }
 
