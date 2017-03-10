@@ -2,6 +2,7 @@
 
 namespace Cmp\Queues\Domain\Event;
 
+use Cmp\Queues\Domain\Event\Exception\DomainEventException;
 use Cmp\Queues\Domain\Event\Exception\InvalidJSONDomainEventException;
 use Cmp\Queues\Domain\Queue\JSONMessageFactory;
 
@@ -25,7 +26,10 @@ class JSONDomainEventFactory implements JSONMessageFactory
             throw new InvalidJSONDomainEventException("Cannot reconstruct domain event. Origin, name, occurredOn or body fields are missing");
         }
 
-        return new DomainEvent($domainEventArray['origin'], $domainEventArray['name'], $domainEventArray['occurredOn'], $domainEventArray['body']);
+        try {
+            return new DomainEvent($domainEventArray['origin'], $domainEventArray['name'], $domainEventArray['occurredOn'], $domainEventArray['body']);
+        } catch (DomainEventException $e) {
+            throw new InvalidJSONDomainEventException("Failed creating DomainEvent instance", 0, $e);
+        }
     }
-
 }
