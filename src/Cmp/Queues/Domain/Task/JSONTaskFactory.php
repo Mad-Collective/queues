@@ -9,11 +9,10 @@ use Cmp\Queues\Domain\Task\Exception\TaskException;
 class JSONTaskFactory implements JSONMessageFactory
 {
     /**
-     * @param $json
+     * @param string $json
      *
      * @return Task
      * @throws InvalidJSONTaskException
-     * @throws TaskException
      */
     public function create($json)
     {
@@ -27,6 +26,12 @@ class JSONTaskFactory implements JSONMessageFactory
             throw new InvalidJSONTaskException("Cannot reconstruct task. Name or body fields are missing");
         }
 
-       return new Task($taskArray['name'], $taskArray['body'], isset($taskArray['delay']) ? $taskArray['delay'] : 0);
+        try {
+            return new Task(
+                $taskArray['name'], $taskArray['body'], isset($taskArray['delay']) ? $taskArray['delay'] : 0
+            );
+        } catch(TaskException $e) {
+            throw new InvalidJSONTaskException("Failed creating Task instance", 0, $e);
+        }
     }
 }

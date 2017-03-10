@@ -3,6 +3,7 @@
 namespace spec\Cmp\Queues\Domain\Event;
 
 use Cmp\Queues\Domain\Event\DomainEvent;
+use Cmp\Queues\Domain\Event\Exception\InvalidJSONDomainEventException;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
@@ -13,14 +14,27 @@ class JSONDomainEventFactorySpec extends ObjectBehavior
         $this->shouldHaveType('Cmp\Queues\Domain\Event\JSONDomainEventFactory');
         $this->shouldHaveType('Cmp\Queues\Domain\Event\JSONDomainEventFactory');
     }
-    
+
     function it_should_convert_from_json_to_DomainEvent()
     {
         $domainEventPreFactory = new DomainEvent('origin', 'name', time(), array(1,2,3,4,5));
-        $domainEventPostFactory = $this->create(json_encode($domainEventPreFactory));
-        $domainEventPostFactory->getName()->shouldBe($domainEventPreFactory->getName());
-        $domainEventPostFactory->getOrigin()->shouldBe($domainEventPreFactory->getOrigin());
-        $domainEventPostFactory->getOccurredOn()->shouldBe($domainEventPreFactory->getOccurredOn());
-        $domainEventPostFactory->getBody()->shouldBe($domainEventPreFactory->getBody());
+        $this->create(json_encode($domainEventPreFactory))->shouldBeLike($domainEventPreFactory);
+    }
+
+    function it_throws_exception_for_invalid_json()
+    {
+        $invalidJsonString = 'foo';
+        $this->shouldThrow(InvalidJSONDomainEventException::class)->duringCreate($invalidJsonString);
+    }
+
+    function it_throws_exception_when_missing_required_keys()
+    {
+        $data = [
+            'foo' => 'bar'
+        ];
+
+        $validJsonData = json_encode($data);
+
+        $this->shouldThrow(InvalidJSONDomainEventException::class)->duringCreate($validJsonData);
     }
 }
