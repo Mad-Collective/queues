@@ -1,16 +1,8 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: quimmanrique
- * Date: 13/02/17
- * Time: 19:13
- */
-
 namespace Cmp\Queues\Infrastructure\AmqpLib\v26\RabbitMQ\Queue;
 
 use Cmp\Queues\Domain\Queue\JSONMessageFactory;
 use PhpAmqpLib\Message\AMQPMessage;
-use Psr\Log\LoggerInterface;
 
 class MessageHandler
 {
@@ -39,13 +31,9 @@ class MessageHandler
      */
     public function handleMessage(AMQPMessage $message)
     {
-        try {
-            $task = $this->jsonMessageFactory->create($message->body);
-            call_user_func_array($this->callback, [$task]);
-            $message->delivery_info['channel']->basic_ack($message->delivery_info['delivery_tag']);
-        } catch (\Exception $e) {
-            throw $e;
-        }
+        $task = $this->jsonMessageFactory->create($message->body);
+        call_user_func_array($this->callback, [$task]);
+        $message->delivery_info['channel']->basic_ack($message->delivery_info['delivery_tag']);
     }
 
     public function setCallback(callable $callback)
