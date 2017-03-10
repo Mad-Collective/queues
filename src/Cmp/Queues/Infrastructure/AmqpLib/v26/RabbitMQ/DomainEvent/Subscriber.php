@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: quimmanrique
- * Date: 13/02/17
- * Time: 18:59
- */
 
 namespace Cmp\Queues\Infrastructure\AmqpLib\v26\RabbitMQ\DomainEvent;
 
@@ -22,16 +16,16 @@ use Psr\Log\LoggerInterface;
 class Subscriber extends DomainSubscriber
 {
     /**
-     * Subscriber constructor.
-     * @param string $host
-     * @param int $port
-     * @param string $user
-     * @param string $password
-     * @param string $vHost
-     * @param string $exchangeName
-     * @param string $queueName
-     * @param BindConfig $bindConfig
-     * @param LoggerInterface $logger
+     * @param string                 $host
+     * @param int                    $port
+     * @param string                 $user
+     * @param string                 $password
+     * @param string                 $vHost
+     * @param string                 $exchangeName
+     * @param string                 $queueName
+     * @param BindConfig             $bindConfig
+     * @param LoggerInterface        $logger
+     * @param JSONDomainEventFactory $factory
      */
     public function __construct(
         $host,
@@ -42,16 +36,16 @@ class Subscriber extends DomainSubscriber
         $exchangeName,
         $queueName,
         BindConfig $bindConfig,
-        LoggerInterface $logger
-    )
-    {
+        LoggerInterface $logger,
+        JSONDomainEventFactory $factory = null
+    ) {
         $queueReader = new QueueReader(
             new AMQPLazyConnection($host, $port, $user, $password, $vHost),
             new QueueConfig($queueName, false, true, false, false),
             new ExchangeConfig($exchangeName, 'topic', false, true, false),
             $bindConfig,
             new ConsumeConfig(false, false, false, false),
-            new MessageHandler(new JSONDomainEventFactory()),
+            new MessageHandler($factory ?: new JSONDomainEventFactory()),
             $logger
         );
         parent::__construct($queueReader, $logger);

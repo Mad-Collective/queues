@@ -12,6 +12,7 @@ class JSONTaskFactorySpec extends ObjectBehavior
     function it_is_initializable()
     {
         $this->shouldHaveType('Cmp\Queues\Domain\Task\JSONTaskFactory');
+        $this->shouldHaveType('Cmp\Queues\Domain\Queue\JSONMessageFactory');
     }
 
     function it_should_convert_from_json_to_Task()
