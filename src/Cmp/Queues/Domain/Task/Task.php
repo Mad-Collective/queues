@@ -2,10 +2,9 @@
 
 namespace Cmp\Queues\Domain\Task;
 
-use Cmp\Queues\Domain\Queue\Message;
 use Cmp\Queues\Domain\Task\Exception\TaskException;
 
-class Task implements Message
+class Task implements TaskInterface
 {
     /**
      * @var string

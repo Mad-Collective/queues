@@ -26,10 +26,10 @@ class Producer
     }
 
     /**
-     * @param Task $task
+     * @param TaskInterface $task
      * @return $this
      */
-    public function add(Task $task)
+    public function add(TaskInterface $task)
     {
         $this->tasks[] = $task;
         return $this;
