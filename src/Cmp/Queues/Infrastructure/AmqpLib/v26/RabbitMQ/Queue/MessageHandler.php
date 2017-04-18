@@ -32,7 +32,9 @@ class MessageHandler
     public function handleMessage(AMQPMessage $message)
     {
         $task = $this->jsonMessageFactory->create($message->body);
-        call_user_func_array($this->callback, [$task]);
+        if (isset($this->callback)) {
+            call_user_func($this->callback, $task);
+        }
         $message->delivery_info['channel']->basic_ack($message->delivery_info['delivery_tag']);
     }
 
