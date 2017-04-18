@@ -10,6 +10,7 @@ use Cmp\Queues\Infrastructure\AmqpLib\v26\RabbitMQ\Queue\Config\ExchangeConfig;
 use Cmp\Queues\Infrastructure\AmqpLib\v26\RabbitMQ\Queue\Config\QueueConfig;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AMQPLazyConnection;
+use PhpAmqpLib\Exception\AMQPRuntimeException;
 use PhpAmqpLib\Exception\AMQPTimeoutException;
 use Psr\Log\LoggerInterface;
 
@@ -54,6 +55,11 @@ class QueueReader implements DomainQueueReader
      * @var AMQPChannel
      */
     protected $channel;
+
+    /**
+     * @var string
+     */
+    protected $consumerTag = '';
 
     /**
      * QueueReader constructor.
@@ -102,7 +108,14 @@ class QueueReader implements DomainQueueReader
         } catch(\Exception $e) {
             throw new ReaderException("Error occurred while reading", 0, $e);
         } finally {
-            $this->channel->basic_cancel('');
+            if ($this->consumerTag) {
+                try {
+                    $this->channel->basic_cancel($this->consumerTag);
+                } catch(\Exception $e) {
+                }
+
+                $this->consumerTag = '';
+            }
         }
     }
 
@@ -159,7 +172,7 @@ class QueueReader implements DomainQueueReader
     protected function consume($timeout)
     {
         $this->logger->debug('Waiting for messages on queue:' . $this->queueConfig->getName());
-        $this->channel->basic_consume(
+        $this->consumerTag = $this->channel->basic_consume(
             $this->queueConfig->getName(),
             '',
             $this->consumeConfig->getNoLocal(),
