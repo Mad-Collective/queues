@@ -94,13 +94,81 @@ class QueueReader implements DomainQueueReader
     {
         $this->initialize();
         $this->messageHandler->setCallback($callback);
+
         try {
-            $this->channel->wait(null, false, $timeout);
+            $this->consume($timeout);
         } catch(AMQPTimeoutException $e) {
             throw new TimeoutReaderException("Timed out at $timeout seconds while reading.", 0, $e);
         } catch(\Exception $e) {
             throw new ReaderException("Error occurred while reading", 0, $e);
+        } finally {
+            $this->channel->basic_cancel('');
         }
+    }
+
+    /**
+     * Deletes all messages from the queue
+     * @return void
+     */
+    public function purge()
+    {
+        $this->initialize();
+        $this->channel->queue_purge($this->queueConfig->getName());
+    }
+
+    /**
+     * Creates the exchange
+     */
+    protected function exchangeDeclare()
+    {
+        $this->logger->debug('Declaring exchange');
+        $this->channel->exchange_declare(
+            $this->exchangeConfig->getName(),
+            $this->exchangeConfig->getType(),
+            $this->exchangeConfig->getPassive(),
+            $this->exchangeConfig->getDurable(),
+            $this->exchangeConfig->getAutoDelete()
+        );
+    }
+
+    /**
+     * Creates the queues and binds them to the exchanges and topics
+     */
+    protected function queueDeclareAndBind()
+    {
+        $this->logger->debug('Declaring queue');
+        $this->channel->queue_declare(
+            $this->queueConfig->getName(),
+            $this->queueConfig->getPassive(),
+            $this->queueConfig->getDurable(),
+            $this->queueConfig->getExclusive(),
+            $this->queueConfig->getAutoDelete()
+        );
+        $this->channel->queue_bind($this->queueConfig->getName(), $this->exchangeConfig->getName());
+
+        foreach ($this->bindConfig->getTopics() as $bindTopic) {
+            $this->logger->info('Binding Topic:' . $bindTopic);
+            $this->channel->queue_bind($this->queueConfig->getName(), $this->exchangeConfig->getName(), $bindTopic);
+        }
+    }
+
+    /**
+     * Starts consuming from the queue
+     * @param int $timeout
+     */
+    protected function consume($timeout)
+    {
+        $this->logger->debug('Waiting for messages on queue:' . $this->queueConfig->getName());
+        $this->channel->basic_consume(
+            $this->queueConfig->getName(),
+            '',
+            $this->consumeConfig->getNoLocal(),
+            $this->consumeConfig->getNoAck(),
+            $this->consumeConfig->getExclusive(),
+            $this->consumeConfig->getNoWait(),
+            array($this->messageHandler, 'handleMessage')
+        );
+        $this->channel->wait(null, false, $timeout);
     }
 
     /**
@@ -108,50 +176,27 @@ class QueueReader implements DomainQueueReader
      */
     protected function initialize()
     {
-        if($this->channel) {
+        if ($this->channel) {
             return;
         }
-        $this->logger->info('Connecting to RabbitMQ');
+        $this->logger->debug('Connecting to RabbitMQ');
         try {
             $this->channel = $this->connection->channel();
-            $this->channel->exchange_declare(
-                $this->exchangeConfig->getName(),
-                $this->exchangeConfig->getType(),
-                $this->exchangeConfig->getPassive(),
-                $this->exchangeConfig->getDurable(),
-                $this->exchangeConfig->getAutoDelete()
-            );
-            $this->logger->info('Declaring queue');
-            $this->channel->queue_declare(
-                $this->queueConfig->getName(),
-                $this->queueConfig->getPassive(),
-                $this->queueConfig->getDurable(),
-                $this->queueConfig->getExclusive(),
-                $this->queueConfig->getAutoDelete()
-            );
-            $this->channel->queue_bind($this->queueConfig->getName(), $this->exchangeConfig->getName());
-            foreach ($this->bindConfig->getTopics() as $bindTopic) {
-                $this->logger->info('Binding Topic:' . $bindTopic);
-                $this->channel->queue_bind($this->queueConfig->getName(), $this->exchangeConfig->getName(), $bindTopic);
-            }
-            $this->logger->info('Waiting for messages on queue:' . $this->queueConfig->getName());
-            $this->channel->basic_consume(
-                $this->queueConfig->getName(),
-                '',
-                $this->consumeConfig->getNoLocal(),
-                $this->consumeConfig->getNoAck(),
-                $this->consumeConfig->getExclusive(),
-                $this->consumeConfig->getNoWait(),
-                array($this->messageHandler, 'handleMessage')
-            );
+            $this->exchangeDeclare();
+            $this->queueDeclareAndBind();
         } catch (\ErrorException $exception) {
             $this->logger->error('Error trying to connect to rabbitMQ:' . $exception->getMessage());
             throw new ReaderException("Error initializing queue reader", 0, $exception);
         }
     }
 
+    /**
+     * Destructor
+     */
     public function __destruct()
     {
-        $this->channel->close();
+        if (isset($this->channel)) {
+            $this->channel->close();
+        }
     }
 }
