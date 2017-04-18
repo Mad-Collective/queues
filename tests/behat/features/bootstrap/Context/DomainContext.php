@@ -4,6 +4,7 @@ namespace Tests\Behat\Context;
 
 use Behat\Behat\Context\Context;
 use Cmp\Queues\Domain\Event\DomainEvent;
+use Cmp\Queues\Domain\Queue\Exception\TimeoutReaderException;
 use Cmp\Queues\Domain\Task\Task;
 use Cmp\Queues\Infrastructure\AmqpLib\v26\RabbitMQ\DomainEvent\Publisher;
 use Cmp\Queues\Infrastructure\AmqpLib\v26\RabbitMQ\DomainEvent\Subscriber;
@@ -170,6 +171,14 @@ class DomainContext implements Context
     }
 
     /**
+     * @When I purge the queue
+     */
+    public function iPurgeTheQueue()
+    {
+        $this->consumer->purge();
+    }
+
+    /**
      * @Then I should consume the random task
      */
     public function iShouldConsumeTheRandomTask()
@@ -182,6 +191,21 @@ class DomainContext implements Context
         assert($this->task->getName() === $consumedTask->getName(), 'Name doesnt match');
         assert($this->task->getBody() === $consumedTask->getBody(), 'Body doesnt match');
         assert($this->task->getDelay() === $consumedTask->getDelay(), 'Delay doesnt match');
+    }
+
+    /**
+     * @Then I should not consume any task
+     */
+    public function iShouldNotConsumeAnyTask()
+    {
+        $taskCallback = new TestTaskCallback();
+
+        try {
+            $this->consumer->consumeOnce(array($taskCallback, 'setTask'), 2);
+        } catch(TimeoutReaderException $e) {
+        }
+
+        assert($taskCallback->getTask() === null, "Expected no task but got one");
     }
 
     /**
@@ -233,6 +257,7 @@ class DomainContext implements Context
             self::TASK_QUEUE,
             new NullLogger()
         );
-        $this->consumer->consume(function(){},1);
+
+        $this->consumer->purge();
     }
 }

@@ -3,9 +3,15 @@
 namespace spec\Cmp\Queues\Domain\Task;
 
 use Cmp\Queues\Domain\Queue\QueueReader;
+use Cmp\Queues\Domain\Task\Consumer;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
+/**
+ * Class ConsumerSpec
+ *
+ * @mixin Consumer
+ */
 class ConsumerSpec extends ObjectBehavior
 {
     function let(
@@ -25,5 +31,11 @@ class ConsumerSpec extends ObjectBehavior
         $callback = function(){};
         $queueReader->read($callback, 1)->shouldBeCalled();
         $this->consumeOnce($callback, 1);
+    }
+
+    function it_purges_queue(QueueReader $queueReader)
+    {
+        $queueReader->purge()->willReturn()->shouldBeCalled();
+        $this->purge();
     }
 }
