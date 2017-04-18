@@ -96,8 +96,7 @@ class QueueReader implements DomainQueueReader
         $this->messageHandler->setCallback($callback);
 
         try {
-            $this->consume();
-            $this->channel->wait(null, false, $timeout);
+            $this->consume($timeout);
         } catch(AMQPTimeoutException $e) {
             throw new TimeoutReaderException("Timed out at $timeout seconds while reading.", 0, $e);
         } catch(\Exception $e) {
@@ -155,8 +154,9 @@ class QueueReader implements DomainQueueReader
 
     /**
      * Starts consuming from the queue
+     * @param int $timeout
      */
-    protected function consume()
+    protected function consume($timeout)
     {
         $this->logger->debug('Waiting for messages on queue:' . $this->queueConfig->getName());
         $this->channel->basic_consume(
@@ -168,6 +168,7 @@ class QueueReader implements DomainQueueReader
             $this->consumeConfig->getNoWait(),
             array($this->messageHandler, 'handleMessage')
         );
+        $this->channel->wait(null, false, $timeout);
     }
 
     /**

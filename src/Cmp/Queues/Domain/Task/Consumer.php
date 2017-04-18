@@ -23,7 +23,7 @@ class Consumer
     /**
      * Consumes tasks indefinitely in a blocking manner
      * @param callable $callback Callable that'll be invoked when a message is received
-     * @param int      $timeout (optional) If specified, the process will block a max of $timeout seconds
+     * @param int      $timeout (optional) If specified, the process will block a max of $timeout seconds. Indefinitely if 0
      */
     public function consume(callable $callback, $timeout=0)
     {
@@ -39,7 +39,7 @@ class Consumer
     /**
      * Consumes a single task in a blocking manner
      * @param callable $callback Callable that'll be invoked when a message is received
-     * @param          $timeout (optional) If specified, the process will block a max of $timeout seconds
+     * @param int      $timeout The process will block a max of $timeout seconds, or indefinitely if 0
      */
     public function consumeOnce(callable $callback, $timeout)
     {

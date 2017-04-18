@@ -1,6 +1,7 @@
 <?php
 namespace Cmp\Queues\Infrastructure\AmqpLib\v26\RabbitMQ\Queue;
 
+use Cmp\Queues\Domain\Queue\Exception\ReaderException;
 use Cmp\Queues\Domain\Queue\JSONMessageFactory;
 use PhpAmqpLib\Message\AMQPMessage;
 
@@ -31,10 +32,12 @@ class MessageHandler
      */
     public function handleMessage(AMQPMessage $message)
     {
-        $task = $this->jsonMessageFactory->create($message->body);
-        if (isset($this->callback)) {
-            call_user_func($this->callback, $task);
+        if (!isset($this->callback)) {
+            throw new ReaderException("Handling a message with no callback set");
         }
+
+        $task = $this->jsonMessageFactory->create($message->body);
+        call_user_func($this->callback, $task);
         $message->delivery_info['channel']->basic_ack($message->delivery_info['delivery_tag']);
     }
 
