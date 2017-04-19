@@ -104,18 +104,11 @@ class QueueReader implements DomainQueueReader
         try {
             $this->consume($timeout);
         } catch(AMQPTimeoutException $e) {
+            $this->stopConsuming();
             throw new TimeoutReaderException("Timed out at $timeout seconds while reading.", 0, $e);
         } catch(\Exception $e) {
+            $this->stopConsuming();
             throw new ReaderException("Error occurred while reading", 0, $e);
-        } finally {
-            if ($this->consumerTag) {
-                try {
-                    $this->channel->basic_cancel($this->consumerTag);
-                } catch(\Exception $e) {
-                }
-
-                $this->consumerTag = '';
-            }
         }
     }
 
@@ -171,16 +164,18 @@ class QueueReader implements DomainQueueReader
      */
     protected function consume($timeout)
     {
-        $this->logger->debug('Waiting for messages on queue:' . $this->queueConfig->getName());
-        $this->consumerTag = $this->channel->basic_consume(
-            $this->queueConfig->getName(),
-            '',
-            $this->consumeConfig->getNoLocal(),
-            $this->consumeConfig->getNoAck(),
-            $this->consumeConfig->getExclusive(),
-            $this->consumeConfig->getNoWait(),
-            array($this->messageHandler, 'handleMessage')
-        );
+        if ($this->consumerTag === '') {
+            $this->logger->debug('Waiting for messages on queue:'.$this->queueConfig->getName());
+            $this->consumerTag = $this->channel->basic_consume(
+                $this->queueConfig->getName(),
+                '',
+                $this->consumeConfig->getNoLocal(),
+                $this->consumeConfig->getNoAck(),
+                $this->consumeConfig->getExclusive(),
+                $this->consumeConfig->getNoWait(),
+                array($this->messageHandler, 'handleMessage')
+            );
+        }
         $this->channel->wait(null, false, $timeout);
     }
 
@@ -200,6 +195,21 @@ class QueueReader implements DomainQueueReader
         } catch (\ErrorException $exception) {
             $this->logger->error('Error trying to connect to rabbitMQ:' . $exception->getMessage());
             throw new ReaderException("Error initializing queue reader", 0, $exception);
+        }
+    }
+
+    /**
+     * Stops the consuming of messages
+     */
+    private function stopConsuming()
+    {
+        if ($this->consumerTag) {
+            try {
+                $this->channel->basic_cancel($this->consumerTag);
+            } catch(\Exception $e) {
+            }
+
+            $this->consumerTag = '';
         }
     }
 
