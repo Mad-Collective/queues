@@ -10,6 +10,7 @@ use Cmp\Queues\Infrastructure\AmqpLib\v26\RabbitMQ\Queue\Config\ExchangeConfig;
 use Cmp\Queues\Infrastructure\AmqpLib\v26\RabbitMQ\Queue\Config\QueueConfig;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AMQPLazyConnection;
+use PhpAmqpLib\Exception\AMQPRuntimeException;
 use PhpAmqpLib\Exception\AMQPTimeoutException;
 use Psr\Log\LoggerInterface;
 
@@ -56,6 +57,11 @@ class QueueReader implements DomainQueueReader
     protected $channel;
 
     /**
+     * @var string
+     */
+    protected $consumerTag = '';
+
+    /**
      * QueueReader constructor.
      * @param AMQPLazyConnection $connection
      * @param QueueConfig $queueConfig
@@ -98,11 +104,11 @@ class QueueReader implements DomainQueueReader
         try {
             $this->consume($timeout);
         } catch(AMQPTimeoutException $e) {
+            $this->stopConsuming();
             throw new TimeoutReaderException("Timed out at $timeout seconds while reading.", 0, $e);
         } catch(\Exception $e) {
+            $this->stopConsuming();
             throw new ReaderException("Error occurred while reading", 0, $e);
-        } finally {
-            $this->channel->basic_cancel('');
         }
     }
 
@@ -158,16 +164,18 @@ class QueueReader implements DomainQueueReader
      */
     protected function consume($timeout)
     {
-        $this->logger->debug('Waiting for messages on queue:' . $this->queueConfig->getName());
-        $this->channel->basic_consume(
-            $this->queueConfig->getName(),
-            '',
-            $this->consumeConfig->getNoLocal(),
-            $this->consumeConfig->getNoAck(),
-            $this->consumeConfig->getExclusive(),
-            $this->consumeConfig->getNoWait(),
-            array($this->messageHandler, 'handleMessage')
-        );
+        if ($this->consumerTag === '') {
+            $this->logger->debug('Waiting for messages on queue:'.$this->queueConfig->getName());
+            $this->consumerTag = $this->channel->basic_consume(
+                $this->queueConfig->getName(),
+                '',
+                $this->consumeConfig->getNoLocal(),
+                $this->consumeConfig->getNoAck(),
+                $this->consumeConfig->getExclusive(),
+                $this->consumeConfig->getNoWait(),
+                array($this->messageHandler, 'handleMessage')
+            );
+        }
         $this->channel->wait(null, false, $timeout);
     }
 
@@ -187,6 +195,21 @@ class QueueReader implements DomainQueueReader
         } catch (\ErrorException $exception) {
             $this->logger->error('Error trying to connect to rabbitMQ:' . $exception->getMessage());
             throw new ReaderException("Error initializing queue reader", 0, $exception);
+        }
+    }
+
+    /**
+     * Stops the consuming of messages
+     */
+    private function stopConsuming()
+    {
+        if ($this->consumerTag) {
+            try {
+                $this->channel->basic_cancel($this->consumerTag);
+            } catch(\Exception $e) {
+            }
+
+            $this->consumerTag = '';
         }
     }
 

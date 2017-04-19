@@ -29,21 +29,11 @@ class Consumer
     {
         while(true) {
             try {
-                $this->consumeOnce($callback, $timeout);
+                $this->queueReader->read($callback, $timeout);
             } catch(TimeoutReaderException $e) {
                 break;
             }
         }
-    }
-
-    /**
-     * Consumes a single task in a blocking manner
-     * @param callable $callback Callable that'll be invoked when a message is received
-     * @param int      $timeout The process will block a max of $timeout seconds, or indefinitely if 0
-     */
-    public function consumeOnce(callable $callback, $timeout)
-    {
-        $this->queueReader->read($callback, $timeout);
     }
 
     /**

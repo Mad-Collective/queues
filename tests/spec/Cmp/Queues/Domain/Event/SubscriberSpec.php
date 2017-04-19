@@ -45,18 +45,8 @@ class SubscriberSpec extends ObjectBehavior
         $this->notify($domainEvent);
     }
 
-    function it_reads_from_queue(
-        QueueReader $queueReader,
-        EventSubscriptor $eventSubscriptor
-    )   
-    {
-        $queueReader->read(Argument::cetera())->shouldBeCalled();
-        $this->subscribe($eventSubscriptor);
-        $this->processOne(function(){}, 1);
-    }
-    
     function it_should_not_read_from_queue_if_no_EventSubscriptor_added()
     {
-        $this->shouldThrow('Cmp\Queues\Domain\Event\Exception\DomainEventException')->duringProcessOne(function(){});
+        $this->shouldThrow('Cmp\Queues\Domain\Event\Exception\DomainEventException')->duringStart(1);
     }
 }

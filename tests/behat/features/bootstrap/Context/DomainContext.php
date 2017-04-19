@@ -201,7 +201,7 @@ class DomainContext implements Context
         $taskCallback = new TestTaskCallback();
 
         try {
-            $this->consumer->consumeOnce(array($taskCallback, 'setTask'), 2);
+            $this->consumer->consume(array($taskCallback, 'setTask'), 2);
         } catch(TimeoutReaderException $e) {
         }
 
