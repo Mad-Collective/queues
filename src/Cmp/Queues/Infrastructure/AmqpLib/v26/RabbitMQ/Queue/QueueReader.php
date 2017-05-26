@@ -1,6 +1,7 @@
 <?php
 namespace Cmp\Queues\Infrastructure\AmqpLib\v26\RabbitMQ\Queue;
 
+use Cmp\Queues\Domain\Queue\Exception\GracefulStopException;
 use Cmp\Queues\Domain\Queue\Exception\ReaderException;
 use Cmp\Queues\Domain\Queue\Exception\TimeoutReaderException;
 use Cmp\Queues\Domain\Queue\QueueReader as DomainQueueReader;
@@ -10,7 +11,6 @@ use Cmp\Queues\Infrastructure\AmqpLib\v26\RabbitMQ\Queue\Config\ExchangeConfig;
 use Cmp\Queues\Infrastructure\AmqpLib\v26\RabbitMQ\Queue\Config\QueueConfig;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AMQPLazyConnection;
-use PhpAmqpLib\Exception\AMQPRuntimeException;
 use PhpAmqpLib\Exception\AMQPTimeoutException;
 use Psr\Log\LoggerInterface;
 
@@ -103,6 +103,8 @@ class QueueReader implements DomainQueueReader
 
         try {
             $this->consume($timeout);
+        } catch(GracefulStopException $e) {
+            $this->stopConsuming();
         } catch(AMQPTimeoutException $e) {
             $this->stopConsuming();
             throw new TimeoutReaderException("Timed out at $timeout seconds while reading.", 0, $e);
