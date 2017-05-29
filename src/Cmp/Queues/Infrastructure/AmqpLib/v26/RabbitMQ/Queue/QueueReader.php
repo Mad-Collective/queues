@@ -95,6 +95,7 @@ class QueueReader implements DomainQueueReader
      * @param int $timeout
      * @throws ReaderException
      * @throws TimeoutReaderException
+     * @throws GracefulStopException
      */
     public function read(callable $callback, $timeout=0)
     {
@@ -105,6 +106,7 @@ class QueueReader implements DomainQueueReader
             $this->consume($timeout);
         } catch(GracefulStopException $e) {
             $this->stopConsuming();
+            throw  new GracefulStopException("Graceful exception", 0, $e);
         } catch(AMQPTimeoutException $e) {
             $this->stopConsuming();
             throw new TimeoutReaderException("Timed out at $timeout seconds while reading.", 0, $e);

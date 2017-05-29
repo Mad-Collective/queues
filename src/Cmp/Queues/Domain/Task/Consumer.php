@@ -2,6 +2,7 @@
 namespace Cmp\Queues\Domain\Task;
 
 use Cmp\Queues\Domain\Queue\Exception\TimeoutReaderException;
+use Cmp\Queues\Domain\Queue\Exception\GracefulStopException;
 use Cmp\Queues\Domain\Queue\QueueReader;
 
 class Consumer
@@ -31,6 +32,8 @@ class Consumer
             try {
                 $this->queueReader->read($callback, $timeout);
             } catch(TimeoutReaderException $e) {
+                break;
+            } catch(GracefulStopException $e) {
                 break;
             }
         }
