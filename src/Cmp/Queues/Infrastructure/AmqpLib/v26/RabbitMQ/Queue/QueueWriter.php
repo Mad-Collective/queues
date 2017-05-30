@@ -100,7 +100,7 @@ class QueueWriter implements DomainQueueWriter
         if($this->channel) {
             return;
         }
-        $this->logger->info('Connecting to RabbitMQ');
+        $this->logger->debug('Connecting to RabbitMQ');
         try {
             $this->channel = $this->connection->channel();
             $this->channel->exchange_declare(

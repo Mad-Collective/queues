@@ -157,7 +157,7 @@ class QueueReader implements DomainQueueReader
         $this->channel->queue_bind($this->queueConfig->getName(), $this->exchangeConfig->getName());
 
         foreach ($this->bindConfig->getTopics() as $bindTopic) {
-            $this->logger->info('Binding Topic:' . $bindTopic);
+            $this->logger->debug('Binding Topic:' . $bindTopic);
             $this->channel->queue_bind($this->queueConfig->getName(), $this->exchangeConfig->getName(), $bindTopic);
         }
     }

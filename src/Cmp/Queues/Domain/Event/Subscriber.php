@@ -63,7 +63,7 @@ class Subscriber
      */
     public function notify(DomainEvent $domainEvent)
     {
-        $this->logger->info('Domain Event received, notifying subscribers');
+        $this->logger->debug('Domain Event received, notifying subscribers');
         foreach($this->subscriptors as $subscriptor) {
             if($subscriptor->isSubscribed($domainEvent)) {
                 $subscriptor->notify($domainEvent);
