@@ -103,10 +103,10 @@ class DelayedQueueWriter implements DomainQueueWriter
         try{
             $delayedQueue = self::DELAY_QUEUE_PREFIX.$this->delay.'Queue';
 
-            $this->logger->info('Creating delayed exchange '.$this->delayedExchangeName);
+            $this->logger->debug('Creating delayed exchange '.$this->delayedExchangeName);
             // Delay Queue
             $this->channel->exchange_declare($this->delayedExchangeName, 'fanout', false, true, true);
-            $this->logger->info('Creating delayed queue '.$delayedQueue);
+            $this->logger->debug('Creating delayed queue '.$delayedQueue);
             $this->channel->queue_declare(
                 $delayedQueue,
                 false,
