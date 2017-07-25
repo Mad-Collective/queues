@@ -33,11 +33,11 @@ class DomainEvent implements Message
 
     /**
      * DomainEvent constructor.
-     * @param $origin
-     * @param $name
-     * @param $version
-     * @param $occurredOn
-     * @param array $body
+     * @param string $origin
+     * @param string $name
+     * @param string $version
+     * @param int    $occurredOn
+     * @param array  $body
      */
     public function __construct($origin, $name, $version, $occurredOn, array $body = [])
     {
@@ -100,8 +100,8 @@ class DomainEvent implements Message
     }
 
     /**
-     * @param $origin
-     * @return $this
+     * @param string $origin
+     * @return DomainEvent $this
      * @throws DomainEventException
      */
     protected function setOrigin($origin)
@@ -114,8 +114,8 @@ class DomainEvent implements Message
     }
 
     /**
-     * @param $name
-     * @return $this
+     * @param string $name
+     * @return DomainEvent $this
      * @throws DomainEventException
      */
     protected function setName($name)
@@ -128,8 +128,8 @@ class DomainEvent implements Message
     }
 
     /**
-     * @param $version
-     * @return $this
+     * @param string $version
+     * @return DomainEvent $this
      * @throws DomainEventException
      */
     protected function setVersion($version)
@@ -142,8 +142,8 @@ class DomainEvent implements Message
     }
 
     /**
-     * @param $occurredOn
-     * @return $this
+     * @param int $occurredOn
+     * @return DomainEvent $this
      * @throws DomainEventException
      */
     protected function setOccurredOn($occurredOn)
