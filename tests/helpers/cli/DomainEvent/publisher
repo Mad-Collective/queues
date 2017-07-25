@@ -19,5 +19,5 @@ $publisher = new Publisher(
     $logger
 );
 
-$publisher->add(new DomainEvent('queues.helper', 'test', microtime(true), array(1,2,3,4,5)));
+$publisher->add(new DomainEvent('queues.helper', 'test', '1.0.0', microtime(true), array(1,2,3,4,5)));
 $publisher->publish();

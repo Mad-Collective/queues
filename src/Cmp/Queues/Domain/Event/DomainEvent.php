@@ -17,6 +17,11 @@ class DomainEvent implements Message
     protected $name;
 
     /**
+     * @var string
+     */
+    protected $version;
+
+    /**
      * @var int
      */
     protected $occurredOn;
@@ -30,13 +35,15 @@ class DomainEvent implements Message
      * DomainEvent constructor.
      * @param $origin
      * @param $name
+     * @param $version
      * @param $occurredOn
      * @param array $body
      */
-    public function __construct($origin, $name, $occurredOn, array $body = [])
+    public function __construct($origin, $name, $version, $occurredOn, array $body = [])
     {
         $this->setOrigin($origin)
              ->setName($name)
+             ->setVersion($version)
              ->setOccurredOn($occurredOn)
         ;
         $this->body = $body;
@@ -56,6 +63,14 @@ class DomainEvent implements Message
     public function getName()
     {
         return $this->name;
+    }
+
+    /**
+     * @return string
+     */
+    public function getVersion()
+    {
+        return $this->version;
     }
 
     /**
@@ -113,6 +128,20 @@ class DomainEvent implements Message
     }
 
     /**
+     * @param $version
+     * @return $this
+     * @throws DomainEventException
+     */
+    protected function setVersion($version)
+    {
+        if(empty($version)) {
+            throw new DomainEventException('DomainEvent version cannot be empty');
+        }
+        $this->version = $version;
+        return $this;
+    }
+
+    /**
      * @param $occurredOn
      * @return $this
      * @throws DomainEventException
@@ -122,6 +151,11 @@ class DomainEvent implements Message
         if(!is_null($occurredOn) && !preg_match('/^\d+(\.\d{1,4})?$/', $occurredOn)) { // accepts also microseconds
             throw new DomainEventException("$occurredOn is not a valid unix timestamp.");
         }
+
+        if ($occurredOn > time()) {
+            throw new DomainEventException('OccuredOn cannot be located in the future');
+        }
+
         $this->occurredOn = $occurredOn;
         return $this;
     }
@@ -132,10 +166,11 @@ class DomainEvent implements Message
     public function jsonSerialize()
     {
         return [
-            'origin' => $this->origin,
-            'name' => $this->name,
+            'origin'     => $this->origin,
+            'name'       => $this->name,
+            'version'    => $this->version,
             'occurredOn' => $this->occurredOn,
-            'body' => $this->body
+            'body'       => $this->body
         ];
     }
 }

@@ -11,8 +11,8 @@ class DomainEventSpec extends ObjectBehavior
 
     function let()
     {
-        $this->time = microtime(true);
-        $this->beConstructedWith('origin', 'name', $this->time, array(1,2,3));
+        $this->time = microtime(true)-10;
+        $this->beConstructedWith('origin', 'name', '1.0.0', $this->time, array(1,2,3));
     }
 
     function it_is_initializable()
@@ -30,21 +30,35 @@ class DomainEventSpec extends ObjectBehavior
     {
         $this->shouldThrow(
             'Cmp\Queues\Domain\Event\Exception\DomainEventException'
-        )->during('__construct', array('', 'name', microtime(true)));
+        )->during('__construct', array('', 'name', '1.0.0', microtime(true)));
     }
 
     function it_should_throw_exception_if_empty_name()
     {
         $this->shouldThrow(
             'Cmp\Queues\Domain\Event\Exception\DomainEventException'
-        )->during('__construct', array('origin', '', microtime(true)));
+        )->during('__construct', array('origin', '', '1.0.0', microtime(true)));
+    }
+
+    function it_should_throw_exception_if_empty_version()
+    {
+        $this->shouldThrow(
+            'Cmp\Queues\Domain\Event\Exception\DomainEventException'
+        )->during('__construct', array('origin', 'name', '', microtime(true)));
     }
 
     function it_should_throw_exception_if_invalid_occurredOn()
     {
         $this->shouldThrow(
             'Cmp\Queues\Domain\Event\Exception\DomainEventException'
-        )->during('__construct', array('origin', '', 'occurredOn'));
+        )->during('__construct', array('origin', 'name', '1.0.0', 'occurredOn'));
+    }
+
+    function it_should_throw_exception_if_occurredOn_in_future()
+    {
+        $this->shouldThrow(
+            'Cmp\Queues\Domain\Event\Exception\DomainEventException'
+        )->during('__construct', array('origin', 'name', '1.0.0', time() + 8 * 24 * 60 * 60));
     }
 
     function it_should_get_origin()
@@ -55,6 +69,11 @@ class DomainEventSpec extends ObjectBehavior
     function it_should_get_name()
     {
         $this->getName()->shouldBe('name');
+    }
+
+    function it_should_get_version()
+    {
+        $this->getVersion()->shouldBe('1.0.0');
     }
 
     function it_should_get_occurredOn()

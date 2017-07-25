@@ -17,7 +17,7 @@ class JSONDomainEventFactorySpec extends ObjectBehavior
 
     function it_should_convert_from_json_to_domain_event()
     {
-        $taskPreFactory = new DomainEvent('origin', 'name', time(), array(1,2,3,4,5));
+        $taskPreFactory = new DomainEvent('origin', 'name', '1.0.0', time(), array(1,2,3,4,5));
         $this->create(json_encode($taskPreFactory))->shouldBeLike($taskPreFactory);
     }
 
