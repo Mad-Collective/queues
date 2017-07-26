@@ -21,6 +21,8 @@ class DomainContext implements Context
     const TASK_QUEUE = 'behat-task-queue-test';
     const TASK_EXCHANGE = 'behat-task-exchange-test';
 
+    const VERSION = '1.0.0';
+
     /**
      * @var DomainEvent
      */
@@ -72,7 +74,7 @@ class DomainContext implements Context
     public function iSendARandomDomainEvent()
     {
         $this->startDomainEventConsumer();
-        $this->domainEvent = new DomainEvent('behat', 'behat.test', time(), array(1,2,3,4,5));
+        $this->domainEvent = new DomainEvent('behat', 'behat.test', self::VERSION, time(), array(1,2,3,4,5));
         $publisher = new Publisher(
             $this->host,
             $this->port,
@@ -82,6 +84,7 @@ class DomainContext implements Context
             self::DOMAIN_EVENT_EXCHANGE,
             new NullLogger()
         );
+
         $publisher->add($this->domainEvent);
         $publisher->publish();
     }
@@ -97,6 +100,7 @@ class DomainContext implements Context
         assert($this->domainEvent->getOrigin() === $incomingDomainEvent->getOrigin(), 'Origin doesnt match');
         assert($this->domainEvent->getName() === $incomingDomainEvent->getName(), 'Name doesnt match');
         assert($this->domainEvent->getBody() === $incomingDomainEvent->getBody(), 'Body doesnt match');
+        assert($this->domainEvent->getVersion() === $incomingDomainEvent->getVersion(), 'Version doesnt match');
         assert($this->domainEvent->getOccurredOn() === $incomingDomainEvent->getOccurredOn(), 'OccurredOn doesnt match');
     }
 
@@ -106,7 +110,7 @@ class DomainContext implements Context
     public function iSendARandomDomainEventWithAnUnwantedTopic()
     {
         $this->startDomainEventConsumer();
-        $this->domainEvent = new DomainEvent('behat', 'unwanted.topic', time(), array(1,2,3,4,5));
+        $this->domainEvent = new DomainEvent('behat', 'unwanted.topic', self::VERSION, time(), array(1,2,3,4,5));
         $publisher = new Publisher(
             $this->host,
             $this->port,
@@ -145,6 +149,7 @@ class DomainContext implements Context
             $bindConfig,
             new NullLogger()
         );
+
         $this->subscriptor = new TestEventSubscriptor();
         $this->subscriber->subscribe($this->subscriptor);
         $this->subscriber->start(1);
