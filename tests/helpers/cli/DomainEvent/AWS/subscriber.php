@@ -21,6 +21,6 @@ class TestEventSubscriptor implements EventSubscriptor
     }
 }
 
-$subscriber = new Subscriber('us-east-1', 'test', new NaiveStdoutLogger());
+$subscriber = new Subscriber('us-east-1', 'test', 'test', new NaiveStdoutLogger());
 $subscriber->subscribe(new TestEventSubscriptor());
 $subscriber->start();

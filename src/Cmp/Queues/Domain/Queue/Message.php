@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: quimmanrique
- * Date: 13/02/17
- * Time: 13:40
- */
 
 namespace Cmp\Queues\Domain\Queue;
 

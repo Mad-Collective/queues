@@ -5,7 +5,7 @@ use Cmp\Queues\Domain\Event\DomainEvent;
 use Cmp\Queues\Infrastructure\AmqpLib\v26\RabbitMQ\DomainEvent\Publisher;
 use Cmp\Queues\Infrastructure\Logger\NaiveStdoutLogger;
 
-require_once '/app/queues/vendor/autoload.php';
+require_once '../../../../../vendor/autoload.php';
 
 $logger = new NaiveStdoutLogger();
 

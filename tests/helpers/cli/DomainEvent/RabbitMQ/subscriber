@@ -7,7 +7,7 @@ use Cmp\Queues\Infrastructure\AmqpLib\v26\RabbitMQ\DomainEvent\Subscriber;
 use Cmp\Queues\Infrastructure\AmqpLib\v26\RabbitMQ\Queue\Config\BindConfig;
 use Cmp\Queues\Infrastructure\Logger\NaiveStdoutLogger;
 
-require_once '/app/queues/vendor/autoload.php';
+require_once '../../../../../vendor/autoload.php';
 
 class TestEventSubscriptor implements EventSubscriptor
 {

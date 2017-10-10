@@ -152,7 +152,7 @@ class DomainEvent implements Message
             throw new DomainEventException("$occurredOn is not a valid unix timestamp.");
         }
 
-        if ($occurredOn > time()) {
+        if ($occurredOn > microtime(true)) {
             throw new DomainEventException('OccuredOn cannot be located in the future');
         }
 
