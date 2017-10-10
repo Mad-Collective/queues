@@ -12,8 +12,7 @@
         }
     },
     "require": {
-        "psr/log": "^1.0",
-        "aws/aws-sdk-php": "^3.36"
+        "psr/log": "^1.0"
     },
     "authors": [
         {
@@ -24,7 +23,8 @@
     "require-dev": {
         "phpspec/phpspec": "2.4.1",
         "php-amqplib/php-amqplib": "^2.6",
-        "behat/behat": "^3.3"
+        "behat/behat": "^3.3",
+        "aws/aws-sdk-php": "^3.36"
     },
     "config": {
       "bin-dir": "bin"

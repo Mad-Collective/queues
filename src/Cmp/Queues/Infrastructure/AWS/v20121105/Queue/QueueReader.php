@@ -160,7 +160,7 @@ class QueueReader implements DomainQueueReader
         $this->sqs->setQueueAttributes([
             'QueueUrl' => $this->queueUrl,
             'Attributes' => [
-                'Policy' => [
+                'Policy' => json_encode([
                     'Version' => '2012-10-17',
                     'Statement'  => [
                         'Effect' => 'Allow',
@@ -173,7 +173,7 @@ class QueueReader implements DomainQueueReader
                            ],
                         ],
                     ],
-                ],
+                ]),
             ]
         ]);
     }
