@@ -21,6 +21,11 @@ class QueueReader implements DomainQueueReader
     protected $queueUrl;
 
     /**
+     * @var int
+     */
+    protected $messagesToRead;
+
+    /**
      * @var MessageHandler
      */
     protected $messageHandler;
@@ -33,17 +38,20 @@ class QueueReader implements DomainQueueReader
     /**
      * @param SqsClient       $sqs
      * @param string          $queueUrl
+     * @param int             $messagesToRead
      * @param MessageHandler  $messageHandler
      * @param LoggerInterface $logger
      */
     public function __construct(
         SqsClient $sqs,
         $queueUrl,
+        $messagesToRead,
         MessageHandler $messageHandler,
         LoggerInterface $logger
     ) {
         $this->sqs = $sqs;
         $this->queueUrl = $queueUrl;
+        $this->messagesToRead = $messagesToRead;
         $this->logger = $logger;
         $this->messageHandler = $messageHandler;
     }
@@ -86,7 +94,7 @@ class QueueReader implements DomainQueueReader
         $result = $this->sqs->receiveMessage([
             'QueueUrl' => $this->queueUrl,
             'MessageAttributeNames' => ['All'],
-            'MaxNumberOfMessages' => 10,
+            'MaxNumberOfMessages' => $this->messagesToRead,
             'WaitTimeSeconds' => $timeout,
         ]);
 

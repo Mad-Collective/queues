@@ -299,7 +299,9 @@ class DomainContext implements Context
         $this->subscriber = new AWSSubscriber(
             self::AWS_REGION,
             self::$queueUrl,
-            new NullLogger()
+            new NullLogger(),
+            null,
+            1
         );
     }
 

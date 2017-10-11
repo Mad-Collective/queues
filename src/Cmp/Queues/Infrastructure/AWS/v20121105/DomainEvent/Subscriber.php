@@ -16,12 +16,19 @@ class Subscriber extends DomainSubscriber
      * @param string                 $queueUrl
      * @param LoggerInterface        $logger
      * @param JSONDomainEventFactory $factory
+     * @param int                    $messagesToRead
      */
-    public function __construct($region, $queueUrl, LoggerInterface $logger, JSONDomainEventFactory $factory = null)
-    {
+    public function __construct(
+        $region,
+        $queueUrl,
+        LoggerInterface $logger,
+        JSONDomainEventFactory $factory = null,
+        $messagesToRead = 10
+    ) {
         $queueReader = new QueueReader(
             SqsClient::factory(['region' => $region, 'version' => '2012-11-05']),
             $queueUrl,
+            $messagesToRead,
             new MessageHandler($factory ?: new JSONDomainEventFactory()),
             $logger
         );
