@@ -15,6 +15,7 @@ use Cmp\Queues\Infrastructure\AmqpLib\v26\RabbitMQ\Task\Consumer;
 use Cmp\Queues\Infrastructure\AmqpLib\v26\RabbitMQ\Task\Producer;
 use Cmp\Queues\Infrastructure\AWS\v20121105\DomainEvent\Publisher as AWSPublisher;
 use Cmp\Queues\Infrastructure\AWS\v20121105\DomainEvent\Subscriber as AWSSubscriber;
+use Cmp\Queues\Infrastructure\AWS\v20121105\Queue\Queue;
 use Psr\Log\NullLogger;
 
 class DomainContext implements Context
@@ -70,6 +71,9 @@ class DomainContext implements Context
     protected $password;
     protected $vHost;
 
+    protected static $queueUrl;
+    protected static $topicArn;
+
     public function __construct()
     {
         $this->host = getenv('RABBITMQ_HOST');
@@ -77,6 +81,18 @@ class DomainContext implements Context
         $this->user = getenv('RABBITMQ_USER');
         $this->password = getenv('RABBITMQ_PASSWORD');
         $this->vHost = getenv('RABBITMQ_VHOST');
+    }
+
+    /**
+     * @BeforeSuite
+     */
+    public static function prepare()
+    {
+        $queue = Queue::create('us-east-1');
+        $result = $queue->createQueueAndTopic(self::DOMAIN_EVENT_QUEUE, self::DOMAIN_EVENT_EXCHANGE);
+
+        self::$queueUrl = $result['queueUrl'];
+        self::$topicArn = $result['topicArn'];
     }
 
     /**
@@ -282,8 +298,7 @@ class DomainContext implements Context
     {
         $this->subscriber = new AWSSubscriber(
             self::AWS_REGION,
-            self::DOMAIN_EVENT_QUEUE,
-            self::DOMAIN_EVENT_EXCHANGE,
+            self::$queueUrl,
             new NullLogger()
         );
     }
@@ -324,7 +339,7 @@ class DomainContext implements Context
     {
         return new AWSPublisher(
             self::AWS_REGION,
-            self::DOMAIN_EVENT_EXCHANGE,
+            self::$topicArn,
             new NullLogger()
         );
     }

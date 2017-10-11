@@ -13,7 +13,7 @@ class QueueWriter implements DomainQueueWriter
     /**
      * @var SnsClient
      */
-    protected $client;
+    protected $sns;
 
     /**
      * @var string
@@ -26,16 +26,15 @@ class QueueWriter implements DomainQueueWriter
     protected $logger;
 
     /**
-     * @param SnsClient       $client
-     * @param string          $topicName
+     * @param SnsClient       $sns
+     * @param string          $topicArn
      * @param LoggerInterface $logger
      */
-    public function __construct(SnsClient $client, $topicName, LoggerInterface $logger)
+    public function __construct(SnsClient $sns, $topicArn, LoggerInterface $logger)
     {
-        $this->client = $client;
+        $this->sns = $sns;
+        $this->topicArn = $topicArn;
         $this->logger = $logger;
-
-        $this->initialize($topicName);
     }
 
     /**
@@ -59,28 +58,12 @@ class QueueWriter implements DomainQueueWriter
     protected function send(Message $message)
     {
         try {
-            $this->client->publish([
+            $this->sns->publish([
                 'TopicArn' => $this->topicArn,
                 'Message' => json_encode($message),
             ]);
         } catch(\Exception $e) {
             $this->logger->error('Error writing messages', ['exception' => $e]);
-            throw new WriterException($e->getMessage(), $e->getCode());
-        }
-    }
-
-    /**
-     * @param string $name
-     *
-     * @throws WriterException
-     */
-    protected function initialize($name)
-    {
-        try {
-            $result = $this->client->createTopic(['Name' => $name]);
-            $this->topicArn = $result->get('TopicArn');
-        } catch (\Exception $e) {
-            $this->logger->error('Error trying to create an SNS topic', ['exception' => $e]);
             throw new WriterException($e->getMessage(), $e->getCode());
         }
     }

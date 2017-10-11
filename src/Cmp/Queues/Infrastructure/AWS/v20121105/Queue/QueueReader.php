@@ -2,12 +2,10 @@
 
 namespace Cmp\Queues\Infrastructure\AWS\v20121105\Queue;
 
-use Aws\Sns\SnsClient;
 use Aws\Sqs\SqsClient;
 use Cmp\Queues\Domain\Queue\Exception\ReaderException;
 use Cmp\Queues\Domain\Queue\Exception\TimeoutReaderException;
 use Cmp\Queues\Domain\Queue\QueueReader as DomainQueueReader;
-use Exception;
 use Psr\Log\LoggerInterface;
 
 class QueueReader implements DomainQueueReader
@@ -16,11 +14,6 @@ class QueueReader implements DomainQueueReader
      * @var SqsClient
      */
     protected $sqs;
-
-    /**
-     * @var SnsClient
-     */
-    protected $sns;
 
     /**
      * @var string
@@ -39,26 +32,20 @@ class QueueReader implements DomainQueueReader
 
     /**
      * @param SqsClient       $sqs
-     * @param SnsClient       $sns
-     * @param string          $queueName
-     * @param string          $topicName
+     * @param string          $queueUrl
      * @param MessageHandler  $messageHandler
      * @param LoggerInterface $logger
      */
     public function __construct(
         SqsClient $sqs,
-        SnsClient $sns,
-        $queueName,
-        $topicName,
+        $queueUrl,
         MessageHandler $messageHandler,
         LoggerInterface $logger
     ) {
         $this->sqs = $sqs;
-        $this->sns = $sns;
+        $this->queueUrl = $queueUrl;
         $this->logger = $logger;
         $this->messageHandler = $messageHandler;
-
-        $this->initialize($queueName, $topicName);
     }
 
     /**
@@ -112,69 +99,5 @@ class QueueReader implements DomainQueueReader
             $this->messageHandler->handleMessage($message);
             $this->sqs->deleteMessage(['QueueUrl' => $this->queueUrl, 'ReceiptHandle' => $message['ReceiptHandle']]);
         }
-    }
-
-    /**
-     * @param string $queueName
-     * @param string $topicName
-     *
-     * @throws ReaderException
-     */
-    protected function initialize($queueName, $topicName)
-    {
-        try {
-            $this->createQueue($queueName);
-            $this->bindToSNS($topicName);
-        } catch (Exception $e) {
-            $this->logger->error('Error trying to create queue', ['exception' => $e]);
-            throw new ReaderException('Error initializing queue reader', 0, $e);
-        }
-    }
-
-    /**
-     * Creates the queue in SQS, nothing will happen if the queue already exists
-     *
-     * @param string $queueName
-     */
-    protected function createQueue($queueName)
-    {
-        $result = $this->sqs->createQueue(array('QueueName' => $queueName));
-        $this->queueUrl = $result['QueueUrl'];
-    }
-
-    /**
-     * @param string $topicName
-     */
-    protected function bindToSNS($topicName)
-    {
-        $result = $this->sns->createTopic(['Name' => $topicName]);
-        $topicArn = $result->get('TopicArn');
-
-        $queueArn = $this->sqs->getQueueArn($this->queueUrl);
-        $this->sns->subscribe([
-            'TopicArn' => $topicArn,
-            'Protocol' => 'sqs',
-            'Endpoint' => $queueArn,
-        ]);
-
-        $this->sqs->setQueueAttributes([
-            'QueueUrl' => $this->queueUrl,
-            'Attributes' => [
-                'Policy' => json_encode([
-                    'Version' => '2012-10-17',
-                    'Statement'  => [
-                        'Effect' => 'Allow',
-                        'Principal' => '*',
-                        'Action' => 'sqs:SendMessage',
-                        'Resource' => $queueArn,
-                        'Condition' => [
-                                'ArnEquals' => [
-                                    'aws:SourceArn' => $topicArn,
-                           ],
-                        ],
-                    ],
-                ]),
-            ]
-        ]);
     }
 }

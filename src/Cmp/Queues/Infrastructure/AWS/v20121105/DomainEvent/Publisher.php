@@ -11,17 +11,17 @@ class Publisher extends DomainPublisher
 {
     /**
      * @param string          $region
-     * @param string          $topicName
+     * @param string          $topicArn
      * @param LoggerInterface $logger
      */
-    public function __construct($region, $topicName, LoggerInterface $logger)
+    public function __construct($region, $topicArn, LoggerInterface $logger)
     {
-        $client = SnsClient::factory([
-            'region'  => $region,
-            'version' => '2010-03-31',
-        ]);
-
-        $queueWriter = new QueueWriter($client, $topicName, $logger);
+        $sns = SnsClient::factory(['region' => $region, 'version' => '2010-03-31']);
+        $queueWriter = new QueueWriter(
+            $sns,
+            $topicArn,
+            $logger
+        );
         parent::__construct($queueWriter);
     }
 }
