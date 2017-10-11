@@ -4,13 +4,18 @@ namespace Tests\Behat\Context;
 
 use Behat\Behat\Context\Context;
 use Cmp\Queues\Domain\Event\DomainEvent;
+use Cmp\Queues\Domain\Event\Publisher;
+use Cmp\Queues\Domain\Event\Subscriber;
 use Cmp\Queues\Domain\Queue\Exception\TimeoutReaderException;
 use Cmp\Queues\Domain\Task\Task;
-use Cmp\Queues\Infrastructure\AmqpLib\v26\RabbitMQ\DomainEvent\Publisher;
-use Cmp\Queues\Infrastructure\AmqpLib\v26\RabbitMQ\DomainEvent\Subscriber;
+use Cmp\Queues\Infrastructure\AmqpLib\v26\RabbitMQ\DomainEvent\Publisher as RabbitMQPublisher;
+use Cmp\Queues\Infrastructure\AmqpLib\v26\RabbitMQ\DomainEvent\Subscriber as RabbitMQSubscriber;
 use Cmp\Queues\Infrastructure\AmqpLib\v26\RabbitMQ\Queue\Config\BindConfig;
 use Cmp\Queues\Infrastructure\AmqpLib\v26\RabbitMQ\Task\Consumer;
 use Cmp\Queues\Infrastructure\AmqpLib\v26\RabbitMQ\Task\Producer;
+use Cmp\Queues\Infrastructure\AWS\v20121105\DomainEvent\Publisher as AWSPublisher;
+use Cmp\Queues\Infrastructure\AWS\v20121105\DomainEvent\Subscriber as AWSSubscriber;
+use Cmp\Queues\Infrastructure\AWS\v20121105\Queue\Queue;
 use Psr\Log\NullLogger;
 
 class DomainContext implements Context
@@ -22,6 +27,8 @@ class DomainContext implements Context
     const TASK_EXCHANGE = 'behat-task-exchange-test';
 
     const VERSION = '1.0.0';
+
+    const AWS_REGION = 'us-east-1';
 
     /**
      * @var DomainEvent
@@ -53,11 +60,19 @@ class DomainContext implements Context
      */
     protected $delayedTaskCallback;
 
+    /**
+     * @var string
+     */
+    protected $provider;
+
     protected $host;
     protected $port;
     protected $user;
     protected $password;
     protected $vHost;
+
+    protected static $queueUrl;
+    protected static $topicArn;
 
     public function __construct()
     {
@@ -69,22 +84,33 @@ class DomainContext implements Context
     }
 
     /**
+     * @BeforeSuite
+     */
+    public static function prepare()
+    {
+        $queue = Queue::create('us-east-1');
+        $result = $queue->createQueueAndTopic(self::DOMAIN_EVENT_QUEUE, self::DOMAIN_EVENT_EXCHANGE);
+
+        self::$queueUrl = $result['queueUrl'];
+        self::$topicArn = $result['topicArn'];
+    }
+
+    /**
+     * @Given I use :provider
+     */
+    public function iUseProvider($provider)
+    {
+        $this->provider = $provider;
+    }
+
+    /**
      * @Given I send a random domain event
      */
     public function iSendARandomDomainEvent()
     {
         $this->startDomainEventConsumer();
         $this->domainEvent = new DomainEvent('behat', 'behat.test', self::VERSION, time(), array(1,2,3,4,5));
-        $publisher = new Publisher(
-            $this->host,
-            $this->port,
-            $this->user,
-            $this->password,
-            $this->vHost,
-            self::DOMAIN_EVENT_EXCHANGE,
-            new NullLogger()
-        );
-
+        $publisher = $this->getDomainEventPublisher();
         $publisher->add($this->domainEvent);
         $publisher->publish();
     }
@@ -111,15 +137,7 @@ class DomainContext implements Context
     {
         $this->startDomainEventConsumer();
         $this->domainEvent = new DomainEvent('behat', 'unwanted.topic', self::VERSION, time(), array(1,2,3,4,5));
-        $publisher = new Publisher(
-            $this->host,
-            $this->port,
-            $this->user,
-            $this->password,
-            $this->vHost,
-            self::DOMAIN_EVENT_EXCHANGE,
-            new NullLogger()
-        );
+        $publisher = $this->getDomainEventPublisher();
         $publisher->add($this->domainEvent);
         $publisher->publish();
     }
@@ -132,27 +150,6 @@ class DomainContext implements Context
         $this->subscriber->start(2);
         $incomingDomainEvent = $this->subscriptor->getDomainEvent();
         assert($incomingDomainEvent === null);
-    }
-
-    protected function startDomainEventConsumer()
-    {
-        $bindConfig = new BindConfig();
-        $bindConfig->addTopic('behat.test');
-        $this->subscriber = new Subscriber(
-            $this->host,
-            $this->port,
-            $this->user,
-            $this->password,
-            $this->vHost,
-            self::DOMAIN_EVENT_EXCHANGE,
-            self::DOMAIN_EVENT_QUEUE,
-            $bindConfig,
-            new NullLogger()
-        );
-
-        $this->subscriptor = new TestEventSubscriptor();
-        $this->subscriber->subscribe($this->subscriptor);
-        $this->subscriber->start(1);
     }
 
     /**
@@ -264,5 +261,86 @@ class DomainContext implements Context
         );
 
         $this->consumer->purge();
+    }
+
+    protected function startDomainEventConsumer()
+    {
+        if (empty($this->provider)) {
+            throw new \RuntimeException("You need to specify a provider");
+        }
+
+        $functionName = "Start".$this->provider."DomainEventConsumer";
+        $this->$functionName();
+
+        $this->subscriptor = new TestEventSubscriptor();
+        $this->subscriber->subscribe($this->subscriptor);
+        $this->subscriber->start(1);
+    }
+
+    protected function startRabbitMQDomainEventConsumer()
+    {
+        $bindConfig = new BindConfig();
+        $bindConfig->addTopic('behat.test');
+        $this->subscriber = new RabbitMQSubscriber(
+            $this->host,
+            $this->port,
+            $this->user,
+            $this->password,
+            $this->vHost,
+            self::DOMAIN_EVENT_EXCHANGE,
+            self::DOMAIN_EVENT_QUEUE,
+            $bindConfig,
+            new NullLogger()
+        );
+    }
+
+    protected function startAWSDomainEventConsumer()
+    {
+        $this->subscriber = new AWSSubscriber(
+            self::AWS_REGION,
+            self::$queueUrl,
+            new NullLogger()
+        );
+    }
+
+    /**
+     * @return Publisher
+     */
+    protected function getDomainEventPublisher()
+    {
+        if (empty($this->provider)) {
+            throw new \RuntimeException("You need to specify a provider");
+        }
+
+        $functionName = "get".$this->provider."DomainEventPublisher";
+        return $this->$functionName();
+    }
+
+    /**
+     * @return RabbitMQPublisher
+     */
+    protected function getRabbitMQDomainEventPublisher()
+    {
+        return new RabbitMQPublisher(
+            $this->host,
+            $this->port,
+            $this->user,
+            $this->password,
+            $this->vHost,
+            self::DOMAIN_EVENT_EXCHANGE,
+            new NullLogger()
+        );
+    }
+
+    /**
+     * @return AWSPublisher
+     */
+    protected function getAWSDomainEventPublisher()
+    {
+        return new AWSPublisher(
+            self::AWS_REGION,
+            self::$topicArn,
+            new NullLogger()
+        );
     }
 }

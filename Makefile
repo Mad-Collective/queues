@@ -1,5 +1,5 @@
 COMPONENT := queues
-CODE_CONTAINER := phpfpm
+CODE_CONTAINER := phpcli
 CLI_CONTAINER := phpcli
 APP_ROOT := /app/queues
 IMAGES ?= false
