@@ -52,6 +52,7 @@ class DomainEvent implements Message
              ->setOccurredOn($occurredOn)
         ;
         $this->body = $body;
+        $this->isDeprecated = $isDeprecated;
     }
 
     /**
