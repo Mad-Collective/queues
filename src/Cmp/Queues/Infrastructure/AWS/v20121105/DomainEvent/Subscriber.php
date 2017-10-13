@@ -8,6 +8,7 @@ use Cmp\Queues\Domain\Event\Subscriber as DomainSubscriber;
 use Cmp\Queues\Infrastructure\AWS\v20121105\Queue\MessageHandler;
 use Cmp\Queues\Infrastructure\AWS\v20121105\Queue\QueueReader;
 use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 
 class Subscriber extends DomainSubscriber
 {
@@ -21,7 +22,7 @@ class Subscriber extends DomainSubscriber
     public function __construct(
         $region,
         $queueUrl,
-        LoggerInterface $logger,
+        LoggerInterface $logger = null,
         JSONDomainEventFactory $factory = null,
         $messagesToRead = 10
     ) {
@@ -30,7 +31,7 @@ class Subscriber extends DomainSubscriber
             $queueUrl,
             $messagesToRead,
             new MessageHandler($factory ?: new JSONDomainEventFactory()),
-            $logger
+            $logger ?: new NullLogger()
         );
         parent::__construct($queueReader, $logger);
     }
