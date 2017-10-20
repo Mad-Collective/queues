@@ -71,7 +71,7 @@ class QueueReader implements DomainQueueReader
         try {
             $this->consume($timeout);
         } catch(GracefulStopException $e) {
-            $this->logger->info("Gracefully stopping the AWS queue reader", $e->getCode(), $e);
+            $this->logger->info("Gracefully stopping the AWS queue reader", ["exception" => $e]);
         } catch(TimeoutReaderException $e) {
             throw $e;
         } catch(\Exception $e) {
