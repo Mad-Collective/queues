@@ -3,6 +3,7 @@
 namespace Cmp\Queues\Infrastructure\AWS\v20121105\Queue;
 
 use Aws\Sqs\SqsClient;
+use Cmp\Queues\Domain\Queue\Exception\GracefulStopException;
 use Cmp\Queues\Domain\Queue\Exception\ReaderException;
 use Cmp\Queues\Domain\Queue\Exception\TimeoutReaderException;
 use Cmp\Queues\Domain\Queue\QueueReader as DomainQueueReader;
@@ -69,6 +70,8 @@ class QueueReader implements DomainQueueReader
 
         try {
             $this->consume($timeout);
+        } catch(GracefulStopException $e) {
+            $this->logger->info("Gracefully stopping the AWS queue reader", $e->getCode(), $e);
         } catch(TimeoutReaderException $e) {
             throw $e;
         } catch(\Exception $e) {
@@ -81,7 +84,9 @@ class QueueReader implements DomainQueueReader
      */
     public function purge()
     {
-        $this->sqs->purgeQueue($this->queueUrl);
+        $this->sqs->purgeQueue([
+            'QueueUrl' => $this->queueUrl,
+        ]);
     }
 
     /**
