@@ -18,11 +18,18 @@ class MessageHandler
     private $callback;
 
     /**
-     * @param JSONMessageFactory $jsonMessageFactory
+     * @var bool
      */
-    public function __construct(JSONMessageFactory $jsonMessageFactory)
+    private $raw;
+
+    /**
+     * @param JSONMessageFactory $jsonMessageFactory
+     * @param bool               $raw
+     */
+    public function __construct(JSONMessageFactory $jsonMessageFactory, $raw = false)
     {
         $this->jsonMessageFactory = $jsonMessageFactory;
+        $this->raw                = $raw;
     }
 
     /**
@@ -36,8 +43,14 @@ class MessageHandler
             throw new ReaderException("Handling a message with no callback set");
         }
 
-        $body = json_decode($message['Body'], true);
-        $task = $this->jsonMessageFactory->create($body['Message']);
+        if ($this->raw) {
+            $json = $message['body'];
+        } else {
+            $body = json_decode($message['Body'], true);
+            $json = $body['Message'];
+        }
+
+        $task = $this->jsonMessageFactory->create($json);
         call_user_func($this->callback, $task);
     }
 
