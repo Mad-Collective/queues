@@ -44,7 +44,7 @@ class MessageHandler
         }
 
         if ($this->raw) {
-            $json = $message['body'];
+            $json = $message['Body'];
         } else {
             $body = json_decode($message['Body'], true);
             $json = $body['Message'];
