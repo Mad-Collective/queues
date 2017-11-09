@@ -61,6 +61,7 @@ class QueueReader implements DomainQueueReader
      * @param callable $callback
      * @param int      $timeout
      *
+     * @throws GracefulStopException
      * @throws TimeoutReaderException
      * @throws ReaderException
      */
@@ -72,6 +73,7 @@ class QueueReader implements DomainQueueReader
             $this->consume($timeout);
         } catch(GracefulStopException $e) {
             $this->logger->info("Gracefully stopping the AWS queue reader", ["exception" => $e]);
+            throw $e;
         } catch(TimeoutReaderException $e) {
             throw $e;
         } catch(\Exception $e) {
