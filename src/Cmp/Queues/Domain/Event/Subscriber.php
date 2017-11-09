@@ -2,6 +2,7 @@
 namespace Cmp\Queues\Domain\Event;
 
 use Cmp\Queues\Domain\Event\Exception\DomainEventException;
+use Cmp\Queues\Domain\Queue\Exception\GracefulStopException;
 use Cmp\Queues\Domain\Queue\Exception\TimeoutReaderException;
 use Cmp\Queues\Domain\Queue\QueueReader;
 use Psr\Log\LoggerInterface;
@@ -53,6 +54,8 @@ class Subscriber
             try {
                 $this->queueReader->read(array($this, 'notify'), $timeout);
             } catch(TimeoutReaderException $e) {
+                break;
+            } catch(GracefulStopException $e) {
                 break;
             }
         }
