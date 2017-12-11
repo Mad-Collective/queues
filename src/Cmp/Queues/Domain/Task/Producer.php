@@ -54,4 +54,12 @@ class Producer
     {
         return $this->tasks;
     }
+
+    /**
+     * @return QueueWriter
+     */
+    public function getQueueWriter()
+    {
+        return $this->queueWriter;
+    }
 }
