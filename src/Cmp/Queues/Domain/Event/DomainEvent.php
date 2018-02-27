@@ -32,21 +32,35 @@ class DomainEvent implements Message
     protected $body = array();
 
     /**
-     * DomainEvent constructor.
+     * @var string
+     */
+    private $id;
+
+    /**
+     * @var bool
+     */
+    protected $isDeprecated = false;
+
+    /**
      * @param string $origin
      * @param string $name
      * @param string $version
      * @param int    $occurredOn
      * @param array  $body
+     * @param string $id
+     * @param bool   $isDeprecated
      */
-    public function __construct($origin, $name, $version, $occurredOn, array $body = [])
+    public function __construct($origin, $name, $version, $occurredOn, array $body = [], $id = null, $isDeprecated = false)
     {
         $this->setOrigin($origin)
              ->setName($name)
              ->setVersion($version)
              ->setOccurredOn($occurredOn)
         ;
-        $this->body = $body;
+
+        $this->body         = $body;
+        $this->id           = $id;
+        $this->isDeprecated = $isDeprecated;
     }
 
     /**
@@ -97,6 +111,22 @@ class DomainEvent implements Message
     public function getDelay()
     {
         return 0;
+    }
+
+    /**
+     * @return string
+     */
+    public function getID()
+    {
+        return $this->uuid;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isDeprecated()
+    {
+        return $this->isDeprecated;
     }
 
     /**
@@ -166,11 +196,13 @@ class DomainEvent implements Message
     public function jsonSerialize()
     {
         return [
-            'origin'     => $this->origin,
-            'name'       => $this->name,
-            'version'    => $this->version,
-            'occurredOn' => $this->occurredOn,
-            'body'       => $this->body
+            'origin'       => $this->origin,
+            'name'         => $this->name,
+            'version'      => $this->version,
+            'occurredOn'   => $this->occurredOn,
+            'body'         => $this->body,
+            'id'           => $this->id,
+            'isDeprecated' => $this->isDeprecated,
         ];
     }
 }

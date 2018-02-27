@@ -33,34 +33,26 @@ test: all-test
 
 fast-test: unit
 
-slow-test: integration functional
+slow-test: integration
 
 all-test: fast-test slow-test
 
 unit:
-ifeq ($(shell uname -s),Linux)
-		@./ops/scripts/unit.sh ${CI}
+ifeq ($(shell uname -s),Linux)  
+		@bin/phpspec run ${CI}
 else
 	 @docker-compose -p ${COMPONENT} -f ops/docker/docker-compose.yml run \
-	 --entrypoint "${APP_ROOT}/ops/scripts/operations.sh unit" --rm ${CODE_CONTAINER}
+	 --entrypoint "bin/phpspec run" --rm ${CODE_CONTAINER}
 
 endif
 
 integration:
 ifeq ($(shell uname -s),Linux)
-		@./ops/scripts/integration.sh ${CI}
+		@bin/behat ${CI}
 else
 	 @docker-compose -p ${COMPONENT} -f ops/docker/docker-compose.yml run \
-	 --entrypoint "${APP_ROOT}/ops/scripts/operations.sh integration" --rm ${CODE_CONTAINER}
+	 --entrypoint "bin/behat" --rm ${CODE_CONTAINER}
 
-endif
-
-functional:
-ifeq ($(shell uname -s),Linux)
-		@./ops/scripts/functional.sh ${CI}
-else
-		@docker-compose -p ${COMPONENT} -f ops/docker/docker-compose.yml run \
-		--entrypoint "${APP_ROOT}/ops/scripts/operations.sh functional" --rm ${CODE_CONTAINER}
 endif
 
 fixtures:
