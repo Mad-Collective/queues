@@ -32,6 +32,11 @@ class DomainEvent implements Message
     protected $body = array();
 
     /**
+     * @var string
+     */
+    private $id;
+
+    /**
      * @var bool
      */
     protected $isDeprecated = false;
@@ -42,16 +47,19 @@ class DomainEvent implements Message
      * @param string $version
      * @param int    $occurredOn
      * @param array  $body
+     * @param string $id
      * @param bool   $isDeprecated
      */
-    public function __construct($origin, $name, $version, $occurredOn, array $body = [], $isDeprecated = false)
+    public function __construct($origin, $name, $version, $occurredOn, array $body = [], $id = null, $isDeprecated = false)
     {
         $this->setOrigin($origin)
              ->setName($name)
              ->setVersion($version)
              ->setOccurredOn($occurredOn)
         ;
-        $this->body = $body;
+
+        $this->body         = $body;
+        $this->id           = $id;
         $this->isDeprecated = $isDeprecated;
     }
 
@@ -103,6 +111,14 @@ class DomainEvent implements Message
     public function getDelay()
     {
         return 0;
+    }
+
+    /**
+     * @return string
+     */
+    public function getID()
+    {
+        return $this->uuid;
     }
 
     /**
@@ -185,6 +201,7 @@ class DomainEvent implements Message
             'version'      => $this->version,
             'occurredOn'   => $this->occurredOn,
             'body'         => $this->body,
+            'id'           => $this->id,
             'isDeprecated' => $this->isDeprecated,
         ];
     }

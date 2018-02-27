@@ -33,6 +33,7 @@ class JSONDomainEventFactory implements JSONMessageFactory
                 $domainEventArray['version'],
                 $domainEventArray['occurredOn'],
                 $domainEventArray['body'],
+                isset($domainEventArray['id']) ? $domainEventArray['id'] : null,
                 isset($domainEventArray['isDeprecated']) ? $domainEventArray['isDeprecated'] : false
             );
         } catch (DomainEventException $e) {
