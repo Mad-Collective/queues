@@ -12,7 +12,7 @@ class DomainEventSpec extends ObjectBehavior
     function let()
     {
         $this->time = microtime(true)-10;
-        $this->beConstructedWith('origin', 'name', '1.0.0', $this->time, array(1,2,3));
+        $this->beConstructedWith('origin', 'name', '1.0.0', $this->time, array(1,2,3), 'uuid', true);
     }
 
     function it_is_initializable()
@@ -84,5 +84,15 @@ class DomainEventSpec extends ObjectBehavior
     function it_should_get_body()
     {
         $this->getBody()->shouldBe(array(1,2,3));
+    }
+
+    function it_should_get_the_id()
+    {
+        $this->getID()->shouldBe('uuid');
+    }
+
+    function it_should_get_the_deprecated_flag()
+    {
+        $this->isDeprecated()->shouldBe(true);
     }
 }

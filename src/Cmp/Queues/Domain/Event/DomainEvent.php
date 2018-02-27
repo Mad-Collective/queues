@@ -118,7 +118,7 @@ class DomainEvent implements Message
      */
     public function getID()
     {
-        return $this->uuid;
+        return $this->id;
     }
 
     /**
