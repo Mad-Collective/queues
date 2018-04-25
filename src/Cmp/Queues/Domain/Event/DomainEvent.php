@@ -170,6 +170,8 @@ class DomainEvent implements Message
      * @param string $key
      *
      * @return mixed
+     *
+     * @throws \RuntimeException
      */
     public function getBodyValueOrFail($key)
     {
