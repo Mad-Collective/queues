@@ -12,7 +12,7 @@ class DomainEventSpec extends ObjectBehavior
     function let()
     {
         $this->time = microtime(true)-10;
-        $this->beConstructedWith('origin', 'name', '1.0.0', $this->time, array(1,2,3), 'uuid', true);
+        $this->beConstructedWith('origin', 'name', '1.0.0', $this->time, array("foo" => "bar", "empty" => null), 'uuid', true, 'correlation');
     }
 
     function it_is_initializable()
@@ -83,7 +83,7 @@ class DomainEventSpec extends ObjectBehavior
 
     function it_should_get_body()
     {
-        $this->getBody()->shouldBe(array(1,2,3));
+        $this->getBody()->shouldBe(array("foo" => "bar", "empty" => null));
     }
 
     function it_should_get_the_id()
@@ -94,5 +94,22 @@ class DomainEventSpec extends ObjectBehavior
     function it_should_get_the_deprecated_flag()
     {
         $this->isDeprecated()->shouldBe(true);
+    }
+
+    function it_should_have_the_correlation_id()
+    {
+        $this->getCorrelationId()->shouldBe("correlation");
+    }
+
+    function it_can_get_body_values()
+    {
+        $this->getBodyValue("foo")->shouldBe("bar");
+        $this->getBodyValue("nope", "default")->shouldBe("default");
+        $this->getBodyValue("empty", "default")->shouldBe(null);
+    }
+
+    function it_can_get_body_values_or_fail()
+    {
+        $this->shouldThrow(\RuntimeException::class)->duringGetBodyValueOrFail("nope");
     }
 }
