@@ -42,25 +42,39 @@ class DomainEvent implements Message
     protected $isDeprecated = false;
 
     /**
-     * @param string $origin
-     * @param string $name
-     * @param string $version
-     * @param int    $occurredOn
-     * @param array  $body
-     * @param string $id
-     * @param bool   $isDeprecated
+     * @var string|null
      */
-    public function __construct($origin, $name, $version, $occurredOn, array $body = [], $id = null, $isDeprecated = false)
-    {
-        $this->setOrigin($origin)
-             ->setName($name)
-             ->setVersion($version)
-             ->setOccurredOn($occurredOn)
-        ;
+    protected $correlationId;
 
-        $this->body         = $body;
-        $this->id           = $id;
-        $this->isDeprecated = $isDeprecated;
+    /**
+     * @param string      $origin
+     * @param string      $name
+     * @param string      $version
+     * @param int         $occurredOn
+     * @param array       $body
+     * @param string      $id
+     * @param bool        $isDeprecated
+     * @param string|null $correlationId
+     */
+    public function __construct(
+        $origin,
+        $name,
+        $version,
+        $occurredOn,
+        array $body = [],
+        $id = null,
+        $isDeprecated = false,
+        $correlationId = null
+    ) {
+        $this->setOrigin($origin)
+            ->setName($name)
+            ->setVersion($version)
+            ->setOccurredOn($occurredOn);
+
+        $this->body          = $body;
+        $this->id            = $id;
+        $this->isDeprecated  = $isDeprecated;
+        $this->correlationId = $correlationId;
     }
 
     /**
@@ -130,6 +144,45 @@ class DomainEvent implements Message
     }
 
     /**
+     * @return string|null
+     */
+    public function getCorrelationID()
+    {
+        return $this->correlationId;
+    }
+
+    /**
+     * @param string $key
+     * @param mixed  $default
+     *
+     * @return mixed
+     */
+    public function getBodyValue($key, $default = null)
+    {
+        if (!array_key_exists($key, $this->body)) {
+            return $default;
+        }
+
+        return $this->body[$key];
+    }
+
+    /**
+     * @param string $key
+     *
+     * @return mixed
+     *
+     * @throws \RuntimeException
+     */
+    public function getBodyValueOrFail($key)
+    {
+        if (!array_key_exists($key, $this->body)) {
+            throw new \RuntimeException("No value in the body found for Key: $key");
+        }
+
+        return $this->body[$key];
+    }
+
+    /**
      * @param string $origin
      * @return DomainEvent $this
      * @throws DomainEventException
@@ -196,13 +249,14 @@ class DomainEvent implements Message
     public function jsonSerialize()
     {
         return [
-            'origin'       => $this->origin,
-            'name'         => $this->name,
-            'version'      => $this->version,
-            'occurredOn'   => $this->occurredOn,
-            'body'         => $this->body,
-            'id'           => $this->id,
-            'isDeprecated' => $this->isDeprecated,
+            'origin'        => $this->origin,
+            'name'          => $this->name,
+            'version'       => $this->version,
+            'occurredOn'    => $this->occurredOn,
+            'body'          => $this->body,
+            'id'            => $this->id,
+            'isDeprecated'  => $this->isDeprecated,
+            'correlationId' => $this->correlationId,
         ];
     }
 }
