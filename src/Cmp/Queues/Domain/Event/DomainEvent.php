@@ -171,12 +171,12 @@ class DomainEvent implements Message
      *
      * @return mixed
      *
-     * @throws \RuntimeException
+     * @throws DomainEventException
      */
     public function getBodyValueOrFail($key)
     {
         if (!array_key_exists($key, $this->body)) {
-            throw new \RuntimeException("No value in the body found for Key: $key");
+            throw new DomainEventException("No value in the body found for Key: $key");
         }
 
         return $this->body[$key];

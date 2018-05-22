@@ -2,6 +2,7 @@
 
 namespace spec\Cmp\Queues\Domain\Event;
 
+use Cmp\Queues\Domain\Event\Exception\DomainEventException;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
@@ -110,6 +111,6 @@ class DomainEventSpec extends ObjectBehavior
 
     function it_can_get_body_values_or_fail()
     {
-        $this->shouldThrow(\RuntimeException::class)->duringGetBodyValueOrFail("nope");
+        $this->shouldThrow(DomainEventException::class)->duringGetBodyValueOrFail("nope");
     }
 }
