@@ -4,6 +4,8 @@ namespace Cmp\Queues\Infrastructure\AWS\v20121105\Queue;
 
 use Cmp\Queues\Domain\Queue\Exception\ReaderException;
 use Cmp\Queues\Domain\Queue\JSONMessageFactory;
+use Cmp\Queues\Domain\Task\Exception\ParseMessageException;
+use Exception;
 
 class MessageHandler
 {
@@ -28,6 +30,7 @@ class MessageHandler
     /**
      * @param array $message
      *
+     * @throws ParseMessageException
      * @throws ReaderException
      */
     public function handleMessage(array $message)
@@ -36,9 +39,12 @@ class MessageHandler
             throw new ReaderException("Handling a message with no callback set");
         }
 
-        $body = json_decode($message['Body'], true);
-        $task = $this->jsonMessageFactory->create($body['Message']);
-        call_user_func($this->callback, $task);
+        try{
+            $body = json_decode($message['Body'], true);
+            call_user_func($this->callback, $this->jsonMessageFactory->create($body['Message']));
+        } catch(Exception $e){
+            throw new ParseMessageException($message);
+        }
     }
 
     /**

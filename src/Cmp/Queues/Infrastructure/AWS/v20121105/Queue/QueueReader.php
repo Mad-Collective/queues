@@ -6,7 +6,9 @@ use Aws\Sqs\SqsClient;
 use Cmp\Queues\Domain\Queue\Exception\GracefulStopException;
 use Cmp\Queues\Domain\Queue\Exception\ReaderException;
 use Cmp\Queues\Domain\Queue\Exception\TimeoutReaderException;
+use Cmp\Queues\Domain\Task\Exception\ParseMessageException;
 use Cmp\Queues\Domain\Queue\QueueReader as DomainQueueReader;
+
 use Psr\Log\LoggerInterface;
 
 class QueueReader implements DomainQueueReader
@@ -64,6 +66,7 @@ class QueueReader implements DomainQueueReader
      * @throws GracefulStopException
      * @throws TimeoutReaderException
      * @throws ReaderException
+     * @throws TimeoutReaderException
      */
     public function read(callable $callback, $timeout=0)
     {
@@ -94,7 +97,9 @@ class QueueReader implements DomainQueueReader
     /**
      * @param int $timeout
      *
+     * @throws ReaderException
      * @throws TimeoutReaderException
+     * @throws ParseMessageException
      */
     protected function consume($timeout)
     {
