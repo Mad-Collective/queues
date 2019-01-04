@@ -43,7 +43,7 @@ class MessageHandler
             $body = json_decode($message['Body'], true);
             call_user_func($this->callback, $this->jsonMessageFactory->create($body['Message']));
         } catch(Exception $e){
-            throw new ParseMessageException($message);
+            throw new ParseMessageException(json_encode($message),0, $e);
         }
     }
 
