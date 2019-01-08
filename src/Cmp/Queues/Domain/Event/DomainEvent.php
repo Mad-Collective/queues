@@ -55,6 +55,7 @@ class DomainEvent implements Message
      * @param string      $id
      * @param bool        $isDeprecated
      * @param string|null $correlationId
+     * @throws DomainEventException
      */
     public function __construct(
         $origin,

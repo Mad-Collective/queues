@@ -5,7 +5,6 @@ use Cmp\Queues\Domain\Event\Exception\DomainEventException;
 use Cmp\Queues\Domain\Queue\Exception\GracefulStopException;
 use Cmp\Queues\Domain\Queue\Exception\TimeoutReaderException;
 use Cmp\Queues\Domain\Queue\QueueReader;
-use Cmp\Queues\Domain\Task\Exception\ParseMessageException;
 use Psr\Log\LoggerInterface;
 
 class Subscriber
@@ -49,18 +48,15 @@ class Subscriber
     /**
      * @param int $timeout
      * @throws DomainEventException
+     * @throws \Cmp\Queues\Domain\Queue\Exception\ReaderException
      */
     public function start($timeout=0)
     {
-        if(!isset($this->subscriptors[0])) {
-            throw new DomainEventException('You must add at least 1 EventSubscriptor in order to publish start reading from queue.');
-        }
+        $this->checkHasSubscriptors();
 
         while(true) {
             try {
                 $this->queueReader->read(array($this, 'notify'), $timeout);
-            } catch(ParseMessageException $e){
-                break;
             } catch(TimeoutReaderException $e) {
                 break;
             } catch(GracefulStopException $e) {
@@ -72,12 +68,11 @@ class Subscriber
     /**
      * @param int $timeout
      * @throws DomainEventException
+     * @throws \Cmp\Queues\Domain\Queue\Exception\ReaderException
      */
     public function batch($timeout=0)
     {
-        if(!isset($this->subscriptors[0])) {
-            throw new DomainEventException('You must add at least 1 EventSubscriptor in order to publish start reading from queue.');
-        }
+        $this->checkHasSubscriptors();
 
         $this->queueReader->read(array($this, 'notify'), $timeout);
     }
@@ -101,5 +96,15 @@ class Subscriber
     public function getSubscriptors()
     {
         return $this->subscriptors;
+    }
+
+    /**
+     * @throws DomainEventException
+     */
+    private function checkHasSubscriptors()
+    {
+        if(empty($this->getSubscriptors())) {
+            throw new DomainEventException('You must add at least 1 EventSubscriptor in order to publish start reading from queue.');
+        }
     }
 }
