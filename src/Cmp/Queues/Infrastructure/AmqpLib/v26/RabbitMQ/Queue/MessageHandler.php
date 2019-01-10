@@ -45,8 +45,6 @@ class MessageHandler
             $message->delivery_info['channel']->basic_ack($message->delivery_info['delivery_tag']);
         } catch(InvalidJSONMessageException $e) {
             throw new ParseMessageException(json_encode($message->getBody()), 0, $e);
-        } catch(Exception $e) {
-            throw $e;
         }
     }
 

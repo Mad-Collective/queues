@@ -41,24 +41,22 @@ class MessageHandler
             throw new ReaderException("Handling a message with no callback set");
         }
 
-        if (!isset($message['Body'])) {
-            throw new ParseMessageException(json_encode($message),0, 'Undefined index key Body: ' . print_r($message, true));
-        }
-
         try{
+
+            if (!isset($message['Body'])) {
+                throw new InvalidJSONMessageException('Undefined index key Body: ' . print_r($message, true));
+            }
 
             $body = json_decode($message['Body'], true);
 
             if (!isset($body['Message'])) {
-                throw new InvalidJSONDomainEventException('Undefined index key Message: ' . print_r($body, true));
+                throw new InvalidJSONMessageException('Undefined index key Message: ' . print_r($body, true));
             }
 
             call_user_func($this->callback, $this->jsonMessageFactory->create($body['Message']));
 
         } catch(InvalidJSONMessageException $e) {
             throw new ParseMessageException(json_encode($message),0, $e);
-        } catch(Exception $e) {
-            throw $e;
         }
     }
 
