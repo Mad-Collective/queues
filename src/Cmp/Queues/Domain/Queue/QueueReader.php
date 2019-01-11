@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: quimmanrique
- * Date: 13/02/17
- * Time: 17:32
- */
 
 namespace Cmp\Queues\Domain\Queue;
 
@@ -14,8 +8,9 @@ interface QueueReader
 {
     /**
      * @param callable $callback
-     * @throws ReaderException
+     * @param int $timeout
      * @return void
+     * @throws ReaderException
      */
     public function read(callable $callback, $timeout=0);
 

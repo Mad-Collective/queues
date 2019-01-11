@@ -2,8 +2,12 @@
 
 namespace Cmp\Queues\Infrastructure\AWS\v20121105\Queue;
 
+use Cmp\Queues\Domain\Event\Exception\InvalidJSONDomainEventException;
+use Cmp\Queues\Domain\Queue\Exception\InvalidJSONMessageException;
 use Cmp\Queues\Domain\Queue\Exception\ReaderException;
 use Cmp\Queues\Domain\Queue\JSONMessageFactory;
+use Cmp\Queues\Domain\Task\Exception\ParseMessageException;
+use Exception;
 
 class MessageHandler
 {
@@ -28,6 +32,7 @@ class MessageHandler
     /**
      * @param array $message
      *
+     * @throws ParseMessageException
      * @throws ReaderException
      */
     public function handleMessage(array $message)
@@ -36,9 +41,23 @@ class MessageHandler
             throw new ReaderException("Handling a message with no callback set");
         }
 
-        $body = json_decode($message['Body'], true);
-        $task = $this->jsonMessageFactory->create($body['Message']);
-        call_user_func($this->callback, $task);
+        try{
+
+            if (!isset($message['Body'])) {
+                throw new InvalidJSONMessageException('Undefined index key Body: ' . print_r($message, true));
+            }
+
+            $body = json_decode($message['Body'], true);
+
+            if (!isset($body['Message'])) {
+                throw new InvalidJSONMessageException('Undefined index key Message: ' . print_r($body, true));
+            }
+
+            call_user_func($this->callback, $this->jsonMessageFactory->create($body['Message']));
+
+        } catch(InvalidJSONMessageException $e) {
+            throw new ParseMessageException(json_encode($message),0, $e);
+        }
     }
 
     /**

@@ -6,7 +6,9 @@ use Aws\Sqs\SqsClient;
 use Cmp\Queues\Domain\Queue\Exception\GracefulStopException;
 use Cmp\Queues\Domain\Queue\Exception\ReaderException;
 use Cmp\Queues\Domain\Queue\Exception\TimeoutReaderException;
+use Cmp\Queues\Domain\Task\Exception\ParseMessageException;
 use Cmp\Queues\Domain\Queue\QueueReader as DomainQueueReader;
+
 use Psr\Log\LoggerInterface;
 
 class QueueReader implements DomainQueueReader
@@ -59,11 +61,12 @@ class QueueReader implements DomainQueueReader
 
     /**
      * @param callable $callback
-     * @param int      $timeout
+     * @param int $timeout
      *
      * @throws GracefulStopException
-     * @throws TimeoutReaderException
+     * @throws ParseMessageException
      * @throws ReaderException
+     * @throws TimeoutReaderException
      */
     public function read(callable $callback, $timeout=0)
     {
@@ -71,6 +74,8 @@ class QueueReader implements DomainQueueReader
 
         try {
             $this->consume($timeout);
+        } catch(ParseMessageException $e){
+            throw $e;
         } catch(GracefulStopException $e) {
             $this->logger->info("Gracefully stopping the AWS queue reader", ["exception" => $e]);
             throw $e;
@@ -94,7 +99,9 @@ class QueueReader implements DomainQueueReader
     /**
      * @param int $timeout
      *
+     * @throws ReaderException
      * @throws TimeoutReaderException
+     * @throws ParseMessageException
      */
     protected function consume($timeout)
     {

@@ -27,6 +27,7 @@ class Subscriber
     /**
      * Subscriber constructor.
      * @param QueueReader $queueReader
+     * @param LoggerInterface $logger
      */
     public function __construct(QueueReader $queueReader, LoggerInterface $logger)
     {
@@ -44,11 +45,14 @@ class Subscriber
         return $this;
     }
 
+    /**
+     * @param int $timeout
+     * @throws DomainEventException
+     * @throws \Cmp\Queues\Domain\Queue\Exception\ReaderException
+     */
     public function start($timeout=0)
     {
-        if(!isset($this->subscriptors[0])) {
-            throw new DomainEventException('You must add at least 1 EventSubscriptor in order to publish start reading from queue.');
-        }
+        $this->checkHasSubscriptors();
 
         while(true) {
             try {
@@ -59,6 +63,18 @@ class Subscriber
                 break;
             }
         }
+    }
+
+    /**
+     * @param int $timeout
+     * @throws DomainEventException
+     * @throws \Cmp\Queues\Domain\Queue\Exception\ReaderException
+     */
+    public function batch($timeout=0)
+    {
+        $this->checkHasSubscriptors();
+
+        $this->queueReader->read(array($this, 'notify'), $timeout);
     }
 
     /**
@@ -80,5 +96,15 @@ class Subscriber
     public function getSubscriptors()
     {
         return $this->subscriptors;
+    }
+
+    /**
+     * @throws DomainEventException
+     */
+    private function checkHasSubscriptors()
+    {
+        if(empty($this->getSubscriptors())) {
+            throw new DomainEventException('You must add at least 1 EventSubscriptor in order to publish start reading from queue.');
+        }
     }
 }
