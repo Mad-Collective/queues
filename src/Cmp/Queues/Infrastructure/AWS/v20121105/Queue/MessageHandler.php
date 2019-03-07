@@ -32,6 +32,7 @@ class MessageHandler
     /**
      * @param array $message
      *
+     * @return mixed
      * @throws ParseMessageException
      * @throws ReaderException
      */
@@ -53,7 +54,7 @@ class MessageHandler
                 throw new InvalidJSONMessageException('Undefined index key Message: ' . print_r($body, true));
             }
 
-            call_user_func($this->callback, $this->jsonMessageFactory->create($body['Message']));
+            return call_user_func($this->callback, $this->jsonMessageFactory->create($body['Message']));
 
         } catch(InvalidJSONMessageException $e) {
             throw new ParseMessageException(json_encode($message),0, $e);

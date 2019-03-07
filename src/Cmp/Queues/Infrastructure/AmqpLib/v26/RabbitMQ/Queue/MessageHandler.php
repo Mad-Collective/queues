@@ -41,8 +41,10 @@ class MessageHandler
 
         try {
             $task = $this->jsonMessageFactory->create($message->body);
-            call_user_func($this->callback, $task);
-            $message->delivery_info['channel']->basic_ack($message->delivery_info['delivery_tag']);
+            $response = call_user_func($this->callback, $task);
+            if(is_null($response) || !is_bool($response) || $response) {
+                $message->delivery_info['channel']->basic_ack($message->delivery_info['delivery_tag']);
+            }
         } catch(InvalidJSONMessageException $e) {
             throw new ParseMessageException(json_encode($message->getBody()), 0, $e);
         }

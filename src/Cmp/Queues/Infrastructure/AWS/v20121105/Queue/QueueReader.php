@@ -118,8 +118,10 @@ class QueueReader implements DomainQueueReader
 
         $messages = isset($result['Messages']) ? $result['Messages'] : [];
         foreach ($messages as $message) {
-            $this->messageHandler->handleMessage($message);
-            $this->sqs->deleteMessage(['QueueUrl' => $this->queueUrl, 'ReceiptHandle' => $message['ReceiptHandle']]);
+            $response = $this->messageHandler->handleMessage($message);
+            if(is_null($response) || !is_bool($response) || $response) {
+                $this->sqs->deleteMessage(['QueueUrl' => $this->queueUrl, 'ReceiptHandle' => $message['ReceiptHandle']]);
+            }
         }
     }
 }
