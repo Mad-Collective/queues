@@ -3,6 +3,12 @@
     "description": "Provides abstractions for Tasks & Domain Events as well as implementations for some queue systems. Easy to extend.",
     "type": "library",
     "license": "MIT",
+    "authors": [
+        {
+            "name": "Jordi Martin",
+            "email": "jordi.martin@teamcmp.com"
+        }
+    ],
     "autoload": {
         "psr-0": {
             "": "src"
