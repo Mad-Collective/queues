@@ -42,8 +42,19 @@ class JSONDomainEventFactorySpec extends ObjectBehavior
         $id            = "abc";
         $isDeprecated  = true;
         $correlationId = "def";
+ //       $extraAttributes = ['attribute1', 'attribute2'];
 
-        $taskPreFactory = new DomainEvent('origin', 'name', '1.0.0', time(), array(1,2,3,4,5), $id, $isDeprecated, $correlationId);
+        $taskPreFactory = new DomainEvent(
+            'origin',
+            'name',
+            '1.0.0',
+            time(),
+            array(1,2,3,4,5),
+            $id,
+            $isDeprecated,
+            $correlationId
+            // $extraAttributes
+        );
         $this->create(json_encode($taskPreFactory))->shouldBeLike($taskPreFactory);
     }
 
