@@ -35,7 +35,8 @@ class JSONDomainEventFactory implements JSONMessageFactory
                 $domainEventArray['body'],
                 isset($domainEventArray['id']) ? $domainEventArray['id'] : null,
                 isset($domainEventArray['isDeprecated']) ? $domainEventArray['isDeprecated'] : false,
-                isset($domainEventArray['correlationId']) ? $domainEventArray['correlationId'] : null
+                isset($domainEventArray['correlationId']) ? $domainEventArray['correlationId'] : null,
+                isset($domainEventArray['extraAttributes']) ? $domainEventArray['extraAttributes'] : null
             );
         } catch (DomainEventException $e) {
             throw new InvalidJSONDomainEventException("Failed creating DomainEvent instance", 0, $e);

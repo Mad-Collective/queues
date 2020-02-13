@@ -109,7 +109,17 @@ class DomainContext implements Context
     public function iSendARandomDomainEvent()
     {
         $this->startDomainEventConsumer();
-        $this->domainEvent = new DomainEvent('behat', 'behat.test', self::VERSION, time(), array(1,2,3,4,5));
+        $this->domainEvent = new DomainEvent(
+            'behat',
+            'behat.test',
+            self::VERSION,
+            time(),
+            array(1,2,3,4,5),
+            null,
+            false,
+            null,
+            ['attribute1', 'attribute2']
+        );
         $publisher = $this->getDomainEventPublisher();
         $publisher->add($this->domainEvent);
         $publisher->publish();
@@ -128,6 +138,7 @@ class DomainContext implements Context
         assert($this->domainEvent->getBody() === $incomingDomainEvent->getBody(), 'Body doesnt match');
         assert($this->domainEvent->getVersion() === $incomingDomainEvent->getVersion(), 'Version doesnt match');
         assert($this->domainEvent->getOccurredOn() === $incomingDomainEvent->getOccurredOn(), 'OccurredOn doesnt match');
+        assert($this->domainEvent->getExtraAttributes() === $incomingDomainEvent->getExtraAttributes(), 'ExtraAttributes doesnt match');
     }
 
     /**
@@ -136,7 +147,17 @@ class DomainContext implements Context
     public function iSendARandomDomainEventWithAnUnwantedTopic()
     {
         $this->startDomainEventConsumer();
-        $this->domainEvent = new DomainEvent('behat', 'unwanted.topic', self::VERSION, time(), array(1,2,3,4,5));
+        $this->domainEvent = new DomainEvent(
+            'behat',
+            'unwanted.topic',
+            self::VERSION,
+            time(),
+            array(1,2,3,4,5),
+            null,
+            false,
+            null,
+            ['attribute1', 'attribute2']
+        );
         $publisher = $this->getDomainEventPublisher();
         $publisher->add($this->domainEvent);
         $publisher->publish();

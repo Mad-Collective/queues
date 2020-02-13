@@ -13,7 +13,17 @@ class DomainEventSpec extends ObjectBehavior
     function let()
     {
         $this->time = microtime(true)-10;
-        $this->beConstructedWith('origin', 'name', '1.0.0', $this->time, array("foo" => "bar", "empty" => null), 'uuid', true, 'correlation');
+        $this->beConstructedWith(
+            'origin',
+            'name',
+            '1.0.0',
+            $this->time,
+            array("foo" => "bar", "empty" => null),
+            'uuid',
+            true,
+            'correlation',
+            ['attribute1', 'attribute2']
+        );
     }
 
     function it_is_initializable()
@@ -100,6 +110,11 @@ class DomainEventSpec extends ObjectBehavior
     function it_should_have_the_correlation_id()
     {
         $this->getCorrelationId()->shouldBe("correlation");
+    }
+
+    function it_should_have_the_extra_attributes()
+    {
+        $this->getExtraAttributes()->shouldBe(['attribute1', 'attribute2']);
     }
 
     function it_can_get_body_values()

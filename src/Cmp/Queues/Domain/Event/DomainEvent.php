@@ -1,4 +1,5 @@
 <?php
+
 namespace Cmp\Queues\Domain\Event;
 
 use Cmp\Queues\Domain\Event\Exception\DomainEventException;
@@ -27,6 +28,11 @@ class DomainEvent implements Message
     protected $occurredOn;
 
     /**
+     * @var array|null
+     */
+    protected $extraAttributes;
+
+    /**
      * @var array
      */
     protected $body = array();
@@ -47,14 +53,15 @@ class DomainEvent implements Message
     protected $correlationId;
 
     /**
-     * @param string      $origin
-     * @param string      $name
-     * @param string      $version
-     * @param int         $occurredOn
-     * @param array       $body
-     * @param string      $id
-     * @param bool        $isDeprecated
+     * @param string $origin
+     * @param string $name
+     * @param string $version
+     * @param int $occurredOn
+     * @param array $body
+     * @param string $id
+     * @param bool $isDeprecated
      * @param string|null $correlationId
+     * @param array|null $extraAttributes
      * @throws DomainEventException
      */
     public function __construct(
@@ -65,16 +72,18 @@ class DomainEvent implements Message
         array $body = [],
         $id = null,
         $isDeprecated = false,
-        $correlationId = null
+        $correlationId = null,
+        $extraAttributes = []
     ) {
         $this->setOrigin($origin)
             ->setName($name)
             ->setVersion($version)
-            ->setOccurredOn($occurredOn);
+            ->setOccurredOn($occurredOn)
+            ->setExtraAttributes($extraAttributes);
 
-        $this->body          = $body;
-        $this->id            = $id;
-        $this->isDeprecated  = $isDeprecated;
+        $this->body = $body;
+        $this->id = $id;
+        $this->isDeprecated = $isDeprecated;
         $this->correlationId = $correlationId;
     }
 
@@ -110,6 +119,14 @@ class DomainEvent implements Message
     public function getOccurredOn()
     {
         return $this->occurredOn;
+    }
+
+    /**
+     * @return array|null
+     */
+    public function getExtraAttributes()
+    {
+        return $this->extraAttributes;
     }
 
     /**
@@ -154,7 +171,7 @@ class DomainEvent implements Message
 
     /**
      * @param string $key
-     * @param mixed  $default
+     * @param mixed $default
      *
      * @return mixed
      */
@@ -190,10 +207,11 @@ class DomainEvent implements Message
      */
     protected function setOrigin($origin)
     {
-        if(empty($origin)) {
+        if (empty($origin)) {
             throw new DomainEventException('DomainEvent origin cannot be empty');
         }
         $this->origin = $origin;
+
         return $this;
     }
 
@@ -204,10 +222,11 @@ class DomainEvent implements Message
      */
     protected function setName($name)
     {
-        if(empty($name)) {
+        if (empty($name)) {
             throw new DomainEventException('DomainEvent name cannot be empty');
         }
         $this->name = $name;
+
         return $this;
     }
 
@@ -218,10 +237,11 @@ class DomainEvent implements Message
      */
     protected function setVersion($version)
     {
-        if(empty($version)) {
+        if (empty($version)) {
             throw new DomainEventException('DomainEvent version cannot be empty');
         }
         $this->version = $version;
+
         return $this;
     }
 
@@ -232,7 +252,7 @@ class DomainEvent implements Message
      */
     protected function setOccurredOn($occurredOn)
     {
-        if(!is_null($occurredOn) && !preg_match('/^\d+(\.\d{1,4})?$/', $occurredOn)) { // accepts also microseconds
+        if (!is_null($occurredOn) && !preg_match('/^\d+(\.\d{1,4})?$/', $occurredOn)) { // accepts also microseconds
             throw new DomainEventException("$occurredOn is not a valid unix timestamp.");
         }
 
@@ -241,7 +261,16 @@ class DomainEvent implements Message
         }
 
         $this->occurredOn = $occurredOn;
+
         return $this;
+    }
+
+    /**
+     * @param array|null $extraAttributes
+     */
+    protected function setExtraAttributes($extraAttributes)
+    {
+        $this->extraAttributes = $extraAttributes;
     }
 
     /**
@@ -250,14 +279,15 @@ class DomainEvent implements Message
     public function jsonSerialize()
     {
         return [
-            'origin'        => $this->origin,
-            'name'          => $this->name,
-            'version'       => $this->version,
-            'occurredOn'    => $this->occurredOn,
-            'body'          => $this->body,
-            'id'            => $this->id,
-            'isDeprecated'  => $this->isDeprecated,
-            'correlationId' => $this->correlationId,
+            'origin'          => $this->origin,
+            'name'            => $this->name,
+            'version'         => $this->version,
+            'occurredOn'      => $this->occurredOn,
+            'body'            => $this->body,
+            'id'              => $this->id,
+            'isDeprecated'    => $this->isDeprecated,
+            'correlationId'   => $this->correlationId,
+            'extraAttributes' => $this->extraAttributes,
         ];
     }
 }
