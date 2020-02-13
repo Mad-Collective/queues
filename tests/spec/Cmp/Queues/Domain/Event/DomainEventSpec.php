@@ -21,8 +21,8 @@ class DomainEventSpec extends ObjectBehavior
             array("foo" => "bar", "empty" => null),
             'uuid',
             true,
-            'correlation',
-            ['attribute1', 'attribute2']
+            'correlation'
+  //          ['attribute1', 'attribute2']
         );
     }
 
@@ -112,10 +112,10 @@ class DomainEventSpec extends ObjectBehavior
         $this->getCorrelationId()->shouldBe("correlation");
     }
 
-    function it_should_have_the_extra_attributes()
+/*    function it_should_have_the_extra_attributes()
     {
         $this->getExtraAttributes()->shouldBe(['attribute1', 'attribute2']);
-    }
+    }*/
 
     function it_can_get_body_values()
     {

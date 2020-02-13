@@ -117,8 +117,8 @@ class DomainContext implements Context
             array(1,2,3,4,5),
             null,
             false,
-            null,
-            ['attribute1', 'attribute2']
+            null
+          //  ['attribute1', 'attribute2']
         );
         $publisher = $this->getDomainEventPublisher();
         $publisher->add($this->domainEvent);
@@ -138,7 +138,7 @@ class DomainContext implements Context
         assert($this->domainEvent->getBody() === $incomingDomainEvent->getBody(), 'Body doesnt match');
         assert($this->domainEvent->getVersion() === $incomingDomainEvent->getVersion(), 'Version doesnt match');
         assert($this->domainEvent->getOccurredOn() === $incomingDomainEvent->getOccurredOn(), 'OccurredOn doesnt match');
-        assert($this->domainEvent->getExtraAttributes() === $incomingDomainEvent->getExtraAttributes(), 'ExtraAttributes doesnt match');
+ //       assert($this->domainEvent->getExtraAttributes() === $incomingDomainEvent->getExtraAttributes(), 'ExtraAttributes doesnt match');
     }
 
     /**
@@ -155,8 +155,8 @@ class DomainContext implements Context
             array(1,2,3,4,5),
             null,
             false,
-            null,
-            ['attribute1', 'attribute2']
+            null
+  //          ['attribute1', 'attribute2']
         );
         $publisher = $this->getDomainEventPublisher();
         $publisher->add($this->domainEvent);
