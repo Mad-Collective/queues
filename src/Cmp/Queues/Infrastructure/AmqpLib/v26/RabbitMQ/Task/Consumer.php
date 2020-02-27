@@ -38,6 +38,11 @@ class Consumer extends DomainConsumer
         LoggerInterface $logger,
         JSONMessageFactory $factory = null
     ) {
+        var_dump($host);
+        var_dump($port);
+        var_dump($user);
+        var_dump($password);
+        var_dump($vHost);
         $queueReader = new QueueReader(
             new AMQPLazyConnection($host, $port, $user, $password, $vHost),
             new QueueConfig($queueName, false, true, false, false),
