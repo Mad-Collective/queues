@@ -193,10 +193,18 @@ class QueueReader implements DomainQueueReader
         }
         $this->logger->debug('Connecting to RabbitMQ');
         try {
+            var_dump('*************************');
+            var_dump('RABBIT CHANNEL');
+            var_dump($this->connection->channel());
+            var_dump('*************************');
             $this->channel = $this->connection->channel();
             $this->exchangeDeclare();
             $this->queueDeclareAndBind();
         } catch (\ErrorException $exception) {
+            var_dump('*************************');
+            var_dump('EXCEPTION MESSAGE');
+            var_dump($exception->getMessage());
+            var_dump('*************************');
             $this->logger->error('Error trying to connect to rabbitMQ:' . $exception->getMessage());
             throw new ReaderException("Error initializing queue reader", 0, $exception);
         }
