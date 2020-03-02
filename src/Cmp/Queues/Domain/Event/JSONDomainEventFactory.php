@@ -22,7 +22,7 @@ class JSONDomainEventFactory implements JSONMessageFactory
             throw new InvalidJSONDomainEventException("String is not valid JSON");
         }
 
-        if (!isset($domainEventArray['origin'], $domainEventArray['name'], $domainEventArray['version'], $domainEventArray['occurredOn'], $domainEventArray['body'])) {
+        if (!isset($domainEventArray['origin'], $domainEventArray['name'], $domainEventArray['version'], $domainEventArray['occurredOn'])) {
             throw new InvalidJSONDomainEventException("Cannot reconstruct domain event. Origin, name, version, occurredOn or body fields are missing");
         }
 
@@ -32,10 +32,11 @@ class JSONDomainEventFactory implements JSONMessageFactory
                 $domainEventArray['name'],
                 $domainEventArray['version'],
                 $domainEventArray['occurredOn'],
-                $domainEventArray['body'],
+                isset($domainEventArray['body']) ? $domainEventArray['body'] : [],
                 isset($domainEventArray['id']) ? $domainEventArray['id'] : null,
                 isset($domainEventArray['isDeprecated']) ? $domainEventArray['isDeprecated'] : false,
-                isset($domainEventArray['correlationId']) ? $domainEventArray['correlationId'] : null
+                isset($domainEventArray['correlationId']) ? $domainEventArray['correlationId'] : null,
+                isset($domainEventArray['context']) ? $domainEventArray['context'] : ""
             );
         } catch (DomainEventException $e) {
             throw new InvalidJSONDomainEventException("Failed creating DomainEvent instance", 0, $e);

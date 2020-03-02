@@ -59,8 +59,9 @@ class QueueWriter implements DomainQueueWriter
     {
         try {
             $this->sns->publish([
-                'TopicArn' => $this->topicArn,
-                'Message' => json_encode($message),
+                'TopicArn'          => $this->topicArn,
+                'Message'           => json_encode($message),
+                'MessageAttributes' => $message->getAttributes()
             ]);
         } catch(\Exception $e) {
             $this->logger->error('Error writing messages', ['exception' => $e]);
