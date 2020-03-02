@@ -47,14 +47,26 @@ class DomainEvent implements Message
     protected $correlationId;
 
     /**
-     * @param string      $origin
-     * @param string      $name
-     * @param string      $version
-     * @param int         $occurredOn
-     * @param array       $body
-     * @param string      $id
-     * @param bool        $isDeprecated
+     * @var array
+     */
+    private $attributes;
+
+    /**
+     * @var string
+     */
+    private $context;
+
+    /**
+     * @param string $origin
+     * @param string $name
+     * @param string $version
+     * @param int $occurredOn
+     * @param array $body
+     * @param string $id
+     * @param bool $isDeprecated
      * @param string|null $correlationId
+     * @param array $attributes
+     * @param string $context
      * @throws DomainEventException
      */
     public function __construct(
@@ -65,7 +77,9 @@ class DomainEvent implements Message
         array $body = [],
         $id = null,
         $isDeprecated = false,
-        $correlationId = null
+        $correlationId = null,
+        $context = "",
+        $attributes = []
     ) {
         $this->setOrigin($origin)
             ->setName($name)
@@ -76,6 +90,8 @@ class DomainEvent implements Message
         $this->id            = $id;
         $this->isDeprecated  = $isDeprecated;
         $this->correlationId = $correlationId;
+        $this->attributes    = $attributes;
+        $this->context       = $context;
     }
 
     /**
@@ -184,6 +200,22 @@ class DomainEvent implements Message
     }
 
     /**
+     * @return string
+     */
+    public function getContext()
+    {
+        return $this->context;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAttributes()
+    {
+        return $this->attributes;
+    }
+
+    /**
      * @param string $origin
      * @return DomainEvent $this
      * @throws DomainEventException
@@ -252,6 +284,7 @@ class DomainEvent implements Message
         return [
             'origin'        => $this->origin,
             'name'          => $this->name,
+            'context'       => $this->context,
             'version'       => $this->version,
             'occurredOn'    => $this->occurredOn,
             'body'          => $this->body,

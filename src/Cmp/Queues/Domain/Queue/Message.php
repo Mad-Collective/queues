@@ -18,4 +18,9 @@ interface Message extends \JsonSerializable
      * @return int
      */
     public function getDelay();
+
+    /**
+     * @return array
+     */
+    public function getAttributes();
 }

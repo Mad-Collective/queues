@@ -26,6 +26,7 @@ class Task implements TaskInterface
      * @param string $name
      * @param array $body
      * @param int $delay
+     * @throws TaskException
      */
     public function __construct($name, array $body, $delay=0)
     {
@@ -98,5 +99,13 @@ class Task implements TaskInterface
             'body' => $this->body,
             'delay' => $this->delay
         ];
+    }
+
+    /**
+     * @return array
+     */
+    public function getAttributes()
+    {
+        return [];
     }
 }
