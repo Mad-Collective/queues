@@ -27,6 +27,11 @@ COPY confs/php.ini /usr/local/etc/php/php.ini
 COPY run.sh /run.sh
 RUN chmod 755 /run.sh
 
+ADD https://letsencrypt.org/certs/isrgrootx1.pem.txt /usr/local/share/ca-certificates/isrgrootx1.pem
+RUN sed '/DST_Root_CA_X3.crt/d' /etc/ca-certificates.conf > /tmp/cacerts.conf && mv /tmp/cacerts.conf /etc/ca-certificates.conf
+RUN cd /usr/local/share/ca-certificates && openssl x509 -in isrgrootx1.pem -inform PEM -out isrgrootx1.crt
+RUN update-ca-certificates
+
 VOLUME ["$FOLDER"]
 
 ENTRYPOINT exec /run.sh

@@ -7,9 +7,6 @@ set -e
 
 if [[ ! -f $COMPOSER_BIN ]]; then
 
-  apt-get update
-  apt-get upgrade -y
-
 	curl -sS http://getcomposer.org/installer | php && mv composer.phar /usr/local/bin/composer;
 
 fi
