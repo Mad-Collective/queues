@@ -1,10 +1,5 @@
 Feature: Domain Events
 
-  Scenario: I send and consume a domain event from RabbitMQ
-    Given I use RabbitMQ
-    And I send a random domain event
-    Then I should consume the random domain event
-
   Scenario: I send and consume a domain event from AWS
     Given I use AWS
     And I send a random domain event
