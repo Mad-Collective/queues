@@ -50,11 +50,24 @@ class MessageHandler
 
             $body = json_decode($message['Body'], true);
 
-            if (!isset($body['Message'])) {
-                throw new InvalidJSONMessageException('Undefined index key Message: ' . print_r($body, true));
+            if (1 === \count($body) && true === \array_key_exists(0, $body)) {
+                $body = $body[0];
             }
 
-            return call_user_func($this->callback, $this->jsonMessageFactory->create($body['Message']));
+            $messagePayload = $body;
+
+            if (false === \array_key_exists('Message', $body)) {
+                if (false === \array_key_exists('payload', $body)) {
+                    throw new InvalidJSONMessageException('Undefined index key Message: ' . print_r($body, true));
+                }
+                $messagePayload = $body['payload'];
+            }
+
+            if (!isset($messagePayload['Message'])) {
+                throw new InvalidJSONMessageException('Undefined index key Message: ' . print_r($messagePayload, true));
+            }
+
+            return call_user_func($this->callback, $this->jsonMessageFactory->create($messagePayload['Message']));
 
         } catch(InvalidJSONMessageException $e) {
             throw new ParseMessageException(json_encode($message),0, $e);
