@@ -2,7 +2,7 @@ default:
 
     suites:
         domain:
-            paths: [ %paths.base%/tests/behat/features ]
+            paths: [ ./tests/behat/features ]
             contexts:
                 - Tests\Behat\Context\DomainContext
             filters:

@@ -9,11 +9,11 @@ ENV ?= staging
 all: dev logs
 
 dev:
-	@docker-compose -p ${COMPONENT} -f ops/docker/docker-compose.yml up -d
+	@docker-compose -p ${COMPONENT} -f ops/docker/docker-compose.yml up -d --build
 	@sleep 2
 
 enter:
-	@./ops/scripts/enter.sh ${COMPONENT}
+	@docker exec -ti ${COMPONENT}_${CODE_CONTAINER}_1 /bin/sh
 
 kill:
 	@docker-compose -p ${COMPONENT} -f ops/docker/docker-compose.yml kill

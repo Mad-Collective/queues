@@ -18,13 +18,15 @@
         }
     },
     "require": {
-        "psr/log": "^1.0"
+        "php": "^8.0",
+        "psr/log": "^2.0"
     },
     "require-dev": {
-        "phpspec/phpspec": "2.4.1",
+        "phpspec/phpspec": "^7",
         "php-amqplib/php-amqplib": "^2.6",
         "behat/behat": "^3.3",
-        "aws/aws-sdk-php": "^3.36"
+        "aws/aws-sdk-php": "^3.36",
+        "phpunit/phpunit": "^9.6"
     },
     "config": {
       "bin-dir": "bin"
