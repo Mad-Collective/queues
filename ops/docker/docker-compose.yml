@@ -1,18 +1,20 @@
-phpcli:
-  build: phpcli
-  volumes:
-    - ../../:/app/queues
-    - "./phpcli/run.sh:/run.sh"
-  links:
-    - rabbitmq
-  environment:
-    APP_ENV: build
-    AWS_ACCESS_KEY_ID: "${AWS_ACCESS_KEY_ID}"
-    AWS_SECRET_ACCESS_KEY: "${AWS_SECRET_ACCESS_KEY}"
-    AWS_DEFAULT_REGION: "${AWS_DEFAULT_REGION}"
+version: '3.7'
 
-rabbitmq:
-  image: gonkulatorlabs/rabbitmq
-  ports:
-    - "5672:5672"
-    - "15672:15672"
+services:
+  phpcli:
+    build: phpcli
+    volumes:
+      - ../../:/app/queues
+    links:
+      - rabbitmq
+    environment:
+      APP_ENV: build
+      AWS_ACCESS_KEY_ID: "${AWS_ACCESS_KEY_ID}"
+      AWS_SECRET_ACCESS_KEY: "${AWS_SECRET_ACCESS_KEY}"
+      AWS_DEFAULT_REGION: "${AWS_DEFAULT_REGION}"
+
+  rabbitmq:
+    image: gonkulatorlabs/rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
