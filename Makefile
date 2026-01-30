@@ -13,7 +13,7 @@ dev:
 	@sleep 2
 
 enter:
-	@docker exec -ti ${COMPONENT}_${CODE_CONTAINER}_1 /bin/sh
+	@docker exec -ti ${COMPONENT}-${CODE_CONTAINER}-1 /bin/sh
 
 kill:
 	@docker-compose -p ${COMPONENT} -f ops/docker/docker-compose.yml kill

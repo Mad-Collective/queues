@@ -279,7 +279,7 @@ class DomainEvent implements Message
     /**
      * @return array
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return [
             'origin'        => $this->origin,
