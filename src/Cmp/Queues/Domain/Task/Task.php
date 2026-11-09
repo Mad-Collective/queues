@@ -6,20 +6,9 @@ use Cmp\Queues\Domain\Task\Exception\TaskException;
 
 class Task implements TaskInterface
 {
-    /**
-     * @var string
-     */
-    private $name;
-
-    /**
-     * @var array
-     */
-    private $body;
-
-    /**
-     * @var int
-     */
-    private $delay;
+    private string $name;
+    private array $body;
+    private int $delay;
 
     /**
      * Task constructor.
@@ -28,7 +17,7 @@ class Task implements TaskInterface
      * @param int $delay
      * @throws TaskException
      */
-    public function __construct($name, array $body, $delay=0)
+    public function __construct(string $name, array $body, int $delay = 0)
     {
         $this->setName($name)
              ->setDelay($delay)
@@ -36,26 +25,17 @@ class Task implements TaskInterface
         $this->body = $body;
     }
 
-    /**
-     * @return string
-     */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    /**
-     * @return array
-     */
-    public function getBody()
+    public function getBody(): array
     {
         return $this->body;
     }
 
-    /**
-     * @return int
-     */
-    public function getDelay()
+    public function getDelay(): int
     {
         return $this->delay;
     }
@@ -65,7 +45,7 @@ class Task implements TaskInterface
      * @return $this
      * @throws TaskException
      */
-    protected function setName($name)
+    protected function setName($name): Task
     {
         if(empty($name)) {
             throw new TaskException('Task name cannot be empty');
@@ -79,7 +59,7 @@ class Task implements TaskInterface
      * @return $this
      * @throws TaskException
      */
-    protected function setDelay($delay)
+    protected function setDelay($delay): Task
     {
         if(!is_null($delay) && !preg_match('/^\d+$/', $delay)) {
             throw new TaskException("Task delay $delay is not a valid delay.");
@@ -88,11 +68,7 @@ class Task implements TaskInterface
         return $this;
     }
 
-
-    /**
-     * @return array
-     */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return [
             'name' => $this->name,
@@ -101,10 +77,7 @@ class Task implements TaskInterface
         ];
     }
 
-    /**
-     * @return array
-     */
-    public function getAttributes()
+    public function getAttributes(): array
     {
         return [];
     }

@@ -29,7 +29,7 @@ class Producer
      * @param TaskInterface $task
      * @return $this
      */
-    public function add(TaskInterface $task)
+    public function add(TaskInterface $task): Producer
     {
         $this->tasks[] = $task;
         return $this;
@@ -50,7 +50,7 @@ class Producer
     /**
      * @return Task[]
      */
-    public function getTasks()
+    public function getTasks(): array
     {
         return $this->tasks;
     }
@@ -58,7 +58,7 @@ class Producer
     /**
      * @return QueueWriter
      */
-    public function getQueueWriter()
+    public function getQueueWriter(): QueueWriter
     {
         return $this->queueWriter;
     }

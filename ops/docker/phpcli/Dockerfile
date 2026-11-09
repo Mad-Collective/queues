@@ -1,4 +1,6 @@
-FROM php:8.0-fpm-alpine
+FROM php:8.4-fpm-alpine
+
+RUN apk add --no-cache linux-headers
 
 RUN docker-php-ext-install -j$(nproc) \
         bcmath \
